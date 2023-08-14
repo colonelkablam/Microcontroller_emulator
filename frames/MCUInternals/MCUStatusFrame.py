@@ -23,14 +23,14 @@ class MCUStatusFrame(ttk.Frame):
         self.control_panel_label = ttk.Label(self, text=title, style='MainWindowInner.TLabel')
         self.control_panel_label.grid(column=0, row=0, sticky="N")
 
-        # PROGRAM COUNTER
-        self.PCL_display = ByteDisplayFrame(self, self.parent.get_byte_by_name("PCL"), "Program Counter", style='MainWindowInner.TLabel')
+        # PROGRAM COUNTER - need to enter a tuple of the byte(s) being displayed
+        self.PCL_display = ByteDisplayFrame(self, (self.parent.get_byte_by_name("PCLATH"), self.parent.get_byte_by_name("PCL")), "Program Counter", style='MainWindowInner.TLabel')
         self.PCL_display.grid(column=0, row=1, sticky="EW")
         # STATUS REG
-        self.STATUS_display = ByteDisplayFrame(self, self.parent.get_byte_by_name("STATUS"), "Status Register", style='MainWindowInner.TLabel')
+        self.STATUS_display = ByteDisplayFrame(self, (self.parent.get_byte_by_name("STATUS"), ), "Status Register", style='MainWindowInner.TLabel')
         self.STATUS_display.grid(column=0, row=2, sticky="EW")
         # WORKING REG
-        self.WREG_display = ByteDisplayFrame(self, self.parent.get_w_register(), "Working Register", style='MainWindowInner.TLabel')
+        self.WREG_display = ByteDisplayFrame(self, (self.parent.get_w_register(), ), "Working Register", style='MainWindowInner.TLabel')
         self.WREG_display.grid(column=0, row=3, sticky="EW")
 
     def update_display(self):
