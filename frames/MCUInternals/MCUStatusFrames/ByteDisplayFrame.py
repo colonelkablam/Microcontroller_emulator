@@ -25,13 +25,16 @@ class ByteDisplayFrame(ttk.Frame):
         # list for bits
         self.bits = []
 
+        # highlighting
+        self.highlighted = False
+
         # tkinter widgets
 
         # panel label
         self.mem_label = ttk.Label(self, text=f"{title}", style='MainWindowInner3.TLabel')
         self.mem_label.grid(column=0, row=0, pady=(0,5), sticky="W")
 
-        self.bit_frame = ttk.Frame(self, style="MainWindowInner2.TFrame")
+        self.bit_frame = ttk.Frame(self, style="MCUByte.TFrame")
         self.bit_frame.grid(column=1, row=0, sticky="E")
 
         # populate bits from left to right (MSB to LSB)
@@ -52,6 +55,11 @@ class ByteDisplayFrame(ttk.Frame):
             self.bits[bit_index].configure(text=str(self.bytes[nth_byte].get_bit(bit_index % 8)))
             if bit_index % 8 == 0:
                 nth_byte += 1
+        if self.highlighted == True:
+            self.unhighlight()
 
     def highlight(self):
-        
+        self.bit_frame.configure(style="MCUByteHighlight.TFrame")
+
+    def unhighlight(self):
+        self.bit_frame.configure(style="MCUByte.TFrame")

@@ -85,6 +85,20 @@ class MainStyle(ttk.Style):
             background=COLOUR_MEMORY_FRAME_BACKGROUND,
         )
 
+        self.configure(
+            "MCUByteHighlight.TFrame",
+            background=BYTE_HIGHLIGHT,
+            borderwidth=2,
+            relief="ridge"
+        )
+
+        self.configure(
+            "MCUByte.TFrame",
+            background=COLOUR_INNER2_BACKGROUND,
+            borderwidth=2,
+            relief="ridge"
+        )
+
 
         # CodeWindow Styles
 

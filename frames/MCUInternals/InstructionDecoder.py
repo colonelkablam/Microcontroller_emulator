@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from my_constants import*
 
+
 class InstructionDecoder():
     def __init__(self, parent):
 
@@ -43,7 +44,7 @@ class InstructionDecoder():
                 self.set_w_reg_value(result)
                 loc_string = f"W_REG (result: {result})"
                 # record altered register address
-                self.altered_register_address = -1 # W_REG not in data_mem
+                self.altered_register_address = W_REG # W REG not in data_mem
             elif self.operand_2 == 1:
                 self.set_file_reg_value(self.operand_1, result)
                 loc_string = f"FILE REG addr. 0x{self.operand_1:02X} (result: {result})"
@@ -73,7 +74,7 @@ class InstructionDecoder():
         elif self.mnumonic == "CLRW":
             self.set_w_reg_value(0)
             # record altered register address (-1 if no reg altered)
-            self.altered_register_address = -1
+            self.altered_register_address = W_REG
             # advance to next program line
             self.new_program_address = self.parent.get_current_PC_value() + 1
             # log
@@ -95,7 +96,7 @@ class InstructionDecoder():
         # No operation - do nothing but advance program counter
         elif self.mnumonic == "NOP":
             # record altered register address (-1 if no reg altered)
-            self.altered_register_address = -1
+            self.altered_register_address = NONE
             # advance to next program line
             self.new_program_address = self.parent.get_current_PC_value() + 1
             # log
@@ -110,29 +111,32 @@ class InstructionDecoder():
             result = w + self.operand_1
             self.set_w_reg_value(result)
             # record altered register address (-1 if no reg altered)
-            self.altered_register_address = -1
+            self.altered_register_address = W_REG
             # advance to next program line
             self.new_program_address = self.parent.get_current_PC_value() + 1
             # log
             self.add_to_log(f"ADDLW; literal value ({self.operand_1}) + W_REG value ({w}) --> W_REG (result: {self.get_w_reg_value()})")
 
         elif self.mnumonic == "GOTO":
-            # record altered register address (-1 if no reg altered)
-            self.altered_register_address = -1
             self.new_program_address = self.operand_1
             # set next cycle to be an NOP as GOTO uses 2 instruction cycles
             self.parent.set_next_cycle_NOP()
+            # record altered register address (-1 if no reg altered)
+            self.altered_register_address = NONE
             # log
             self.add_to_log(f"GOTO; address 0x{self.operand_1:02X} [{self.operand_1}]; takes 2 instruction cycles")
 
         elif self.mnumonic == "CALL":
             # record altered register address (-1 if no reg altered)
-            self.altered_register_address = -1
+            self.altered_register_address = NONE
+            # advance to next program line
             self.new_program_address = self.operand_1
             # then push current PCL to stack
 
         elif self.mnumonic == "MOVLW":
             self.set_w_reg_value(self.operand_1)
+            # record altered register address (-1 if no reg altered)
+            self.altered_register_address = W_REG
             # advance to next program line
             self.new_program_address = self.parent.get_current_PC_value() + 1
             # log
@@ -140,7 +144,7 @@ class InstructionDecoder():
 
         else:
             # record altered register address (-1 if no reg altered)
-            self.altered_register_address = -1
+            self.altered_register_address = NONE
             self.new_program_address = self.parent.get_current_PC_value() + 1
             self.add_to_log(f"Unrecognised instruction; {instruction}")
             # advance to next program line

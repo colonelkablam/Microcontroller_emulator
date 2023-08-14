@@ -87,7 +87,6 @@ class DataMemoryFrame(ttk.Frame):
 
 
 
-
     # canvas scrolling behaviour
     def _on_mousewheel(self, event):
         self.scroll_canvas.yview_scroll(int(-1*(event.delta/120)), "units")

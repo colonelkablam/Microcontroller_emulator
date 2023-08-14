@@ -132,9 +132,18 @@ class MCUFrame(ttk.Frame):
         new_PC_address = PC_address_and_register[0] 
         altered_reg_address = PC_address_and_register[1]
         self.set_PC(new_PC_address)
-        self.MCU_status_frame.update_display()
         self.prog_memory_frame.highlight_current_instruction(new_PC_address)
-        self.data_memory_frame.highlight_current_register(altered_reg_address)
+        self.MCU_status_frame.update_display()
+        # highlighting displayed bytes
+        if altered_reg_address < 0:
+            if altered_reg_address == NONE:
+                pass
+            else:
+                self.MCU_status_frame.highlight_byte(altered_reg_address)
+        else:
+            self.data_memory_frame.highlight_current_register(altered_reg_address)
+        
+
         self.instruction_cycle += 1
         self.parent.log_commit()
 
