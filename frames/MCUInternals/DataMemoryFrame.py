@@ -61,7 +61,7 @@ class DataMemoryFrame(ttk.Frame):
             name = ttk.Label(self.inner_frame, text=self.memory[mem_address].get_name(), width=9, style="MCUmemory.TLabel")
             name.grid(column=1, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
-            dec_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_dec(), width=3, style="MCUmemory.TLabel")
+            dec_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_dec(), width=3, style="MCUmemory.TLabel", anchor="E")
             dec_value.grid(column=2, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
             hex_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_hex(), width=2, style="MCUmemory.TLabel")
