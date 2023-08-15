@@ -4,7 +4,7 @@ from my_constants import *
 
 
 class ByteDisplayFrame(ttk.Frame):
-    def __init__(self, parent, bytes_tuple, display_bits=8, title="", byte_heading="", *args, **kwargs):
+    def __init__(self, parent, bytes_tuple, display_bits=8, title="Unnamed", byte_heading=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         # styling
@@ -35,8 +35,9 @@ class ByteDisplayFrame(ttk.Frame):
         # tkinter widgets
 
         # panel label
-        self.byte_label = ttk.Label(self, text=f"{byte_heading}", style='MainWindowInner3.TLabel')
-        self.byte_label.grid(column=0, row=0, columnspan=2, pady=(0,0), padx=(0,6), sticky="E")
+        if byte_heading != None:
+            self.byte_label = ttk.Label(self, text=f"{byte_heading}", style='MainWindowInner3.TLabel')
+            self.byte_label.grid(column=0, row=0, columnspan=2, pady=(0,0), padx=(0,6), sticky="E")
 
         self.mem_label = ttk.Label(self, text=f"{title}", style='MainWindowInner3.TLabel')
         self.mem_label.grid(column=0, row=1, pady=(0,0), padx=(5, 0), sticky="W")
