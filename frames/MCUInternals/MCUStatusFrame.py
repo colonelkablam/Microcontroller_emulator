@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import *
-from frames.MCUInternals.MCUStatusFrames import ByteDisplayFrame
+from frames.MCUInternals.MCUStatusFrames import ByteDisplayFrame, StackDisplayFrame
 
 
 class MCUStatusFrame(ttk.Frame):
@@ -10,8 +10,8 @@ class MCUStatusFrame(ttk.Frame):
 
         # styling
         self.configure(style="MainWindowInner.TFrame", padding=10)
-        self.columnconfigure(0, weight=1)
-        #self.rowconfigure((5), weight=1)
+        self.columnconfigure(1, weight=1)
+        #self.rowconfigure(0, weight=1)
         self.grid(sticky="NSEW")
 
         # object properties
@@ -32,6 +32,12 @@ class MCUStatusFrame(ttk.Frame):
                                                 style='MainWindowInner.TLabel'                  )
         
         self.PCL_display.grid(column=0, row=1, sticky="EW")
+
+        # STACK
+        self.stack_display = StackDisplayFrame( self,
+                                                #self.parent.get_stack(),
+                                                style='MainWindowInner.TLabel'                  )
+        self.stack_display.grid(column=0, row=2, rowspan=4, sticky="NS")
         
         # STATUS REG
         self.STATUS_display = ByteDisplayFrame( self,
@@ -40,7 +46,7 @@ class MCUStatusFrame(ttk.Frame):
                                                 byte_heading=              "7           z dc c", 
                                                 style='MainWindowInner.TLabel'                  )
 
-        self.STATUS_display.grid(column=0, row=2, sticky="EW")
+        self.STATUS_display.grid(column=1, row=2, sticky="EW")
         
         # WORKING REG
         self.WREG_display =     ByteDisplayFrame(self,
@@ -48,15 +54,15 @@ class MCUStatusFrame(ttk.Frame):
                                                 title="Working Register",
                                                 byte_heading=              "7                0", 
                                                 style='MainWindowInner.TLabel'                  )
-        self.WREG_display.grid(column=0, row=3, sticky="EW")
+        self.WREG_display.grid(column=1, row=3, sticky="EW")
 
         # PORTA
-        self.PORTA_display =     ByteDisplayFrame(self,
+        self.PORTA_display =    ByteDisplayFrame(self,
                                                 (self.parent.get_byte_by_name("PORTA"), ),
                                                 title="PORTA",
                                                 byte_heading=              "7                0", 
                                                 style='MainWindowInner.TLabel'                  )
-        self.PORTA_display.grid(column=0, row=4, pady=(10,0), sticky="EW")
+        self.PORTA_display.grid(column=1, row=4, pady=(10,0), sticky="EW")
 
         # PORTB
         self.PARTB_display =     ByteDisplayFrame(self,
@@ -64,11 +70,11 @@ class MCUStatusFrame(ttk.Frame):
                                                 title="PORTB",
                                                 #byte_heading=              "7 6 5 4 3 2 1 0                 0", 
                                                 style='MainWindowInner.TLabel'                  )
-        self.PARTB_display.grid(column=0, row=5, sticky="EW")
+        self.PARTB_display.grid(column=1, row=5, sticky="EW")
 
         # MCU status info
         self.status_info_frame = ttk.Frame(self, style="MainWindowInner2.TFrame", padding=10)
-        self.status_info_frame.grid(column=0, row=4)
+        self.status_info_frame.grid(column=0, row=6)
 
         self
 

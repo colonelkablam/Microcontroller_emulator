@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from collections import deque
 from my_constants import*
 from frames import ControlPanelFrame, CodeDisplayFrame
 from frames.MCUInternals import ProgramMemoryFrame, DataMemoryFrame, MCUStatusFrame, InstructionDecoder
@@ -16,6 +17,7 @@ class MCUFrame(ttk.Frame):
         # memory 
         self.program_memory = []    # list of Instruction objects
         self.data_memory = []       # list of Byte objects
+        self.stack = deque()
         # logic
         self.instruction_decoder = InstructionDecoder(self)
         self.is_next_cycle_NOP = False
@@ -115,6 +117,23 @@ class MCUFrame(ttk.Frame):
         return self.w_reg
     def set_w_register(self, new_value):
         self.w_reg.set_value(new_value)
+
+    # STACK methods
+    # access to the stack data structure
+    def get_stack(self):
+        return self.stack
+    # return top element
+    def pop_stack(self):
+        if len(self.stack) != 0:
+            stacked_address = self.stack.pop()
+        else:
+            stacked_address = 0
+            self.parent.add_to_log(f"Stack empty")
+    # add to stack - 8 deep
+    def push_stack(self, new_address):
+        # **some logic** to implement an 8 deep stack to be added
+        self.stack.append(new_address)
+
 
     # initialise log text
     def clear_log_text(self):
