@@ -102,7 +102,7 @@ class MCUFrame(ttk.Frame):
                 else:
                     name = " -"
             # add Byte
-            self.data_memory.append(Byte(tk.IntVar(value=0), tk.StringVar(value="00"), tk.StringVar(value=f"00000000"), name))
+            self.data_memory.append(Byte(tk.IntVar(value=0), tk.StringVar(value="00h"), tk.StringVar(value=f"00000000"), name))
 
     # retrieve bytes from data memory by name (if SFR) or address
     def get_byte_by_name(self, byte_name):

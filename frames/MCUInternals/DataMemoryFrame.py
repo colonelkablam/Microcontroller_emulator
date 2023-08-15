@@ -8,9 +8,9 @@ class DataMemoryFrame(ttk.Frame):
         super().__init__(parent, *args, **kwargs)
 
         # styling
-        self.configure(style="MainWindowInner.TFrame", padding=10)
+        self.configure(style="MainWindowInner.TFrame", padding=5)
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
+        self.rowconfigure(3, weight=1)  # want canvas to fill all available space
         self.grid(sticky="NSEW")
 
         # object properties
@@ -24,21 +24,28 @@ class DataMemoryFrame(ttk.Frame):
         # tkinter widgets
 
         # panel label
-        self.control_panel_label = ttk.Label(self, text=f"{title}\n{DATA_MEMORY_SIZE} byte", style='MainWindowInner.TLabel')
-        self.control_panel_label.grid(column=0, row=0, columnspan=2, pady=(0,10), sticky="W")
+        self.control_panel_label = ttk.Label(self, text=f"{title}\n{DATA_MEMORY_SIZE} bytes", style='MainWindowInner.TLabel')
+        self.control_panel_label.grid(column=0, row=0, columnspan=2, padx=(5,0), pady=(0,5), sticky="NW")
 
-        self.mem_label = ttk.Label(self, text="[addr.][ SFR ][ dec  hex  binary ]", style='MainWindowInner2.TLabel')
-        self.mem_label.grid(column=0, row=1, columnspan=2, pady=(0,5), sticky="W")
+        self.mem_label = ttk.Label(     self, 
+                                        text="[    address    ][   byte value   ]",
+                                        style='MainWindowInner2.TLabel'                     )
+        self.mem_label.grid(column=0, row=1, columnspan=2, pady=(0,0), sticky="NW")
+
+        self.mem_label_2 = ttk.Label(   self,
+                                        text="  hex     SFR     dec hex  binary ",
+                                        style='MainWindowInner2.TLabel'                     )
+        self.mem_label_2.grid(column=0, row=2, columnspan=2, pady=(0,0), sticky="NW")
 
         # canvas
         self.scroll_canvas = tk.Canvas(self, width=DATA_MEMORY_WINDOW_WIDTH, height=DATA_MEMORY_WINDOW_HEIGHT)
-        self.scroll_canvas.grid(column=0, row=2, sticky="NS")
+        self.scroll_canvas.grid(column=0, row=3, sticky="NS")
         self.scroll_canvas.columnconfigure(0, weight=1)
         self.scroll_canvas.rowconfigure(0, weight=1)
 
         # scrollbars
         self.code_scroll = ttk.Scrollbar(self, orient='vertical', command=self.scroll_canvas.yview)
-        self.code_scroll.grid(column=1, row=2, sticky="NS")
+        self.code_scroll.grid(column=1, row=3, sticky="NS")
 
         # configure canvas
         self.scroll_canvas.configure(yscrollcommand=self.code_scroll.set)
@@ -48,7 +55,6 @@ class DataMemoryFrame(ttk.Frame):
 
         # create ANOTHER inner frame inside canvas
         self.inner_frame = ttk.Frame(self.scroll_canvas, style="MCUmemory.TFrame")
-        self.inner_frame.columnconfigure(1, weight=1)
 
         # add INNER FRAME to a window in the canvas
         self.scroll_canvas.create_window((0,0), window=self.inner_frame, anchor="nw")
@@ -61,22 +67,21 @@ class DataMemoryFrame(ttk.Frame):
             name = ttk.Label(self.inner_frame, text=self.memory[mem_address].get_name(), width=9, style="MCUmemory.TLabel")
             name.grid(column=1, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
-            dec_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_dec(), width=3, style="MCUmemory.TLabel", anchor="E")
+            dec_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_dec(), width=3, style="MCUmemory.TLabel", anchor="e")
             dec_value.grid(column=2, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
-            hex_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_hex(), width=2, style="MCUmemory.TLabel")
+            hex_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_hex(), width=3, style="MCUmemory.TLabel")
             hex_value.grid(column=3, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
             bin_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_bin(), width=8, style="MCUmemory.TLabel")
             bin_value.grid(column=4, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
             # add 'columns' to rows of data
-            self.rows.append([addr, name, hex_value, bin_value])
+            self.rows.append([addr, name, dec_value, hex_value, bin_value])
 
 
     # MemoryFrame methods
     def highlight_current_register(self, new_reg_address):
-        print(self.previous_reg_address, new_reg_address)
 
         if new_reg_address != -1:
             for label in self.rows[new_reg_address]:
@@ -84,7 +89,7 @@ class DataMemoryFrame(ttk.Frame):
 
         if self.previous_reg_address != -1:
             for label in self.rows[self.previous_reg_address]:
-                label.config(background="#cccccc")
+                label.config(background=VISITED_DATA_ADDRESS)
 
         self.previous_reg_address = new_reg_address
 

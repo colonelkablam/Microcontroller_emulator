@@ -26,7 +26,7 @@ class Byte():
 
     def update_byte(self):
         self.dec_value.set(self.dec_value.get()  % 256) # can only store an 8-bit number
-        self.hex_value.set(f"{self.dec_value.get() :02X}")
+        self.hex_value.set(f"{self.dec_value.get() :02X}h")
         self.bin_value.set(f"{self.dec_value.get() :08b}")
 
     # return int value

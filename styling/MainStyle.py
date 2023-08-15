@@ -42,7 +42,7 @@ class MainStyle(ttk.Style):
             "MainWindowInner.TLabel", 
             background=COLOUR_INNER_BACKGROUND,
             foreground=COLOUR_DARK_TEXT,
-            font=("Courier", 12)
+            font=("Courier", 12, 'bold')
         )
 
         self.configure(

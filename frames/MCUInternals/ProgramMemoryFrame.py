@@ -8,9 +8,9 @@ class ProgramMemoryFrame(ttk.Frame):
         super().__init__(parent, *args, **kwargs)
 
         # styling
-        self.configure(style="MainWindowInner.TFrame", padding=10)
+        self.configure(style="MainWindowInner.TFrame", padding=5)
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
+        self.rowconfigure(3, weight=1) # row 3 has canvas which we want to fill available space
         self.grid(sticky="NSEW")
 
         # object properties
@@ -26,20 +26,26 @@ class ProgramMemoryFrame(ttk.Frame):
 
         # panel labels
         self.control_panel_label = ttk.Label(self, text=f"{title}\n{PROGRAM_MEMORY_SIZE} x 14-bit words", style='MainWindowInner.TLabel')
-        self.control_panel_label.grid(column=0, row=0, columnspan=2, pady=(0,10), sticky="W")
+        self.control_panel_label.grid(column=0, row=0, columnspan=2, padx=(5,0), pady=(0,5), sticky="NW")
 
-        self.mem_label = ttk.Label(self, text="[  address  ] [  instruction  ]", style='MainWindowInner2.TLabel')
-        self.mem_label.grid(column=0, row=1, columnspan=2, pady=(0,5), sticky="W")
+        self.mem_label = ttk.Label(     self,
+                                        text="[  address  ] [  instruction  ]",
+                                        style='MainWindowInner2.TLabel'             )
+        self.mem_label.grid(column=0, row=1, columnspan=2, pady=(0,0), sticky="NW")
+        self.mem_label_2 = ttk.Label(   self,
+                                        text="  dec   hex    mnum.  operands",
+                                        style='MainWindowInner2.TLabel'             )
+        self.mem_label_2.grid(column=0, row=2, columnspan=2, pady=(0,0), sticky="NW")
 
         # canvas
         self.scroll_canvas = tk.Canvas(self, width=PROG_MEMORY_WINDOW_WIDTH, height=PROG_MEMORY_WINDOW_HEIGHT)
-        self.scroll_canvas.grid(column=0, row=2, sticky="NS")
+        self.scroll_canvas.grid(column=0, row=3, sticky="NS")
         self.scroll_canvas.columnconfigure(0, weight=1)
         self.scroll_canvas.rowconfigure(0, weight=1)
 
         # scrollbars
         self.code_scroll = ttk.Scrollbar(self, orient='vertical', command=self.scroll_canvas.yview)
-        self.code_scroll.grid(column=1, row=2, sticky="NSW")
+        self.code_scroll.grid(column=1, row=3, sticky="NSW")
 
         # configure canvas
         self.scroll_canvas.configure(yscrollcommand=self.code_scroll.set)
@@ -49,7 +55,6 @@ class ProgramMemoryFrame(ttk.Frame):
 
         # create ANOTHER inner frame inside canvas
         self.inner_frame = ttk.Frame(self.scroll_canvas, style="MCUmemory.TFrame")
-        #self.inner_frame.columnconfigure(0, weight=1)
 
         # add INNER FRAME to a window in the canvas
         self.scroll_canvas.create_window((0,0), window=self.inner_frame, anchor="nw")
@@ -90,11 +95,6 @@ class ProgramMemoryFrame(ttk.Frame):
 
         for label in self.rows[new_prog_address]:
             label.config(background=PROGRAM_MEMORY_HIGHLIGHT)
-
-
-
-            
-
 
 
     # canvas scrolling behaviour
