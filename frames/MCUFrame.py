@@ -128,25 +128,20 @@ class MCUFrame(ttk.Frame):
     # main advance method - calls instruction decoder (logic of MCU) and updates PCL
     def advance_cycle(self):
         # get new PC address and altered reg address from the instruction decoder object (and handle wrapping around of max prog mem size)
-        PC_address_and_register = self.instruction_decoder.get_new_program_address(self.get_current_instruction())
-        new_PC_address = PC_address_and_register[0] 
-        altered_reg_address = PC_address_and_register[1]
+        new_PC_address_and_register = self.instruction_decoder.get_new_program_address(self.get_current_instruction())
+        new_PC_address = new_PC_address_and_register[0] 
+        altered_reg_address = new_PC_address_and_register[1]
+        
         self.set_PC(new_PC_address)
         self.prog_memory_frame.highlight_current_instruction(new_PC_address)
-        self.MCU_status_frame.update_display()
-        # highlighting displayed bytes
-        if altered_reg_address < 0:
-            if altered_reg_address == NONE:
-                pass
-            else:
-                self.MCU_status_frame.highlight_byte(altered_reg_address)
-        else:
-            self.data_memory_frame.highlight_current_register(altered_reg_address)
-        
+        self.data_memory_frame.highlight_current_register(altered_reg_address)
+
+        self.MCU_status_frame.update_display() # update focused byte displays
 
         self.instruction_cycle += 1
         self.parent.log_commit()
-
+        
+        # test to see if next instruction a NOP
         if self.is_next_cycle_NOP == True:
             self.advance_NOP()
             self.is_next_cycle_NOP = False

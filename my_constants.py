@@ -20,9 +20,6 @@ MEMORY_WINDOW_HEIGHT = 400
 
 # 'file addresses' constants for highlighting
 NONE = -1
-W_REG = -2
-STATUS = -3
-PC = -4
 
 # display style constants
 COLOUR_PRIMARY = "#99ccff"

@@ -19,7 +19,7 @@ class DataMemoryFrame(ttk.Frame):
 
         # list to store intruction labels
         self.rows = [] # allows access for formatting later
-        self.previous_reg_address = 0
+        self.previous_reg_address = -1
 
         # tkinter widgets
 
@@ -81,7 +81,7 @@ class DataMemoryFrame(ttk.Frame):
 
         if self.previous_reg_address != -1:
             for label in self.rows[self.previous_reg_address]:
-                label.config(background="white")
+                label.config(background="#cccccc")
 
         self.previous_reg_address = new_reg_address
 

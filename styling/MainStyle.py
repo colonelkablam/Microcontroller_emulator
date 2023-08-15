@@ -99,6 +99,20 @@ class MainStyle(ttk.Style):
             relief="ridge"
         )
 
+        self.configure(
+            "MCUBit.TLabel", 
+            background=COLOUR_MEMORY_LABEL_BACKGROUND,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 9)
+        )
+
+        self.configure(
+            "MCUBitHighlight.TLabel", 
+            background=BYTE_HIGHLIGHT,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 9)
+        )
+
 
         # CodeWindow Styles
 

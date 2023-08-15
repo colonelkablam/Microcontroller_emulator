@@ -44,7 +44,7 @@ class InstructionDecoder():
                 self.set_w_reg_value(result)
                 loc_string = f"W_REG (result: {result})"
                 # record altered register address
-                self.altered_register_address = W_REG # W REG not in data_mem
+                self.altered_register_address = NONE # W REG not in data_mem
             elif self.operand_2 == 1:
                 self.set_file_reg_value(self.operand_1, result)
                 loc_string = f"FILE REG addr. 0x{self.operand_1:02X} (result: {result})"
@@ -74,7 +74,7 @@ class InstructionDecoder():
         elif self.mnumonic == "CLRW":
             self.set_w_reg_value(0)
             # record altered register address (-1 if no reg altered)
-            self.altered_register_address = W_REG
+            self.altered_register_address = NONE
             # advance to next program line
             self.new_program_address = self.parent.get_current_PC_value() + 1
             # log
@@ -111,7 +111,7 @@ class InstructionDecoder():
             result = w + self.operand_1
             self.set_w_reg_value(result)
             # record altered register address (-1 if no reg altered)
-            self.altered_register_address = W_REG
+            self.altered_register_address = NONE
             # advance to next program line
             self.new_program_address = self.parent.get_current_PC_value() + 1
             # log
@@ -136,7 +136,7 @@ class InstructionDecoder():
         elif self.mnumonic == "MOVLW":
             self.set_w_reg_value(self.operand_1)
             # record altered register address (-1 if no reg altered)
-            self.altered_register_address = W_REG
+            self.altered_register_address = NONE
             # advance to next program line
             self.new_program_address = self.parent.get_current_PC_value() + 1
             # log
