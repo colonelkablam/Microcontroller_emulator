@@ -31,11 +31,11 @@ class MCUStatusFrame(ttk.Frame):
                                                 byte_heading="12 -PCLATH-  7 ----- PCL ---- 0", 
                                                 style='MainWindowInner.TLabel'                  )
         
-        self.PCL_display.grid(column=0, row=1, sticky="EW")
+        self.PCL_display.grid(column=0, row=1, columnspan=2, sticky="EW")
 
         # STACK
         self.stack_display = StackDisplayFrame( self,
-                                                #self.parent.get_stack(),
+                                                self.parent.get_stack(),
                                                 style='MainWindowInner.TLabel'                  )
         self.stack_display.grid(column=0, row=2, rowspan=4, sticky="NS")
         

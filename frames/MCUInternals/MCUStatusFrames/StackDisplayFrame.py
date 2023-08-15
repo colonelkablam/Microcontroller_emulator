@@ -3,8 +3,8 @@ from tkinter import ttk
 from my_constants import *
 
 class StackDisplayFrame(ttk.Frame):
-    def __init__(self, parent, *args, **kwargs):
-        super.__init__(parent, *args, *kwargs)
+    def __init__(self, parent, stack, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
 
         # styling
         self.configure(style="MainWindowInner2.TFrame", padding=5)
@@ -14,6 +14,6 @@ class StackDisplayFrame(ttk.Frame):
 
         # properties
         self.parent = parent
-        #self.stack = stack
+        self.stack = stack
 
     # Stack methods

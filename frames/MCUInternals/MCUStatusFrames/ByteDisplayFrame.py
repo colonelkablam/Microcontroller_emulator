@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 from my_constants import *
 
-
 class ByteDisplayFrame(ttk.Frame):
     def __init__(self, parent, bytes_tuple, display_bits=8, title="Unnamed", byte_heading=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
