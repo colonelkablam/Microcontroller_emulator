@@ -49,7 +49,7 @@ class ByteDisplayFrame(ttk.Frame):
         nth_byte = 0
         for bit_index in range(self.msb, -1, -1):
             bit = ttk.Label(self.bit_frame, text=str(self.bytes[nth_byte].get_bit(bit_index % 8)), width=1, style="MCUBit.TLabel")
-            bit.grid(column=self.msb-bit_index, row=0, padx=3, pady=2)
+            bit.grid(column=self.msb-bit_index, row=0, padx=2, pady=2)
             if bit_index % 8 == 0:
                 nth_byte += 1
             self.bits.insert(0, bit) # store in a list for updating as needed

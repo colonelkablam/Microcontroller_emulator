@@ -15,8 +15,11 @@ LOG_WINDOW_HEIGHT = 200
 PROGRAM_MEMORY_SIZE = 512  # x 14-bit instructions (13-bit addressing allows up to 8192 program memory spaces)
 DATA_MEMORY_SIZE = 256 # bytes
 
-MEMORY_WINDOW_WIDTH = 200
-MEMORY_WINDOW_HEIGHT = 400
+PROG_MEMORY_WINDOW_WIDTH = 215
+PROG_MEMORY_WINDOW_HEIGHT = 260
+
+DATA_MEMORY_WINDOW_WIDTH = 230
+DATA_MEMORY_WINDOW_HEIGHT = 260
 
 # 'file addresses' constants for highlighting
 NONE = -1

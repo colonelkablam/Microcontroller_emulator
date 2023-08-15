@@ -27,11 +27,11 @@ class DataMemoryFrame(ttk.Frame):
         self.control_panel_label = ttk.Label(self, text=f"{title}\n{DATA_MEMORY_SIZE} byte", style='MainWindowInner.TLabel')
         self.control_panel_label.grid(column=0, row=0, columnspan=2, pady=(0,10), sticky="W")
 
-        self.mem_label = ttk.Label(self, text="  addr.    name    hex  binary", style='MainWindowInner2.TLabel')
+        self.mem_label = ttk.Label(self, text="[addr.][ SFR ][ dec  hex  binary ]", style='MainWindowInner2.TLabel')
         self.mem_label.grid(column=0, row=1, columnspan=2, pady=(0,5), sticky="W")
 
         # canvas
-        self.scroll_canvas = tk.Canvas(self, width=MEMORY_WINDOW_WIDTH + 30, height=MEMORY_WINDOW_HEIGHT)
+        self.scroll_canvas = tk.Canvas(self, width=DATA_MEMORY_WINDOW_WIDTH, height=DATA_MEMORY_WINDOW_HEIGHT)
         self.scroll_canvas.grid(column=0, row=2, sticky="NS")
         self.scroll_canvas.columnconfigure(0, weight=1)
         self.scroll_canvas.rowconfigure(0, weight=1)
@@ -61,11 +61,14 @@ class DataMemoryFrame(ttk.Frame):
             name = ttk.Label(self.inner_frame, text=self.memory[mem_address].get_name(), width=9, style="MCUmemory.TLabel")
             name.grid(column=1, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
+            dec_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_dec(), width=3, style="MCUmemory.TLabel")
+            dec_value.grid(column=2, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
+
             hex_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_hex(), width=2, style="MCUmemory.TLabel")
-            hex_value.grid(column=2, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
+            hex_value.grid(column=3, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
             bin_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_bin(), width=8, style="MCUmemory.TLabel")
-            bin_value.grid(column=3, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
+            bin_value.grid(column=4, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
             # add 'columns' to rows of data
             self.rows.append([addr, name, hex_value, bin_value])

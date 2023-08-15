@@ -103,14 +103,14 @@ class MainStyle(ttk.Style):
             "MCUBit.TLabel", 
             background=COLOUR_MEMORY_LABEL_BACKGROUND,
             foreground=COLOUR_DARK_TEXT,
-            font=("Courier", 9)
+            font=("Courier", 11)
         )
 
         self.configure(
             "MCUBitHighlight.TLabel", 
             background=BYTE_HIGHLIGHT,
             foreground=COLOUR_DARK_TEXT,
-            font=("Courier", 9)
+            font=("Courier", 11)
         )
 
 

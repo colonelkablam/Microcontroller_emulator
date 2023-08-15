@@ -28,11 +28,11 @@ class ProgramMemoryFrame(ttk.Frame):
         self.control_panel_label = ttk.Label(self, text=f"{title}\n{PROGRAM_MEMORY_SIZE} x 14-bit words", style='MainWindowInner.TLabel')
         self.control_panel_label.grid(column=0, row=0, columnspan=2, pady=(0,10), sticky="W")
 
-        self.mem_label = ttk.Label(self, text="  addr.      instruction", style='MainWindowInner2.TLabel')
+        self.mem_label = ttk.Label(self, text="[  address  ] [  instruction  ]", style='MainWindowInner2.TLabel')
         self.mem_label.grid(column=0, row=1, columnspan=2, pady=(0,5), sticky="W")
 
         # canvas
-        self.scroll_canvas = tk.Canvas(self, width=MEMORY_WINDOW_WIDTH, height=MEMORY_WINDOW_HEIGHT)
+        self.scroll_canvas = tk.Canvas(self, width=PROG_MEMORY_WINDOW_WIDTH, height=PROG_MEMORY_WINDOW_HEIGHT)
         self.scroll_canvas.grid(column=0, row=2, sticky="NS")
         self.scroll_canvas.columnconfigure(0, weight=1)
         self.scroll_canvas.rowconfigure(0, weight=1)
@@ -52,12 +52,12 @@ class ProgramMemoryFrame(ttk.Frame):
         #self.inner_frame.columnconfigure(0, weight=1)
 
         # add INNER FRAME to a window in the canvas
-        self.scroll_canvas.create_window((0,0), window=self.inner_frame, anchor="nw", width=MEMORY_WINDOW_WIDTH)
+        self.scroll_canvas.create_window((0,0), window=self.inner_frame, anchor="nw")
            
         # add memory display
         for mem_address in range(0, PROGRAM_MEMORY_SIZE):
             # display the program memory locations
-            dec_addr = ttk.Label(self.inner_frame, text=f"{mem_address :03}", width=3, style="MCUmemory.TLabel")
+            dec_addr = ttk.Label(self.inner_frame, text=f"[{mem_address :03}]", width=5, style="MCUmemory.TLabel")
             dec_addr.grid(column=0, row=mem_address, pady=(0,5), padx=5, sticky="W")
 
             hex_addr = ttk.Label(self.inner_frame, text=f"{mem_address :04X}h", width=5, style="MCUmemory.TLabel")
