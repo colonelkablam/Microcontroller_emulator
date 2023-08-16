@@ -11,7 +11,6 @@ class StackDisplayFrame(ttk.Frame):
         self.columnconfigure(0, weight=1)
         #self.rowconfigure(0, weight=1)
         self.grid(sticky="NSEW")
-        self.pack_propagate(0)
 
         # properties
         self.parent = parent
@@ -29,7 +28,7 @@ class StackDisplayFrame(ttk.Frame):
                                         text=f"{stack_index+1}: empty",
                                         width=8, 
                                         style="MCUBit.TLabel"      )
-            stack_element.grid(column=0, row=stack_index+1, padx=0, pady=0)
+            stack_element.grid(column=0, row=stack_index+1, padx=0, pady=0, sticky="W")
 
             self.stack_display.append(stack_element)
 

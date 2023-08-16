@@ -24,14 +24,14 @@ class MCUStatusFrame(ttk.Frame):
         self.control_panel_label.grid(column=0, row=0, sticky="N")
 
         # PROGRAM COUNTER - need to enter a tuple of the byte(s) being displayed
-        # self.PCL_display = ByteDisplayFrame(    self, 
-        #                                         (self.parent.get_byte_by_name("PCLATH"), self.parent.get_byte_by_name("PCL")),
-        #                                         display_bits=13, 
-        #                                         title="Program Counter",
-        #                                         byte_heading="12 -PCLATH-  7 ----- PCL ---- 0", 
-        #                                         style='MainWindowInner.TLabel'                  )
+        self.PCL_display = ByteDisplayFrame(    self, 
+                                                (self.parent.get_byte_by_name("PCLATH"), self.parent.get_byte_by_name("PCL")),
+                                                display_bits=13, 
+                                                title="Program Counter",
+                                                byte_heading="12 -PCLATH-  7 ----- PCL ---- 0", 
+                                                style='MainWindowInner.TLabel'                  )
         
-        # self.PCL_display.grid(column=0, row=1, columnspan=2, sticky="EW")
+        self.PCL_display.grid(column=0, row=1, columnspan=2, sticky="EW")
 
         # STACK
         self.stack_display = StackDisplayFrame( self,
@@ -47,6 +47,8 @@ class MCUStatusFrame(ttk.Frame):
                                                 style='MainWindowInner.TLabel'                  )
 
         self.STATUS_display.grid(column=1, row=2, sticky="EW")
+        self.pack_propagate(0)
+
         
         # WORKING REG
         self.WREG_display =     ByteDisplayFrame(self,
