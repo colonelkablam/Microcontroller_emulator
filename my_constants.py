@@ -21,6 +21,8 @@ PROG_MEMORY_WINDOW_HEIGHT = 260
 DATA_MEMORY_WINDOW_WIDTH = 245
 DATA_MEMORY_WINDOW_HEIGHT = 260
 
+STACK_SIZE = 8
+
 # 'file addresses' constants for highlighting
 NONE = -1
 

@@ -9,7 +9,7 @@ class ByteDisplayFrame(ttk.Frame):
         # styling
         self.configure(style="MainWindowInner2.TFrame", padding=5)
         self.columnconfigure(1, weight=1)
-        self.rowconfigure(1, weight=1)
+        #self.rowconfigure(1, weight=1)
         self.grid(sticky="NSEW")
 
         # object properties
@@ -47,7 +47,10 @@ class ByteDisplayFrame(ttk.Frame):
         # populate bits from left to right (MSB to LSB)
         nth_byte = 0
         for bit_index in range(self.msb, -1, -1):
-            bit = ttk.Label(self.bit_frame, text=str(self.bytes[nth_byte].get_bit(bit_index % 8)), width=1, style="MCUBit.TLabel")
+            bit = ttk.Label(self.bit_frame,
+                            text=str(self.bytes[nth_byte].get_bit(bit_index % 8)), 
+                            width=1, 
+                            style="MCUBit.TLabel"                           )
             bit.grid(column=self.msb-bit_index, row=0, padx=2, pady=2)
             if bit_index % 8 == 0:
                 nth_byte += 1

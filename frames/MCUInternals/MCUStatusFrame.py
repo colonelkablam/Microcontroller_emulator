@@ -11,7 +11,7 @@ class MCUStatusFrame(ttk.Frame):
         # styling
         self.configure(style="MainWindowInner.TFrame", padding=10)
         self.columnconfigure(1, weight=1)
-        #self.rowconfigure(0, weight=1)
+        #self.rowconfigure(2, weight=1)
         self.grid(sticky="NSEW")
 
         # object properties
@@ -24,20 +24,20 @@ class MCUStatusFrame(ttk.Frame):
         self.control_panel_label.grid(column=0, row=0, sticky="N")
 
         # PROGRAM COUNTER - need to enter a tuple of the byte(s) being displayed
-        self.PCL_display = ByteDisplayFrame(    self, 
-                                                (self.parent.get_byte_by_name("PCLATH"), self.parent.get_byte_by_name("PCL")),
-                                                display_bits=13, 
-                                                title="Program Counter",
-                                                byte_heading="12 -PCLATH-  7 ----- PCL ---- 0", 
-                                                style='MainWindowInner.TLabel'                  )
+        # self.PCL_display = ByteDisplayFrame(    self, 
+        #                                         (self.parent.get_byte_by_name("PCLATH"), self.parent.get_byte_by_name("PCL")),
+        #                                         display_bits=13, 
+        #                                         title="Program Counter",
+        #                                         byte_heading="12 -PCLATH-  7 ----- PCL ---- 0", 
+        #                                         style='MainWindowInner.TLabel'                  )
         
-        self.PCL_display.grid(column=0, row=1, columnspan=2, sticky="EW")
+        # self.PCL_display.grid(column=0, row=1, columnspan=2, sticky="EW")
 
         # STACK
         self.stack_display = StackDisplayFrame( self,
                                                 self.parent.get_stack(),
                                                 style='MainWindowInner.TLabel'                  )
-        self.stack_display.grid(column=0, row=2, rowspan=4, sticky="NS")
+        self.stack_display.grid(column=0, row=2, rowspan=4, sticky="NSEW")
         
         # STATUS REG
         self.STATUS_display = ByteDisplayFrame( self,
