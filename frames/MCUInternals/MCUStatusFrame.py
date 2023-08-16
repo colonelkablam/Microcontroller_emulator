@@ -21,7 +21,7 @@ class MCUStatusFrame(ttk.Frame):
 
         # panel label
         self.control_panel_label = ttk.Label(self, text=title, style='MainWindowInner.TLabel')
-        self.control_panel_label.grid(column=0, row=0, sticky="N")
+        self.control_panel_label.grid(column=0, row=0, columnspan=2, sticky="NE")
 
         # PROGRAM COUNTER - need to enter a tuple of the byte(s) being displayed
         self.PCL_display = ByteDisplayFrame(    self, 
@@ -33,12 +33,11 @@ class MCUStatusFrame(ttk.Frame):
         
         self.PCL_display.grid(column=0, row=1, columnspan=2, sticky="EW")
 
-        # STACK
-        self.stack_display = StackDisplayFrame( self,
+        # STACK - displayed within the MCU status frame
+        self.stack_frame = StackDisplayFrame(   self,
                                                 self.parent.get_stack(),
                                                 style='MainWindowInner.TLabel'                  )
-        self.stack_display.grid(column=0, row=2, rowspan=4, sticky="NSEW")
-        
+        self.stack_frame.grid(column=0, row=2, rowspan=4, sticky="NSEW")        
         # STATUS REG
         self.STATUS_display = ByteDisplayFrame( self,
                                                 (self.parent.get_byte_by_name("STATUS"), ),
@@ -47,8 +46,6 @@ class MCUStatusFrame(ttk.Frame):
                                                 style='MainWindowInner.TLabel'                  )
 
         self.STATUS_display.grid(column=1, row=2, sticky="EW")
-        self.pack_propagate(0)
-
         
         # WORKING REG
         self.WREG_display =     ByteDisplayFrame(self,

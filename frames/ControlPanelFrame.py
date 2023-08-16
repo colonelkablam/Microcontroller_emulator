@@ -28,8 +28,8 @@ class ControlPanelFrame(ttk.Frame):
         self.button_frame.grid(column=0, row=1)
         # buttons
         self.button1 = ttk.Button(self.button_frame, text="Advance", command=self.MCU_advance_cycle)
-        self.button2 = ttk.Button(self.button_frame, text="Run", command=self.parent.MCU_frame.set_Z_bit_status)
-        self.button3 = ttk.Button(self.button_frame, text="Stop", command=self.parent.MCU_frame.clear_Z_bit_status)
+        self.button2 = ttk.Button(self.button_frame, text="Run", command=self.parent.MCU_frame.pop_stack)
+        self.button3 = ttk.Button(self.button_frame, text="Stop", command=self.parent.MCU_frame.push_stack)
         self.button4 = ttk.Button(self.button_frame, text="View Log Messages", command=self.open_log_window)
         self.button5 = ttk.Button(self.button_frame, text="Pin Out")
         self.button6 = ttk.Button(self.button_frame, text="Code Editor", command=self.open_code_window)

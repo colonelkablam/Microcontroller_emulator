@@ -1,5 +1,5 @@
 # main window
-MAIN_WINDOW_WIDTH = 800
+MAIN_WINDOW_WIDTH = 700
 MAIN_WINDOW_HEIGHT = 600
 
 # code editor

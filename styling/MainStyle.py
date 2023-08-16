@@ -113,6 +113,15 @@ class MainStyle(ttk.Style):
             font=("Courier", 11)
         )
 
+        self.configure(
+            "Stack.TLabel", 
+            background=COLOUR_MEMORY_LABEL_BACKGROUND,
+            foreground=COLOUR_DARK_TEXT,
+            relief="sunken",
+            borderwidth=3,
+            font=("Courier", 9)
+        )
+
 
         # CodeWindow Styles
 
