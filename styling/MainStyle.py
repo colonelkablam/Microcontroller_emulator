@@ -122,6 +122,15 @@ class MainStyle(ttk.Style):
             font=("Courier", 9)
         )
 
+        self.configure(
+            "StackHighlighted.TLabel", 
+            background=STACK_HIGHLIGHT,
+            foreground=COLOUR_DARK_TEXT,
+            relief="sunken",
+            borderwidth=3,
+            font=("Courier", 9)
+        )
+
 
         # CodeWindow Styles
 

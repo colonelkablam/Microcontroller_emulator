@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from my_constants import *
 from dataStructures import Instruction
-
+from frames.ScrollableCanvasFrame import ScrollableCanvasFrame
 
 
 class ProgramMemoryFrame(ttk.Frame):
@@ -27,39 +27,24 @@ class ProgramMemoryFrame(ttk.Frame):
         # tkinter widgets
 
         # panel labels
-        self.control_panel_label = ttk.Label(self, text=f"{title}\n{PROGRAM_MEMORY_SIZE} x 14-bit words", style='MainWindowInner.TLabel')
-        self.control_panel_label.grid(column=0, row=0, columnspan=2, padx=(5,0), pady=(0,5), sticky="NW")
+        control_panel_label = ttk.Label(self, text=f"{title}\n{PROGRAM_MEMORY_SIZE} x 14-bit words", style='MainWindowInner.TLabel')
+        control_panel_label.grid(column=0, row=0, columnspan=2, padx=(5,0), pady=(0,5), sticky="NW")
 
-        self.mem_label = ttk.Label(     self,
-                                        text="[  address  ] [  instruction  ]",
-                                        style='MainWindowInner2.TLabel'             )
-        self.mem_label.grid(column=0, row=1, columnspan=2, pady=(0,0), sticky="NW")
-        self.mem_label_2 = ttk.Label(   self,
-                                        text="  dec   hex    mnum.  operands",
-                                        style='MainWindowInner2.TLabel'             )
-        self.mem_label_2.grid(column=0, row=2, columnspan=2, pady=(0,0), sticky="NW")
+        mem_label = ttk.Label(      self,
+                                    text="[  address  ] [  instruction  ]",
+                                    style='MainWindowInner2.TLabel'             )
+        mem_label.grid(column=0, row=1, columnspan=2, pady=(0,0), sticky="NW")
+        mem_label_2 = ttk.Label(    self,
+                                    text="  dec   hex    mnum.  operands",
+                                    style='MainWindowInner2.TLabel'             )
+        mem_label_2.grid(column=0, row=2, columnspan=2, pady=(0,0), sticky="NW")
 
-        # canvas
-        self.scroll_canvas = tk.Canvas(self, width=PROG_MEMORY_WINDOW_WIDTH, height=PROG_MEMORY_WINDOW_HEIGHT)
-        self.scroll_canvas.grid(column=0, row=3, sticky="NS")
-        self.scroll_canvas.columnconfigure(0, weight=1)
-        self.scroll_canvas.rowconfigure(0, weight=1)
+        # create a scrollable canvas object
+        scroll_canvas = ScrollableCanvasFrame(self, PROG_MEMORY_WINDOW_WIDTH, PROG_MEMORY_WINDOW_HEIGHT)
+        scroll_canvas.grid(column=0, row=3, sticky="NS")
 
-        # scrollbars
-        self.code_scroll = ttk.Scrollbar(self, orient='vertical', command=self.scroll_canvas.yview)
-        self.code_scroll.grid(column=1, row=3, sticky="NSW")
-
-        # configure canvas
-        self.scroll_canvas.configure(yscrollcommand=self.code_scroll.set)
-        self.scroll_canvas.bind("<Configure>", lambda e: self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox("all")))
-        self.scroll_canvas.bind('<Enter>', self._bound_to_mousewheel)
-        self.scroll_canvas.bind('<Leave>', self._unbound_to_mousewheel)
-
-        # create ANOTHER inner frame inside canvas
-        self.inner_frame = ttk.Frame(self.scroll_canvas, style="MCUmemory.TFrame")
-
-        # add INNER FRAME to a window in the canvas
-        self.scroll_canvas.create_window((0,0), window=self.inner_frame, anchor="nw")
+        # get it's inner frame to mount the memory display on
+        inner_frame = scroll_canvas.get_inner_frame()
            
         # initialise program memory
         self.initialise_program_memory()
@@ -67,24 +52,23 @@ class ProgramMemoryFrame(ttk.Frame):
         # add memory display
         for mem_address in range(0, PROGRAM_MEMORY_SIZE):
             # display the program memory locations
-            dec_addr = ttk.Label(self.inner_frame, text=f"[{mem_address :03}]", width=5, style="MCUmemory.TLabel")
+            dec_addr = ttk.Label(inner_frame, text=f"[{mem_address :03}]", width=5, style="MCUmemory.TLabel")
             dec_addr.grid(column=0, row=mem_address, pady=(0,5), padx=5, sticky="W")
 
-            hex_addr = ttk.Label(self.inner_frame, text=f"{mem_address :04X}h", width=5, style="MCUmemory.TLabel")
+            hex_addr = ttk.Label(inner_frame, text=f"{mem_address :04X}h", width=5, style="MCUmemory.TLabel")
             hex_addr.grid(column=1, row=mem_address, pady=(0,5), padx=(0,10), sticky="W")
 
             # create the labels to display the instructions ('dissassembly')
-            instruction_mnemonic = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_mnumonic(), width=6, style="MCUmemory.TLabel")
+            instruction_mnemonic = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_mnumonic(), width=6, style="MCUmemory.TLabel")
             instruction_mnemonic.grid(column=2, row=mem_address, pady=(0,5), padx=(0,5), sticky="E")
 
-            instruction_operand_1 = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_operand_1(), width=6, style="MCUmemory.TLabel")
+            instruction_operand_1 = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_operand_1(), width=6, style="MCUmemory.TLabel")
             instruction_operand_1.grid(column=3, row=mem_address, pady=(0,5), padx=(0,5), sticky="E")
 
-            instruction_operand_2 = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_operand_2(), width=1, style="MCUmemory.TLabel")
+            instruction_operand_2 = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_operand_2(), width=1, style="MCUmemory.TLabel")
             instruction_operand_2.grid(column=4, row=mem_address, pady=(0,5), padx=(0,5), sticky="E")
 
-            column = [dec_addr, hex_addr, instruction_mnemonic, instruction_operand_1, instruction_operand_2]
-            self.rows.append(column)
+            self.rows.append([dec_addr, hex_addr, instruction_mnemonic, instruction_operand_1, instruction_operand_2])
 
         # hightlight the program starting position (0x00h)
         self.highlight_current_instruction(self.previous_address)
@@ -127,17 +111,6 @@ class ProgramMemoryFrame(ttk.Frame):
 
         for label in self.rows[new_prog_address]:
             label.config(background=PROGRAM_MEMORY_HIGHLIGHT)
-
-    # canvas scrolling behaviour
-
-    def _on_mousewheel(self, event):
-        self.scroll_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-
-    def _bound_to_mousewheel(self, event):
-        self.scroll_canvas.bind_all("<MouseWheel>", self._on_mousewheel)
-
-    def _unbound_to_mousewheel(self, event):
-        self.scroll_canvas.unbind_all("<MouseWheel>")
 
 
 

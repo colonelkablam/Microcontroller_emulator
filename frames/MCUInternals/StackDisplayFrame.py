@@ -15,22 +15,22 @@ class StackDisplayFrame(ttk.Frame):
 
         # properties
         self.parent = parent
-        self.stack = deque(maxlen=STACK_SIZE)
+        self.stack = deque(maxlen=STACK_SIZE) # keep stack to * elements
         self.stack_display_list = []
-        self.previous_length = 0
+        self.previous_stack_length = 0
 
         # tkinter widgets
         # heading
-        self.stack_label = ttk.Label(self, text=" STACK:\n-  top  -", style='MainWindowInner3.TLabel')
-        self.stack_label.grid(column=0, row=0, pady=(0,0), padx=(0, 0), sticky="EW")
+        stack_label = ttk.Label(self, text=" STACK:\n-  top  -", style='MainWindowInner3.TLabel')
+        stack_label.grid(column=0, row=0, pady=(0,0), padx=(0, 0), sticky="EW")
 
         # frame for list of stack elements
         self.list_frame = ttk.Frame(self, style='MainWindowInner3.TLabel')
         self.list_frame.grid(column=0, row=1, pady=(0,0), padx=(0, 0), sticky="NSEW")
 
         # bottom
-        self.stack_label = ttk.Label(self, text="-bottom-", style='MainWindowInner3.TLabel')
-        self.stack_label.grid(column=0, row=3, pady=(0,0), padx=(4, 0), sticky="EW")
+        stack_label = ttk.Label(self, text="-bottom-", style='MainWindowInner3.TLabel')
+        stack_label.grid(column=0, row=3, pady=(0,0), padx=(4, 0), sticky="EW")
 
         # initialise the stack display
         self.initialise_stack_display_list()
@@ -39,15 +39,29 @@ class StackDisplayFrame(ttk.Frame):
     # STACK methods
 
     def update(self):
-        print(self.stack)
         stack_length = len(self.stack)
+        # check to see if need to highlight a stack increase
+        if self.previous_stack_length < stack_length:
+            stack_increased = True
+        else:
+            stack_increased = False
+        # record prev value
+        self.previous_stack_length = stack_length
 
+        style = "Stack.TLabel"
+        # go through list of labels and populate according to the stack contents
         for i, element in enumerate(self.stack_display_list):
+            # populate labels - removing any that are empty
             if i < stack_length:
-                element.configure(text=f"{i+1} - {self.stack[i-1]:04X}h", style="Stack.TLabel" )
+                # highlight new element
+                if stack_increased and i == 0:
+                    style = "StackHighlighted.TLabel"
+                element.configure(text=f"{i+1} - {self.stack[i-1]:04X}h", style=style )
                 element.grid()
+                style = "Stack.TLabel"
+
             else:
-                element.grid_remove()
+                element.grid_remove() # hide
 
         if stack_length == 0:
             self.stack_display_list[0].configure(text="  empty  ", style="Stack.TLabel")
