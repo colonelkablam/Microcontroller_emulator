@@ -28,7 +28,9 @@ class MCUStatusFrame(ttk.Frame):
                                                 (self.parent.get_byte_by_name("PCLATH"), self.parent.get_byte_by_name("PCL")),
                                                 display_bits=13, 
                                                 title="Program Counter",
-                                                byte_heading="12 -PCLATH-  7 ----- PCL ---- 0", 
+                                                byte_heading="12 -PCLATH-  7 ----- PCL ---- 0",
+                                                display_dec=False,
+                                                display_hex=True,
                                                 style='MainWindowInner.TLabel'                  )
         
         self.PCL_display.grid(column=0, row=1, columnspan=2, sticky="EW")

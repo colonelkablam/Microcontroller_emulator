@@ -21,16 +21,17 @@ class StackDisplayFrame(ttk.Frame):
 
         # tkinter widgets
         # heading
-        stack_label = ttk.Label(self, text=" STACK:\n-  top  -", style='MainWindowInner3.TLabel')
+        stack_label = ttk.Label(self, text="STACK\n-top-", style='MainWindowInner3.TLabel')
         stack_label.grid(column=0, row=0, pady=(0,0), padx=(0, 0), sticky="EW")
 
         # frame for list of stack elements
-        self.list_frame = ttk.Frame(self, style='MainWindowInner3.TLabel')
+        self.list_frame = ttk.Frame(self, style='MainWindowInner3.TLabel', height=190)
         self.list_frame.grid(column=0, row=1, pady=(0,0), padx=(0, 0), sticky="NSEW")
+        self.list_frame.grid_propagate(0)
 
         # bottom
-        stack_label = ttk.Label(self, text="-bottom-", style='MainWindowInner3.TLabel')
-        stack_label.grid(column=0, row=3, pady=(0,0), padx=(4, 0), sticky="EW")
+        stack_label = ttk.Label(self, text="-end-", style='MainWindowInner3.TLabel')
+        stack_label.grid(column=0, row=3, pady=(0,0), padx=(0, 0), sticky="EW")
 
         # initialise the stack display
         self.initialise_stack_display_list()
@@ -56,7 +57,7 @@ class StackDisplayFrame(ttk.Frame):
                 # highlight new element
                 if stack_increased and i == 0:
                     style = "StackHighlighted.TLabel"
-                element.configure(text=f"{i+1} - {self.stack[i-1]:04X}h", style=style )
+                element.configure(text=f"{self.stack[i-1]:04X}h", style=style )
                 element.grid()
                 style = "Stack.TLabel"
 
@@ -64,8 +65,7 @@ class StackDisplayFrame(ttk.Frame):
                 element.grid_remove() # hide
 
         if stack_length == 0:
-            self.stack_display_list[0].configure(text="  empty  ", style="Stack.TLabel")
-            self.stack_display_list[0].grid()
+            self._add_empty_label() # show stack is empty
 
     # access to the stack data structure
     def get_stack(self):
@@ -88,14 +88,16 @@ class StackDisplayFrame(ttk.Frame):
     def initialise_stack_display_list(self):
         for stack_level in range(0, STACK_SIZE):
             stack_element = ttk.Label(  self.list_frame,
-                                        width=9, 
+                                        width=5, 
                                         style="Stack.TLabel"      )
             stack_element.grid(column=0, row=stack_level, padx=0, pady=(0,3), sticky="EW")
             stack_element.grid_remove()
             self.stack_display_list.append(stack_element)
-        
-        # add empty 'backstop to stack'
-        self.stack_display_list[0].configure(text="  empty  ", style="Stack.TLabel")
+            self._add_empty_label() # show stack is empty
+    
+    # add empty 'backstop to stack'
+    def _add_empty_label(self):
+        self.stack_display_list[0].configure(text="empty", style="Stack.TLabel")
         self.stack_display_list[0].grid()
 
             

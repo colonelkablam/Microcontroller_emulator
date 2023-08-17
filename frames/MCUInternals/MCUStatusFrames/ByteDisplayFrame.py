@@ -3,12 +3,12 @@ from tkinter import ttk
 from my_constants import *
 
 class ByteDisplayFrame(ttk.Frame):
-    def __init__(self, parent, bytes_tuple, display_bits=8, title="Unnamed", byte_heading=None, *args, **kwargs):
+    def __init__(self, parent, bytes_tuple, display_bits=8, title="Unnamed", byte_heading=None, display_dec=True, display_hex=True, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         # styling
         self.configure(style="MainWindowInner2.TFrame", padding=5)
-        self.columnconfigure(1, weight=1)
+        self.columnconfigure(0, weight=1)
         #self.rowconfigure(1, weight=1)
         self.grid(sticky="NSEW")
 
@@ -17,6 +17,7 @@ class ByteDisplayFrame(ttk.Frame):
 
         # tuple of bytes
         self.bytes = bytes_tuple
+        self.byte_value = bytes_tuple[0]
 
         # msb of combined bytes to display from
         num_of_bits = 8 * len(self.bytes)
@@ -35,14 +36,32 @@ class ByteDisplayFrame(ttk.Frame):
 
         # panel label
         if byte_heading != None:
-            self.byte_label = ttk.Label(self, text=f"{byte_heading}", style='MainWindowInner3.TLabel')
-            self.byte_label.grid(column=0, row=0, columnspan=2, pady=(0,0), padx=(0,6), sticky="E")
+            byte_label = ttk.Label(self, text=f"{byte_heading}", style='MainWindowInner3.TLabel')
+            byte_label.grid(column=0, row=0, columnspan=2, pady=(0,0), padx=(0,6), sticky="E")
 
-        self.mem_label = ttk.Label(self, text=f"{title}", style='MainWindowInner3.TLabel')
-        self.mem_label.grid(column=0, row=1, pady=(0,0), padx=(5, 0), sticky="W")
+        mem_label = ttk.Label(self, text=f"{title}", style='ByteDisplayHeading.TLabel')
+        mem_label.grid(column=0, row=0, pady=(0,0), padx=(5, 15), sticky="EW")
 
         self.bit_frame = ttk.Frame(self, style="MCUByte.TFrame")
         self.bit_frame.grid(column=1, row=1, padx=(0,3), sticky="E")
+
+        byte_value_frame = ttk.Frame(self, style="MCUByteValues.TFrame", padding=5)
+        byte_value_frame.grid(column=0, row=1, padx=(0,0), pady=(0,0), sticky="EW")
+
+        if display_dec:
+            self.dec_label = ttk.Label(byte_value_frame, text="dec.", style='MainWindowInner3.TLabel')
+            self.dec_label.grid(column=0, row=0, padx=(10,0), pady=(0,0), sticky="EW")
+
+            self.dec_value = ttk.Label(byte_value_frame, width=3, textvariable=self.byte_value.get_dec(), style="MCUBit.TLabel")
+            self.dec_value.grid(column=1, row=0, padx=(0,5), pady=(0,0), sticky="EW")
+
+        if display_hex:
+            self.hex_label = ttk.Label(byte_value_frame, text="hex.", style='MainWindowInner3.TLabel')
+            self.hex_label.grid(column=2, row=0, padx=(0,0), pady=(0,0), sticky="EW")
+
+            self.hex_value = ttk.Label(byte_value_frame, width=3, textvariable=self.byte_value.get_hex(), style="MCUBit.TLabel")
+            self.hex_value.grid(column=3, row=0, padx=(0,10), pady=(0,0), sticky="EW")
+
 
         # populate bits from left to right (MSB to LSB)
         nth_byte = 0

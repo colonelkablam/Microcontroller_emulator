@@ -32,7 +32,9 @@ class MCUFrame(ttk.Frame):
         
         # PC - store previous program counter value
         self.prev_PC_value = 0
-        self.bit_to_set = 0
+        # for displaying PC
+        self.current_PC_dec = tk.IntVar(value=0)
+        self.current_PC_hex = tk.StringVar(value="0000h")
 
 
         # tkinter widgets
@@ -180,12 +182,19 @@ class MCUFrame(ttk.Frame):
         # combine the two bytes (NOT ADD - used to represent a 13-bit prog address!)
         return (upper_byte << 8) | lower_byte
 
+    def get_PC_tuple(self):
+        return ()
+
     # set the value of the program counter (PC)
     def set_PC(self, new_address):
         print("new addr.", new_address)
         # store current PC value
         self.prev_PC_value = self.get_current_PC_value()
         # split the address into lower and upper bytes (as PC stored in PCL and PCLATH)
+
+        # store the new address in tk objects - for PC display in MCU status
+        self.current_PC_dec.set(new_address)
+        self.current_PC_hex.set(f"{new_address:04X}h")
 
         lower_byte = self._get_n_byte_int(new_address, 0, 8)
         upper_byte = self._get_n_byte_int(new_address, 1, 8)

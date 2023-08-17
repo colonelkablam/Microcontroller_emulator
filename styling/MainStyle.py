@@ -35,14 +35,14 @@ class MainStyle(ttk.Style):
             "MainWindowOuter.TLabel", 
             background=COLOUR_MAIN_BACKGROUND,
             foreground=COLOUR_DARK_TEXT,
-            font=("Courier", 16, 'bold')
+            font=("Courier", 18, 'bold')
         )
 
         self.configure(
             "MainWindowInner.TLabel", 
             background=COLOUR_INNER_BACKGROUND,
             foreground=COLOUR_DARK_TEXT,
-            font=("Courier", 12, 'bold')
+            font=("Courier", 14, 'bold')
         )
 
         self.configure(
@@ -86,6 +86,13 @@ class MainStyle(ttk.Style):
         )
 
         self.configure(
+            "ByteDisplayHeading.TLabel", 
+            background=COLOUR_INNER2_BACKGROUND,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 11, "bold")
+        )
+
+        self.configure(
             "MCUByteHighlight.TFrame",
             background=BYTE_HIGHLIGHT,
             borderwidth=2,
@@ -111,6 +118,11 @@ class MainStyle(ttk.Style):
             background=BYTE_HIGHLIGHT,
             foreground=COLOUR_DARK_TEXT,
             font=("Courier", 11)
+        )
+
+        self.configure(
+            "MCUByteValues.TFrame",
+            background=COLOUR_INNER2_BACKGROUND,
         )
 
         self.configure(
