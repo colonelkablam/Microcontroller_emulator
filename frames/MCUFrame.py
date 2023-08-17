@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from my_constants import*
 from frames import ControlPanelFrame, CodeDisplayFrame
-from frames.MCUInternals import ProgramMemoryFrame, DataMemoryFrame, MCUStatusFrame, InstructionDecoder
-from frames.MCUInternals.MCUStatusFrames import StackDisplayFrame
+from frames.MCUInternals import ProgramMemoryFrame, DataMemoryFrame, MCUStatusFrame, StackDisplayFrame, InstructionDecoder
+#from frames.MCUInternals.MCUStatusFrames import StackDisplayFrame
 from dataStructures import Byte, Instruction
 
 

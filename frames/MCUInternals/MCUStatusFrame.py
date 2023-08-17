@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import *
-from frames.MCUInternals.MCUStatusFrames import ByteDisplayFrame, StackDisplayFrame
+from frames.MCUInternals.MCUStatusFrames import ByteDisplayFrame
 
 
 class MCUStatusFrame(ttk.Frame):
@@ -33,7 +33,7 @@ class MCUStatusFrame(ttk.Frame):
         
         self.PCL_display.grid(column=0, row=1, columnspan=2, sticky="EW")
 
-        # STACK - displayed within the MCU status frame
+        # STACK - displayed within the MCU status frame but contained in MCUFrame as a data holder
      
         # STATUS REG
         self.STATUS_display = ByteDisplayFrame( self,
