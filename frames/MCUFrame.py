@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import*
-from collections import deque
 from frames import ControlPanelFrame, CodeDisplayFrame
 from frames.MCUInternals import ProgramMemoryFrame, DataMemoryFrame, MCUStatusFrame, InstructionDecoder
 from frames.MCUInternals.MCUStatusFrames import StackDisplayFrame
@@ -16,9 +15,7 @@ class MCUFrame(ttk.Frame):
         # properties
         self.parent = parent
         # memory 
-        self.program_memory = []    # list of Instruction objects
         self.data_memory = []       # list of Byte objects
-        #self.stack = deque(maxlen=STACK_SIZE)        # stack exists outside of data and prog mem
         # logic
         self.instruction_decoder = InstructionDecoder(self)
         self.is_next_cycle_NOP = False
@@ -45,9 +42,7 @@ class MCUFrame(ttk.Frame):
                             "TRISB" :   int("0x86", 16)   }
 
         # set-up MCU
-        self.initialise_program_memory()
         self.initialise_data_memory()
-
 
         # tkinter widgets
 
@@ -60,18 +55,19 @@ class MCUFrame(ttk.Frame):
         self.frame_label.grid(column=0, row=0, padx=(50,0), pady=(0,10), sticky="W")
 
         # MCU 'views'
-        # program memory
-        self.prog_memory_frame = ProgramMemoryFrame(self, self.program_memory, "Program Memory")
+        # program memory - contains the program memory logic/control
+        self.prog_memory_frame = ProgramMemoryFrame(self, "Program Memory")
         self.prog_memory_frame.grid(column=0, row=1, padx=(10,10))
-        # data memory
+
+        # data memory - contains the data memory logic/control
         self.data_memory_frame = DataMemoryFrame(self, self.data_memory, "Data Memory / registers")
         self.data_memory_frame.grid(column=1, row=1)
 
-        # MCU Status Information display
+        # MCU Status Information display - frame to display key information/status from the MCU/memory
         self.MCU_status_frame = MCUStatusFrame(self, "MCU Status Display")
         self.MCU_status_frame.grid(column=2, row=1, padx=(20,10))
 
-        # stack to be shown in MCU status frame above
+        # stack to be shown in MCU status frame above - contains the stack logic/control
         self.stack_frame = StackDisplayFrame(   self.MCU_status_frame,
                                                 style='MainWindowInner.TLabel'                  )
         self.stack_frame.grid(column=0, row=2, rowspan=4, sticky="NSEW")   
@@ -80,22 +76,15 @@ class MCUFrame(ttk.Frame):
     # MCUFrame methods
     # fill program memory with empty Instruction objects
     def initialise_program_memory(self):
-        for mem_address in range(0, PROGRAM_MEMORY_SIZE):
-            # add Instruction
-            self.program_memory.append(Instruction(tk.StringVar(value="ADDLW"), tk.StringVar(value="0xFF"), tk.StringVar(value="-")))
+        self.prog_memory_frame.initialise_program_memory()
 
     # load program into program memory (code editor uses this to populate memory)
     def upload_program(self, program):
-        prog_len = len(program)
-        if prog_len <= PROGRAM_MEMORY_SIZE:
-            for mem_address in range(0, prog_len):
-                self.program_memory[mem_address].set_mnumonic(program[mem_address][0])
-                self.program_memory[mem_address].set_operand_1(program[mem_address][1])
-                self.program_memory[mem_address].set_operand_2(program[mem_address][2])
-                
+        upload_successful = self.prog_memory_frame.upload_program(program)
+        if upload_successful:
             self.parent.system_message(f"{prog_len} x 14-bit word program successfully loaded into Program Memory")
         else:
-            self.parent.system_message(f"FAILED TO LOAD PROGRAM: {prog_len} x 14-bit word program too large for MCU {PROGRAM_MEMORY_SIZE} x 14-bit word memory")
+            self.parent.system_message(f"FAILED TO LOAD PROGRAM: {prog_len} word program too large for MCU's {PROGRAM_MEMORY_SIZE} word program memory")
     
     # fill data memory with Byte objects and name accordingly (using the SFR dict)
     def initialise_data_memory(self):
@@ -184,7 +173,7 @@ class MCUFrame(ttk.Frame):
 
     # use the current program counter value to get the current instruction
     def get_current_instruction(self):
-        return self.program_memory[self.get_current_PC_value()].get_instruction()
+        return self.prog_memory_frame.get_instruction(self.get_current_PC_value())
 
     # program counter is 13-bit value (can address up to 8192 14-bit instructions words)
     # get the value of the program counter (PC) from the PCL (lower byte) and PCLATH (upper 5 bits)

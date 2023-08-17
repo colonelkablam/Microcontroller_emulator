@@ -1,10 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import *
+from dataStructures import Instruction
+
 
 
 class ProgramMemoryFrame(ttk.Frame):
-    def __init__(self, parent, memory, title ="Untitled", *args, **kwargs):
+    def __init__(self, parent, title ="Untitled", *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         # styling
@@ -15,7 +17,7 @@ class ProgramMemoryFrame(ttk.Frame):
 
         # object properties
         self.parent = parent
-        self.memory = memory
+        self.memory = []
 
         # list to store intruction labels
         self.rows = []# allows access for formatting later
@@ -59,6 +61,9 @@ class ProgramMemoryFrame(ttk.Frame):
         # add INNER FRAME to a window in the canvas
         self.scroll_canvas.create_window((0,0), window=self.inner_frame, anchor="nw")
            
+        # initialise program memory
+        self.initialise_program_memory()
+
         # add memory display
         for mem_address in range(0, PROGRAM_MEMORY_SIZE):
             # display the program memory locations
@@ -87,6 +92,33 @@ class ProgramMemoryFrame(ttk.Frame):
 
     # MemoryFrame methods
 
+    # fill program memory with empty Instruction objects
+    def initialise_program_memory(self):
+        for mem_address in range(0, PROGRAM_MEMORY_SIZE):
+            # add Instruction
+            self.memory.append(Instruction(tk.StringVar(value="ADDLW"), tk.StringVar(value="0xFF"), tk.StringVar(value="-")))
+
+    # load program into program memory (code editor uses this to populate memory)
+    def upload_program(self, program):
+        prog_len = len(program)
+        if prog_len <= PROGRAM_MEMORY_SIZE | prog_len > 0:
+            for mem_address in range(0, prog_len):
+                self.memory[mem_address].set_mnumonic(program[mem_address][0])
+                self.memory[mem_address].set_operand_1(program[mem_address][1])
+                self.memory[mem_address].set_operand_2(program[mem_address][2])
+
+            return True
+        else:
+            return False
+
+    # retrieve an instruction - none if out of range
+    def get_instruction(self, address):
+        if address < PROGRAM_MEMORY_SIZE:
+            return self.memory[address].get_instruction() # gets tuple of intruction
+        else:
+            return None
+
+    # used for highlighting current PC address
     def highlight_current_instruction(self, new_prog_address):
         for label in self.rows[self.previous_address]:
             label.config(background="white")
@@ -95,7 +127,6 @@ class ProgramMemoryFrame(ttk.Frame):
 
         for label in self.rows[new_prog_address]:
             label.config(background=PROGRAM_MEMORY_HIGHLIGHT)
-
 
     # canvas scrolling behaviour
 
