@@ -89,7 +89,7 @@ class MainStyle(ttk.Style):
             "ByteDisplayHeading.TLabel", 
             background=COLOUR_INNER2_BACKGROUND,
             foreground=COLOUR_DARK_TEXT,
-            font=("Courier", 11, "bold")
+            font=("Courier", 12, "bold")
         )
 
         self.configure(
