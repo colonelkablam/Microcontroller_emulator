@@ -34,10 +34,7 @@ class MCUStatusFrame(ttk.Frame):
         self.PCL_display.grid(column=0, row=1, columnspan=2, sticky="EW")
 
         # STACK - displayed within the MCU status frame
-        self.stack_frame = StackDisplayFrame(   self,
-                                                self.parent.get_stack(),
-                                                style='MainWindowInner.TLabel'                  )
-        self.stack_frame.grid(column=0, row=2, rowspan=4, sticky="NSEW")        
+     
         # STATUS REG
         self.STATUS_display = ByteDisplayFrame( self,
                                                 (self.parent.get_byte_by_name("STATUS"), ),

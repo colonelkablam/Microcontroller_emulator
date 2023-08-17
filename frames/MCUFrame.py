@@ -18,7 +18,7 @@ class MCUFrame(ttk.Frame):
         # memory 
         self.program_memory = []    # list of Instruction objects
         self.data_memory = []       # list of Byte objects
-        self.stack = deque(maxlen=STACK_SIZE)        # stack exists outside of data and prog mem
+        #self.stack = deque(maxlen=STACK_SIZE)        # stack exists outside of data and prog mem
         # logic
         self.instruction_decoder = InstructionDecoder(self)
         self.is_next_cycle_NOP = False
@@ -71,6 +71,11 @@ class MCUFrame(ttk.Frame):
         self.MCU_status_frame = MCUStatusFrame(self, "MCU Status Display")
         self.MCU_status_frame.grid(column=2, row=1, padx=(20,10))
 
+        # stack to be shown in MCU status frame above
+        self.stack_frame = StackDisplayFrame(   self.MCU_status_frame,
+                                                style='MainWindowInner.TLabel'                  )
+        self.stack_frame.grid(column=0, row=2, rowspan=4, sticky="NSEW")   
+
 
     # MCUFrame methods
     # fill program memory with empty Instruction objects
@@ -120,23 +125,22 @@ class MCUFrame(ttk.Frame):
     # STACK methods
     # access to the stack data structure
     def get_stack(self):
-        return self.stack
+        return self.stack_frame.get_stack()
 
     # return top element
     def pop_stack(self):
-        if len(self.stack) != 0:
-            first_in_queue = self.stack.pop()
-        else:
-            first_in_queue = None
+        first_in_queue = self.stack_frame.pop_stack()
+        if first_in_queue == None:
             self.parent.add_to_log(f"Stack empty; unable tp pop MCU stack")
-        return first_in_queue
+            return None
+        else:
+            self.parent.add_to_log(f"Stack popped; returning 0x{first_in_queue:04X}")
+            return first_in_queue
 
     # add to stack - 8 deep
     def push_stack(self, new_address=0):
-        # **some logic** to implement an 8 deep stack to be added
-
-        self.stack.append(new_address)
-        print(self.stack)
+        self.stack_frame.push_stack(new_address)
+        self.parent.add_to_log(f"Stack pushed; 0x{new_address:04X} added to top")
 
 
     # initialise log text
