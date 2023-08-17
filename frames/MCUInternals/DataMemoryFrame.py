@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from my_constants import *
 from dataStructures import Byte
+from frames.ScrollableCanvasFrame import ScrollableCanvasFrame
 
 
 class DataMemoryFrame(ttk.Frame):
@@ -37,60 +38,43 @@ class DataMemoryFrame(ttk.Frame):
         # tkinter widgets
 
         # panel label
-        self.control_panel_label = ttk.Label(self, text=f"{title}\n{DATA_MEMORY_SIZE} bytes", style='MainWindowInner.TLabel')
-        self.control_panel_label.grid(column=0, row=0, columnspan=2, padx=(5,0), pady=(0,5), sticky="NW")
+        control_panel_label = ttk.Label(self, text=f"{title}\n{DATA_MEMORY_SIZE} bytes", style='MainWindowInner.TLabel')
+        control_panel_label.grid(column=0, row=0, columnspan=2, padx=(5,0), pady=(0,5), sticky="NW")
 
-        self.mem_label = ttk.Label(     self, 
+        mem_label = ttk.Label(     self, 
                                         text="[    address    ][   byte value   ]",
                                         style='MainWindowInner2.TLabel'                     )
-        self.mem_label.grid(column=0, row=1, columnspan=2, pady=(0,0), sticky="NW")
+        mem_label.grid(column=0, row=1, columnspan=2, pady=(0,0), sticky="NW")
 
-        self.mem_label_2 = ttk.Label(   self,
+        mem_label_2 = ttk.Label(   self,
                                         text="  hex     SFR     dec hex  binary ",
                                         style='MainWindowInner2.TLabel'                     )
-        self.mem_label_2.grid(column=0, row=2, columnspan=2, pady=(0,0), sticky="NW")
+        mem_label_2.grid(column=0, row=2, columnspan=2, pady=(0,0), sticky="NW")
 
-        # canvas
-        self.scroll_canvas = tk.Canvas(self, width=DATA_MEMORY_WINDOW_WIDTH, height=DATA_MEMORY_WINDOW_HEIGHT)
-        self.scroll_canvas.grid(column=0, row=3, sticky="NS")
-        self.scroll_canvas.columnconfigure(0, weight=1)
-        self.scroll_canvas.rowconfigure(0, weight=1)
+        # create a scrollable canvas object
+        scroll_canvas = ScrollableCanvasFrame(self, DATA_MEMORY_WINDOW_WIDTH, DATA_MEMORY_WINDOW_HEIGHT)
+        scroll_canvas.grid(column=0, row=3, sticky="NS")
 
-        # scrollbars
-        self.code_scroll = ttk.Scrollbar(self, orient='vertical', command=self.scroll_canvas.yview)
-        self.code_scroll.grid(column=1, row=3, sticky="NS")
+        # get it's inner frame to mount the memory display on
+        inner_frame = scroll_canvas.get_inner_frame()
 
-        # configure canvas
-        self.scroll_canvas.configure(yscrollcommand=self.code_scroll.set)
-        self.scroll_canvas.bind("<Configure>", lambda e: self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox("all")))
-        self.scroll_canvas.bind('<Enter>', self._bound_to_mousewheel)
-        self.scroll_canvas.bind('<Leave>', self._unbound_to_mousewheel)
-
-        # create ANOTHER inner frame inside canvas
-        self.inner_frame = ttk.Frame(self.scroll_canvas, style="MCUmemory.TFrame")
-
-        # add INNER FRAME to a window in the canvas
-        self.scroll_canvas.create_window((0,0), window=self.inner_frame, anchor="nw")
-
-        # initialse data memory with empty Bytes
         self.initialise_data_memory()
-
 
         # add memory display
         for mem_address in range(0, DATA_MEMORY_SIZE):
-            addr = ttk.Label(self.inner_frame, text=f"{mem_address:04X}h", width=5, style="MCUmemory.TLabel")
+            addr = ttk.Label(inner_frame, text=f"{mem_address:04X}h", width=5, style="MCUmemory.TLabel")
             addr.grid(column=0, row=mem_address, pady=(0,5), padx=5, sticky="W")
 
-            name = ttk.Label(self.inner_frame, text=self.memory[mem_address].get_name(), width=9, style="MCUmemory.TLabel")
+            name = ttk.Label(inner_frame, text=self.memory[mem_address].get_name(), width=9, style="MCUmemory.TLabel")
             name.grid(column=1, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
-            dec_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_dec(), width=3, style="MCUmemory.TLabel", anchor="e")
+            dec_value = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_dec(), width=3, style="MCUmemory.TLabel", anchor="e")
             dec_value.grid(column=2, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
-            hex_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_hex(), width=3, style="MCUmemory.TLabel")
+            hex_value = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_hex(), width=3, style="MCUmemory.TLabel")
             hex_value.grid(column=3, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
-            bin_value = ttk.Label(self.inner_frame, textvariable=self.memory[mem_address].get_bin(), width=8, style="MCUmemory.TLabel")
+            bin_value = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_bin(), width=8, style="MCUmemory.TLabel")
             bin_value.grid(column=4, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
             # add 'columns' to rows of data
@@ -130,6 +114,7 @@ class DataMemoryFrame(ttk.Frame):
         except:
             byte = None
         return byte
+
     def get_byte_by_address(self, byte_addr):
         try:
             byte = self.memory[byte_addr]
@@ -137,23 +122,38 @@ class DataMemoryFrame(ttk.Frame):
             byte = None
         return byte
 
-    # set bytes by name or address
+    # set bytes by name or address - return False if outside of index/unable to set
     def set_byte_by_name(self, byte_name, value):
-        self.memory[self.SFR_dict[byte_name]].set_value(value)
+        try:
+            self.memory[self.SFR_dict[byte_name]].set_value(value)
+            set_successful = True
+        except:
+            set_successful = False
+        return set_successful
 
     def set_byte_by_address(self, byte_addr, value):
-        self.memory[byte_addr].set_value(value)
+        try:
+            self.memory[byte_addr].set_value(value)
+            set_successful = True
+        except:
+            set_success = False
+        return set_successful
 
 
-    # canvas scrolling behaviour
-    def _on_mousewheel(self, event):
-        self.scroll_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+    # bit-wise methods
+    # set/clear file reg bit
+    def set_file_reg_bit(self, mem_address, bit):
+        self.memory[mem_address].set_bit(bit)
 
-    def _bound_to_mousewheel(self, event):
-        self.scroll_canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+    def clear_file_reg_bit(self, mem_address, bit):
+        self.memory[mem_address].clear_bit(bit)
 
-    def _unbound_to_mousewheel(self, event):
-        self.scroll_canvas.unbind_all("<MouseWheel>")
+    # set/clear status bit 2 (Z); result of ALU gives a zero 
+    def set_Z_bit_status(self):
+        self.memory[self.SFR_dict["STATUS"]].set_bit(2)
+        
+    def clear_Z_bit_status(self):
+        self.memory[self.SFR_dict["STATUS"]].clear_bit(2)
 
 
 

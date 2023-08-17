@@ -52,15 +52,21 @@ class Byte():
     def get_name(self):
         return self.name
 
-    # Bit methods
+    # Bit methods - 
     def get_bit(self, bit):
-        return (self.get_dec_value() >> bit) & 1
+        if bit >= 0 and bit < 8:
+            bit_value = (self.get_dec_value() >> bit) & 1
+        else:
+            bit_value = None
+        return bit_value
 
     def set_bit(self, bit):
-        self.set_value(((1 << bit) | self.dec_value.get()))
+        if bit >= 0 and bit < 8:
+            self.set_value(((1 << bit) | self.dec_value.get()))
 
     def clear_bit(self, bit=0):
-        self.set_value(self.dec_value.get() & (~(1 << bit)))
+        if bit >= 0 and bit < 8:
+            self.set_value(self.dec_value.get() & (~(1 << bit)))
     
     def print_values(self):
         print(self.dec.get(), self.hex.get(), self.bin.get())

@@ -38,8 +38,8 @@ class MCUFrame(ttk.Frame):
         # tkinter widgets
 
         # panel label
-        self.frame_label = ttk.Label(self, text="MCU Panel", style='MainWindowOuter.TLabel')
-        self.frame_label.grid(column=0, row=0, padx=(50,0), pady=(0,10), sticky="W")
+        frame_label = ttk.Label(self, text="MCU Panel", style='MainWindowOuter.TLabel')
+        frame_label.grid(column=0, row=0, padx=(50,0), pady=(0,10), sticky="W")
 
         # set-up MCU
         # MCU 'views'
@@ -87,10 +87,20 @@ class MCUFrame(ttk.Frame):
         return byte
 
     def get_byte_by_address(self, byte_addr):
-        byte = self.data_memory_frame.get_byte_by_name(byte_addr)
+        byte = self.data_memory_frame.get_byte_by_address(byte_addr)
         if byte == None:
             self.parent.system_message(f"FAILED TO RETRIEVE BYTE: @ address {byte_addr}; not within data memory")
         return byte
+    # set bytes in data memory by name (if SFR) or address
+    def set_byte_by_name(self, byte_name, value):
+        set_successful = self.data_memory_frame.set_byte_by_name(byte_name, value)
+        if set_successful == False:
+            self.parent.system_message(f"FAILED TO SET BYTE: value of {value} @ '{byte_name}'; SFR name not defined")
+
+    def set_byte_by_address(self, byte_addr, value):
+        set_successful = self.data_memory_frame.set_byte_by_address(byte_addr, value)
+        if set_successful == False:
+            self.parent.system_message(f"FAILED TO SET BYTE: value of {value} @ address {byte_addr}")
 
     # handle the working register (exists outside the data memory list)
     def get_w_register(self):
@@ -205,10 +215,10 @@ class MCUFrame(ttk.Frame):
 
     # set/clear status bit 2 (Z); result of ALU gives a zero 
     def set_Z_bit_status(self):
-        self.data_memory_frame(self.SFR_dict["STATUS"]).set_bit(2)
+        self.data_memory_frame.set_Z_bit_status()
         
     def clear_Z_bit_status(self):
-        self.data_memory_frame(self.SFR_dict["STATUS"]).clear_bit(2)
+        self.data_memory_frame.clear_Z_bit_status()
 
 
 

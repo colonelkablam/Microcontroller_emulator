@@ -165,10 +165,10 @@ class InstructionDecoder():
 
     # access to file registers with address
     def get_file_reg_value(self, file_reg):
-        return self.parent.data_memory[file_reg].get_dec_value()
+        return self.parent.get_byte_by_address(file_reg).get_dec_value()
 
     def set_file_reg_value(self, file_reg, value=0):
-        self.parent.data_memory[file_reg].set_value(value)
+        return self.parent.set_byte_by_address(file_reg, value)
 
     # set/clear status bit
     def set_Z_bit_status(self):
