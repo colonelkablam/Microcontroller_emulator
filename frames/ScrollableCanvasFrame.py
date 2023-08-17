@@ -8,8 +8,8 @@ class ScrollableCanvasFrame(tk.Frame):
         # canvas
         self.scroll_canvas = tk.Canvas(self, width=width, height=height)
         self.scroll_canvas.grid(column=0, row=0, sticky="NS")
-        # self.scroll_canvas.columnconfigure(0, weight=1)
-        # self.scroll_canvas.rowconfigure(0, weight=1)
+        #self.scroll_canvas.columnconfigure(0, weight=1)
+        #self.scroll_canvas.rowconfigure(0, weight=1)
 
         # scrollbars
         self.code_scroll = ttk.Scrollbar(self, orient='vertical', command=self.scroll_canvas.yview)

@@ -28,14 +28,15 @@ class MCUFrame(ttk.Frame):
         self.time_duration = 0
         
         # Working register - not in data_memory
-        self.w_reg = Byte(  tk.IntVar(value=0),
-                            tk.StringVar(value="00"),
-                            tk.StringVar(value=f"00000000"),
-                            "WREG"      )
+        self.w_reg = NBitNumber(    8,
+                                    tk.IntVar(value=0),
+                                    tk.StringVar(value="00"),
+                                    tk.StringVar(value=f"00000000"),
+                                    "WREG"      )
         
         # PC - store previous program counter value
         self.prev_PC_value = 0
-        # for displaying PC extend Byte object to handle 13-bit number
+        # for displaying PC 13-bit number needed
         self.current_PC_13bit_Number = NBitNumber(  13, 
                                                     tk.IntVar(value=0), 
                                                     tk.StringVar(value="0000h"), 

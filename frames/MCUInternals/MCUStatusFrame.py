@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import *
-from frames.MCUInternals.MCUStatusFrames import ByteDisplayFrame
+from frames.MCUInternals.MCUStatusFrames import ByteDisplayFrame, BinaryDisplayFrame
 
 
 class MCUStatusFrame(ttk.Frame):
@@ -24,13 +24,10 @@ class MCUStatusFrame(ttk.Frame):
         self.control_panel_label.grid(column=0, row=0, columnspan=2, sticky="NE")
 
         # PROGRAM COUNTER - need to enter a tuple of the byte(s) being displayed
-        self.PCL_display = ByteDisplayFrame(    self, 
-                                                (self.parent.get_PC_13bit(), ),
-                                                display_bits=13, 
+        self.PCL_display = BinaryDisplayFrame(  self, 
+                                                self.parent.get_PC_13bit(),
                                                 title="Program Counter",
                                                 byte_heading="12 -PCLATH-  7 ----- PCL ---- 0",
-                                                display_dec=False,
-                                                display_hex=True,
                                                 style='MainWindowInner.TLabel'                  )
         
         self.PCL_display.grid(column=0, row=1, columnspan=2, sticky="EW")
@@ -38,11 +35,11 @@ class MCUStatusFrame(ttk.Frame):
         # STACK - displayed within the MCU status frame but contained in MCUFrame as a data holder
      
         # STATUS REG
-        self.STATUS_display = ByteDisplayFrame( self,
-                                                (self.parent.get_byte_by_name("STATUS"), ),
-                                                title="Status Register",
-                                                byte_heading=              "7           z dc c", 
-                                                style='MainWindowInner.TLabel'                  )
+        self.STATUS_display = BinaryDisplayFrame(   self,
+                                                    self.parent.get_byte_by_name("STATUS"),
+                                                    title="Status Register",
+                                                    byte_heading=              "7           z dc c", 
+                                                    style='MainWindowInner.TLabel'                  )
 
         self.STATUS_display.grid(column=1, row=2, sticky="EW")
         

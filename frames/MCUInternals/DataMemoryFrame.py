@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import *
-from dataStructures import Byte
+from dataStructures import Byte, NBitNumber
 from frames.ScrollableCanvasFrame import ScrollableCanvasFrame
 
 
@@ -52,11 +52,13 @@ class DataMemoryFrame(ttk.Frame):
         mem_label_2.grid(column=0, row=2, columnspan=2, pady=(0,0), sticky="NW")
 
         # create a scrollable canvas object
-        scroll_canvas = ScrollableCanvasFrame(self, DATA_MEMORY_WINDOW_WIDTH, DATA_MEMORY_WINDOW_HEIGHT)
-        scroll_canvas.grid(column=0, row=3, sticky="NS")
+        scroll_canvas_frame = ScrollableCanvasFrame(self, DATA_MEMORY_WINDOW_WIDTH, DATA_MEMORY_WINDOW_HEIGHT)
+        scroll_canvas_frame.grid(column=0, row=3, sticky="NS")
+        scroll_canvas_frame.rowconfigure(0, weight=1)
+
 
         # get it's inner frame to mount the memory display on
-        inner_frame = scroll_canvas.get_inner_frame()
+        inner_frame = scroll_canvas_frame.get_inner_frame()
 
         self.initialise_data_memory()
 
@@ -105,7 +107,7 @@ class DataMemoryFrame(ttk.Frame):
                 else:
                     name = " -"
             # add Byte
-            self.memory.append(Byte(tk.IntVar(value=0), tk.StringVar(value="00h"), tk.StringVar(value=f"00000000"), name))
+            self.memory.append(NBitNumber(8, tk.IntVar(value=0), tk.StringVar(value="00h"), tk.StringVar(value=f"00000000"), name))
 
     # retrieve bytes from data memory by name (if SFR) or address - return None if outside of index
     def get_byte_by_name(self, byte_name):

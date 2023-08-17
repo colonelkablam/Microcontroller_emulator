@@ -3,7 +3,10 @@ from tkinter import ttk
 from my_constants import*
 
 class Byte():
-    def __init__(self, dec_value, hex_value, bin_value, name=" - "):
+    def __init__(self, n_bits, dec_value, hex_value, bin_value, name=" - "):
+
+        # properties
+        self.number_of_bits = n_bits
 
         # tk.IntVar()
         self.dec_value = dec_value
@@ -67,6 +70,9 @@ class Byte():
     def clear_bit(self, bit=0):
         if bit >= 0 and bit < 8:
             self.set_value(self.dec_value.get() & (~(1 << bit)))
+
+    def get_number_of_bits(self):
+        return self.number_of_bits
     
     def print_values(self):
         print(self.dec.get(), self.hex.get(), self.bin.get())

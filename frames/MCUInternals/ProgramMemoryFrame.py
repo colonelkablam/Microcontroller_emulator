@@ -40,11 +40,12 @@ class ProgramMemoryFrame(ttk.Frame):
         mem_label_2.grid(column=0, row=2, columnspan=2, pady=(0,0), sticky="NW")
 
         # create a scrollable canvas object
-        scroll_canvas = ScrollableCanvasFrame(self, PROG_MEMORY_WINDOW_WIDTH, PROG_MEMORY_WINDOW_HEIGHT)
-        scroll_canvas.grid(column=0, row=3, sticky="NS")
+        scroll_canvas_frame = ScrollableCanvasFrame(self, PROG_MEMORY_WINDOW_WIDTH, PROG_MEMORY_WINDOW_HEIGHT)
+        scroll_canvas_frame.grid(column=0, row=3, sticky="NS")
+        scroll_canvas_frame.rowconfigure(0, weight=1)
 
         # get it's inner frame to mount the memory display on
-        inner_frame = scroll_canvas.get_inner_frame()
+        inner_frame = scroll_canvas_frame.get_inner_frame()
            
         # initialise program memory
         self.initialise_program_memory()

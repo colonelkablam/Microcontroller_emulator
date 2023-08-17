@@ -16,7 +16,7 @@ class NBitNumber():
         self.bin_value = bin_value
 
         self.name = name
-
+    
     # Byte methods
     def set_value(self, new_value):
         self.dec_value.set(new_value)
@@ -28,12 +28,12 @@ class NBitNumber():
         self.dec_value.set(self.dec_value.get() + step)
         self.update_byte()
 
+    # need to update other values using the existing dec value
     def update_byte(self):
         max_value = 2**self.number_of_bits
         num_digets_hex = int(math.log10(max_value)) + 1
         self.dec_value.set(self.dec_value.get()  % max_value) # can only store up to n-bit number
-
-
+        # formatting number of digits to display
         self.hex_value.set(f"{self.dec_value.get() :0{num_digets_hex}X}h")
         self.bin_value.set(f"{self.dec_value.get() :0{self.number_of_bits}b}")
 
@@ -75,6 +75,9 @@ class NBitNumber():
     def clear_bit(self, bit=0):
         if bit >= 0 and bit < self.number_of_bits:
             self.set_value(self.dec_value.get() & (~(1 << bit)))
+
+    def get_number_of_bits(self):
+        return self.number_of_bits
     
     def print_values(self):
         print(self.dec.get(), self.hex.get(), self.bin.get())
