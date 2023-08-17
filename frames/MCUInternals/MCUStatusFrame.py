@@ -27,7 +27,7 @@ class MCUStatusFrame(ttk.Frame):
         self.PCL_display = BinaryDisplayFrame(  self, 
                                                 self.parent.get_PC_13bit(),
                                                 title="Program Counter",
-                                                byte_heading="12 -PCLATH-  7 ----- PCL ---- 0",
+                                                bit_numbering="12 -PCLATH-  7 ----- PCL ---- 0",
                                                 style='MainWindowInner.TLabel'                  )
         
         self.PCL_display.grid(column=0, row=1, columnspan=2, sticky="EW")
@@ -37,39 +37,63 @@ class MCUStatusFrame(ttk.Frame):
         # STATUS REG
         self.STATUS_display = BinaryDisplayFrame(   self,
                                                     self.parent.get_byte_by_name("STATUS"),
-                                                    title="Status Register",
-                                                    byte_heading=              "7           z dc c", 
-                                                    style='MainWindowInner.TLabel'                  )
+                                                    title = "Status Register",
+                                                    bit_numbering =              "7           z dc c", 
+                                                    style = 'MainWindowInner.TLabel'                  )
 
         self.STATUS_display.grid(column=1, row=2, sticky="EW")
         
         # WORKING REG
-        self.WREG_display =     ByteDisplayFrame(self,
-                                                (self.parent.get_w_register(), ),
-                                                title="Working Register",
-                                                byte_heading=              "7                0", 
-                                                style='MainWindowInner.TLabel'                  )
+        self.WREG_display = BinaryDisplayFrame( self,
+                                                self.parent.get_w_register(),
+                                                title = "Working Register",
+                                                bit_numbering =              "7                0", 
+                                                style = 'MainWindowInner.TLabel'                  )
         self.WREG_display.grid(column=1, row=3, sticky="EW")
 
         # PORTA
-        self.PORTA_display =    ByteDisplayFrame(self,
-                                                (self.parent.get_byte_by_name("PORTA"), ),
-                                                title="PORTA",
-                                                byte_heading=              "7                0", 
-                                                style='MainWindowInner.TLabel'                  )
-        self.PORTA_display.grid(column=1, row=4, pady=(10,0), sticky="EW")
-
+        self.PORTA_display = BinaryDisplayFrame(self,
+                                                self.parent.get_byte_by_name("PORTA"),
+                                                display_dec = False,
+                                                display_hex = False,
+                                                title = "PORTA",
+                                                bit_numbering =              "7                0", 
+                                                style = 'MainWindowInner.TLabel'                  )
+        self.PORTA_display.grid(column=1, row=4, pady=(10,0), sticky="NEW")
+        
+        # TRISA
+        self.PARTB_display = BinaryDisplayFrame(self,
+                                                self.parent.get_byte_by_name("TRISA"),
+                                                display_dec = False,
+                                                display_hex = False,
+                                                title = "TRISA",
+                                                bit_numbering =              "7  6  5  4  3  2  1  0", 
+                                                style = 'MainWindowInner.TLabel'                  )
+        self.PARTB_display.grid(column=1, row=5, pady=(0,10), sticky="NEW")
+        
         # PORTB
-        self.PARTB_display =     ByteDisplayFrame(self,
-                                                (self.parent.get_byte_by_name("PORTB"), ),
+        self.PARTB_display = BinaryDisplayFrame(self,
+                                                self.parent.get_byte_by_name("PORTB"),
+                                                display_dec=False,
+                                                display_hex=False,
                                                 title="PORTB",
-                                                #byte_heading=              "7 6 5 4 3 2 1 0                 0", 
+                                                #bit_numbering =              "7 6 5 4 3 2 1 0                 0", 
                                                 style='MainWindowInner.TLabel'                  )
-        self.PARTB_display.grid(column=1, row=5, sticky="EW")
+        self.PARTB_display.grid(column=1, row=6, pady=(10,0), sticky="NEW")
+
+        # TRISB
+        self.PARTB_display = BinaryDisplayFrame(self,
+                                                self.parent.get_byte_by_name("TRISB"),
+                                                display_dec=False,
+                                                display_hex=False,
+                                                title="TRISB",
+                                                #bit_numbering =              "7  6  5  4  3  2  1  0", 
+                                                style='MainWindowInner.TLabel'                  )
+        self.PARTB_display.grid(column=1, row=7, pady=(0,10), sticky="NEW")
 
         # MCU status info
-        self.status_info_frame = ttk.Frame(self, style="MainWindowInner2.TFrame", padding=10)
-        self.status_info_frame.grid(column=0, row=6)
+        # self.status_info_frame = ttk.Frame(self, style="MainWindowInner2.TFrame", padding=10)
+        # self.status_info_frame.grid(column=0, row=6)
 
         self
 

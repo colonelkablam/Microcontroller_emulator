@@ -107,6 +107,13 @@ class MainStyle(ttk.Style):
         )
 
         self.configure(
+            "BitPosition.TLabel", 
+            background=COLOUR_INNER2_BACKGROUND,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 8)
+        )
+
+        self.configure(
             "MCUBit.TLabel", 
             background=COLOUR_MEMORY_LABEL_BACKGROUND,
             foreground=COLOUR_DARK_TEXT,
