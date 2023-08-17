@@ -28,12 +28,19 @@ class MCUFrame(ttk.Frame):
         self.time_duration = 0
         
         # Working register - not in data_memory
-        self.w_reg = Byte(tk.IntVar(value=0), tk.StringVar(value="00"), tk.StringVar(value=f"00000000"), "WREG")
+        self.w_reg = Byte(  tk.IntVar(value=0),
+                            tk.StringVar(value="00"),
+                            tk.StringVar(value=f"00000000"),
+                            "WREG"      )
         
         # PC - store previous program counter value
         self.prev_PC_value = 0
         # for displaying PC extend Byte object to handle 13-bit number
-        self.current_PC_13bit_Number = NBitNumber(13, 0, "0000h", "0000000000000", "PC")
+        self.current_PC_13bit_Number = NBitNumber(  13, 
+                                                    tk.IntVar(value=0), 
+                                                    tk.StringVar(value="0000h"), 
+                                                    tk.StringVar(value="0000000000000"), 
+                                                    "PC"        )
 
         # tkinter widgets
 
@@ -57,7 +64,7 @@ class MCUFrame(ttk.Frame):
 
         # stack to be shown in MCU status frame above - contains the stack logic/control
         self.stack_frame = StackDisplayFrame(self.MCU_status_frame, style='MainWindowInner.TLabel')
-        self.parent.stack_frame.grid(column=0, row=2, rowspan=4, sticky="NSEW")   
+        self.stack_frame.grid(column=0, row=2, rowspan=4, sticky="NSEW")   
 
 
     # MCUFrame methods
@@ -180,8 +187,8 @@ class MCUFrame(ttk.Frame):
         # combine the two bytes (NOT ADD - used to represent a 13-bit prog address!)
         return (upper_byte << 8) | lower_byte
 
-    def get_PC_tuple(self):
-        return (self.current_PC_13bit_Number,)
+    def get_PC_13bit(self):
+        return self.current_PC_13bit_Number
 
     # set the value of the program counter (PC)
     def set_PC(self, new_address):

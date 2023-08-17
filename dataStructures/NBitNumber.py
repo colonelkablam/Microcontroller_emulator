@@ -30,7 +30,7 @@ class NBitNumber():
 
     def update_byte(self):
         max_value = 2**self.number_of_bits
-        num_digets_hex = int(math.log16(max_value)) + 1
+        num_digets_hex = int(math.log10(max_value)) + 1
         self.dec_value.set(self.dec_value.get()  % max_value) # can only store up to n-bit number
 
 
