@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import *
+from dataStructures import Byte
 
 
 class DataMemoryFrame(ttk.Frame):
-    def __init__(self, parent, memory, title ="Untitled", *args, **kwargs):
+    def __init__(self, parent, title ="Untitled", *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         # styling
@@ -15,11 +16,23 @@ class DataMemoryFrame(ttk.Frame):
 
         # object properties
         self.parent = parent
-        self.memory = memory
+        self.memory = []
 
         # list to store intruction labels
         self.rows = [] # allows access for formatting later
-        self.previous_reg_address = -1
+        self.previous_reg_address = -1 # starts as non-existant address
+
+        # Special Function Registers (SFR) look-up address by name dictionary
+        self.SFR_dict = {   "INDF" :    int("0x00", 16),
+                            "TMRO" :    int("0x01", 16),
+                            "PCL" :     int("0x02", 16),
+                            "STATUS" :  int("0x03", 16),
+                            "FSR" :     int("0x04", 16),
+                            "PORTA" :   int("0x05", 16),
+                            "PORTB" :   int("0x06", 16),
+                            "PCLATH" :  int("0x0A", 16),
+                            "TRISA" :   int("0x85", 16),
+                            "TRISB" :   int("0x86", 16)   }
 
         # tkinter widgets
 
@@ -59,6 +72,10 @@ class DataMemoryFrame(ttk.Frame):
         # add INNER FRAME to a window in the canvas
         self.scroll_canvas.create_window((0,0), window=self.inner_frame, anchor="nw")
 
+        # initialse data memory with empty Bytes
+        self.initialise_data_memory()
+
+
         # add memory display
         for mem_address in range(0, DATA_MEMORY_SIZE):
             addr = ttk.Label(self.inner_frame, text=f"{mem_address:04X}h", width=5, style="MCUmemory.TLabel")
@@ -93,6 +110,39 @@ class DataMemoryFrame(ttk.Frame):
 
         self.previous_reg_address = new_reg_address
 
+    # fill data memory with Byte objects and name accordingly (using the SFR dict)
+    def initialise_data_memory(self):
+        for mem_address in range(0, DATA_MEMORY_SIZE):
+            # get SFR name (if one assigned) - look through SFR dictionary
+            for SFR_name, SFR_addr in self.SFR_dict.items():
+                if SFR_addr == mem_address:
+                    name = SFR_name
+                    break
+                else:
+                    name = " -"
+            # add Byte
+            self.memory.append(Byte(tk.IntVar(value=0), tk.StringVar(value="00h"), tk.StringVar(value=f"00000000"), name))
+
+    # retrieve bytes from data memory by name (if SFR) or address - return None if outside of index
+    def get_byte_by_name(self, byte_name):
+        try:
+            byte = self.memory[self.SFR_dict[byte_name]]
+        except:
+            byte = None
+        return byte
+    def get_byte_by_address(self, byte_addr):
+        try:
+            byte = self.memory[byte_addr]
+        except:
+            byte = None
+        return byte
+
+    # set bytes by name or address
+    def set_byte_by_name(self, byte_name, value):
+        self.memory[self.SFR_dict[byte_name]].set_value(value)
+
+    def set_byte_by_address(self, byte_addr, value):
+        self.memory[byte_addr].set_value(value)
 
 
     # canvas scrolling behaviour

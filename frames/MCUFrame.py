@@ -1,66 +1,54 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import*
+from dataStructures import Byte
 from frames import ControlPanelFrame, CodeDisplayFrame
 from frames.MCUInternals import ProgramMemoryFrame, DataMemoryFrame, MCUStatusFrame, StackDisplayFrame, InstructionDecoder
-#from frames.MCUInternals.MCUStatusFrames import StackDisplayFrame
-from dataStructures import Byte, Instruction
-
 
 
 class MCUFrame(ttk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
+        # configure layout of internal Frames
+        #self.columnconfigure(2, weight=1)
+        self.rowconfigure(1, weight=1)
+
         # properties
         self.parent = parent
-        # memory 
-        self.data_memory = []       # list of Byte objects
+
         # logic
         self.instruction_decoder = InstructionDecoder(self)
         self.is_next_cycle_NOP = False
+
         # clock
         self.clock_frequency = 4.0 # Mhz
         self.cycles_per_instruction = 4
         self.instruction_cycle = 0
         self.time_duration = 0
+        
         # Working register - not in data_memory
         self.w_reg = Byte(tk.IntVar(value=0), tk.StringVar(value="00"), tk.StringVar(value=f"00000000"), "WREG")
+        
         # PC - store previous program counter value
         self.prev_PC_value = 0
         self.bit_to_set = 0
-        # Special Function Registers (SFR) look-up address by name dictionary
-        self.SFR_dict = {   "INDF" :    int("0x00", 16),
-                            "TMRO" :    int("0x01", 16),
-                            "PCL" :     int("0x02", 16),
-                            "STATUS" :  int("0x03", 16),
-                            "FSR" :     int("0x04", 16),  
-                            "PORTA" :   int("0x05", 16),
-                            "PORTB" :   int("0x06", 16),
-                            "PCLATH" :  int("0x0A", 16),
-                            "TRISA" :   int("0x85", 16),
-                            "TRISB" :   int("0x86", 16)   }
 
-        # set-up MCU
-        self.initialise_data_memory()
 
         # tkinter widgets
-
-        # configure layout of internal Frames
-        #self.columnconfigure(2, weight=1)
-        self.rowconfigure(1, weight=1)
 
         # panel label
         self.frame_label = ttk.Label(self, text="MCU Panel", style='MainWindowOuter.TLabel')
         self.frame_label.grid(column=0, row=0, padx=(50,0), pady=(0,10), sticky="W")
 
+        # set-up MCU
         # MCU 'views'
         # program memory - contains the program memory logic/control
         self.prog_memory_frame = ProgramMemoryFrame(self, "Program Memory")
         self.prog_memory_frame.grid(column=0, row=1, padx=(10,10))
 
         # data memory - contains the data memory logic/control
-        self.data_memory_frame = DataMemoryFrame(self, self.data_memory, "Data Memory / registers")
+        self.data_memory_frame = DataMemoryFrame(self, "Data Memory / registers")
         self.data_memory_frame.grid(column=1, row=1)
 
         # MCU Status Information display - frame to display key information/status from the MCU/memory
@@ -68,13 +56,12 @@ class MCUFrame(ttk.Frame):
         self.MCU_status_frame.grid(column=2, row=1, padx=(20,10))
 
         # stack to be shown in MCU status frame above - contains the stack logic/control
-        self.stack_frame = StackDisplayFrame(   self.MCU_status_frame,
-                                                style='MainWindowInner.TLabel'                  )
+        self.stack_frame = StackDisplayFrame(   self.MCU_status_frame, style='MainWindowInner.TLabel')
         self.stack_frame.grid(column=0, row=2, rowspan=4, sticky="NSEW")   
 
 
     # MCUFrame methods
-    # fill program memory with empty Instruction objects
+    # fill program memory with empty Instruction objects ("ADDLW 0xFF 0")
     def initialise_program_memory(self):
         self.prog_memory_frame.initialise_program_memory()
 
@@ -88,22 +75,22 @@ class MCUFrame(ttk.Frame):
     
     # fill data memory with Byte objects and name accordingly (using the SFR dict)
     def initialise_data_memory(self):
-        for mem_address in range(0, DATA_MEMORY_SIZE):
-            # get SFR name (if one assigned) - look through SFR dictionary
-            for SFR_name, SFR_addr in self.SFR_dict.items():
-                if SFR_addr == mem_address:
-                    name = SFR_name
-                    break
-                else:
-                    name = " -"
-            # add Byte
-            self.data_memory.append(Byte(tk.IntVar(value=0), tk.StringVar(value="00h"), tk.StringVar(value=f"00000000"), name))
+        self.data_memory_frame.initialise_data_memory()
+        self.parent.system_message(f"DATA MEMORY INITIALISED")
+
 
     # retrieve bytes from data memory by name (if SFR) or address
     def get_byte_by_name(self, byte_name):
-        return self.data_memory[self.SFR_dict[byte_name]]
+        byte = self.data_memory_frame.get_byte_by_name(byte_name)
+        if byte == None:
+            self.parent.system_message(f"FAILED TO RETRIEVE BYTE: {byte_name}; SFR name not defined")
+        return byte
+
     def get_byte_by_address(self, byte_addr):
-        return self.data_memory[byte_addr]
+        byte = self.data_memory_frame.get_byte_by_name(byte_addr)
+        if byte == None:
+            self.parent.system_message(f"FAILED TO RETRIEVE BYTE: @ address {byte_addr}; not within data memory")
+        return byte
 
     # handle the working register (exists outside the data memory list)
     def get_w_register(self):
@@ -178,8 +165,8 @@ class MCUFrame(ttk.Frame):
     # program counter is 13-bit value (can address up to 8192 14-bit instructions words)
     # get the value of the program counter (PC) from the PCL (lower byte) and PCLATH (upper 5 bits)
     def get_current_PC_value(self):
-        lower_byte = self.data_memory[self.SFR_dict["PCL"]].get_dec_value()
-        upper_byte = self.data_memory[self.SFR_dict["PCLATH"]].get_dec_value()
+        lower_byte = self.data_memory_frame.get_byte_by_name("PCL").get_dec_value()
+        upper_byte = self.data_memory_frame.get_byte_by_name("PCLATH").get_dec_value()
         # combine the two bytes (NOT ADD - used to represent a 13-bit prog address!)
         return (upper_byte << 8) | lower_byte
 
@@ -196,8 +183,8 @@ class MCUFrame(ttk.Frame):
         upper_5_bits = self._get_n_byte_int(upper_byte, 0, 5)
 
         # store the values in the registers
-        self.data_memory[self.SFR_dict["PCL"]].set_value(lower_byte)
-        self.data_memory[self.SFR_dict["PCLATH"]].set_value(upper_5_bits)
+        self.data_memory_frame.set_byte_by_name("PCL", lower_byte)
+        self.data_memory_frame.set_byte_by_name("PCLATH", upper_5_bits)
         # log it
         self.parent.add_to_log(f"Program Counter (PC); changed from 0x{self.prev_PC_value:04X} [{self.prev_PC_value}] --> 0x{new_address:04X} [{new_address}]")
     
@@ -211,17 +198,17 @@ class MCUFrame(ttk.Frame):
     # bit-wise methods
     # set/clear file reg bit
     def set_file_reg_bit(self, mem_address, bit):
-        self.data_memory[mem_address].set_bit(bit)
+        self.data_memory_frame(mem_address).set_bit(bit)
 
     def clear_file_reg_bit(self, mem_address, bit):
-        self.data_memory[mem_address].clear_bit(bit)
+        self.data_memory_frame(mem_address).clear_bit(bit)
 
-    # set/clear status bit
+    # set/clear status bit 2 (Z); result of ALU gives a zero 
     def set_Z_bit_status(self):
-        self.data_memory[self.SFR_dict["STATUS"]].set_bit(2)
+        self.data_memory_frame(self.SFR_dict["STATUS"]).set_bit(2)
         
     def clear_Z_bit_status(self):
-        self.data_memory[self.SFR_dict["STATUS"]].clear_bit(2)
+        self.data_memory_frame(self.SFR_dict["STATUS"]).clear_bit(2)
 
 
 
