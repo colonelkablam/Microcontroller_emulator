@@ -19,12 +19,8 @@ class NBitNum(tk.IntVar):
 # create main window
 main_window = tk.Tk()
 
-number = NBitNum(value=100)
 
-label = tk.Label(main_window)
-print(type(label))
-
-print(number.get())
+print(f"{7:04b}")
 
 
 # main loop
