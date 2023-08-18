@@ -23,7 +23,7 @@ class DataMemoryFrame(ttk.Frame):
         self.rows = [] # allows access for formatting later
         self.previous_reg_address = -1 # starts as non-existant address
         self.watch_list = []    # stores registers to watch
-        self.watch_registers = tk.BooleanVar(value=False) # toggle value to see if to only see ticked registers
+        self.watching_registers = tk.BooleanVar(value=False) # toggle value to see if to only see ticked registers
 
         # Special Function Registers (SFR) look-up address by name dictionary
         self.SFR_dict = {   "INDF" :    int("0x00", 16),
@@ -97,27 +97,24 @@ class DataMemoryFrame(ttk.Frame):
 
             # add 'columns' to rows of data
             column = [watch_box, addr, name, dec_value, hex_value, bin_value]
-            
-            # test to see if PC byte - adjust style accor
-            if mem_address == self.SFR_dict["PCL"] or mem_address == self.SFR_dict["PCLATH"]:
-                for element in column:
-                    if element.winfo_class() == "TLabel":
-                        element.config(background=PCL_PCLATH_HIGHLIGHT)
 
             # append to main list
             self.rows.append(column)
+
+        # test to see if PCL/PCLATH SFR and adjust bg style accordingly
+        self._SFRs_background_set()
         
         # add watched reg. display tickbox
         # user can toggle between watched and all registers
-        toggle_watch_registers = tk.Checkbutton(    self,
+        toggle_watching_registers = tk.Checkbutton(    self,
                                                     text="Disply only selected registers",
-                                                    variable=self.watch_registers,
+                                                    variable=self.watching_registers,
                                                     anchor="w",
                                                     onvalue=True,
                                                     offvalue=False,
                                                     bg=COLOUR_MEMORY_FRAME_BACKGROUND,
                                                     command=self._toggle_watching_registers      )
-        toggle_watch_registers.grid(column=0, row=4, pady=(0,0), padx=(0,0), sticky="EW")
+        toggle_watching_registers.grid(column=0, row=4, pady=(0,0), padx=(0,0), sticky="EW")
 
 
     # MemoryFrame methods
@@ -137,7 +134,7 @@ class DataMemoryFrame(ttk.Frame):
 
     def _toggle_watching_registers(self):
         for address, watch in enumerate(self.watch_list):
-            if self.watch_registers.get() == True:
+            if self.watching_registers.get() == True:
                 if watch.get() == 0:
                     for element in self.rows[address]:
                         element.grid_remove()
@@ -145,6 +142,12 @@ class DataMemoryFrame(ttk.Frame):
                 for element in self.rows[address]:
                         element.grid()
 
+    # takes a list of SFR names to change bg colour
+    def _SFRs_background_set(self):
+        for mem_address in self.SFR_dict.values():
+            for element in self.rows[mem_address]:
+                if element.winfo_class() == "TLabel":
+                    element.config(background=PCL_PCLATH_HIGHLIGHT)
 
     # fill data memory with Byte objects and name accordingly (using the SFR dict)
     def initialise_data_memory(self):
@@ -159,6 +162,22 @@ class DataMemoryFrame(ttk.Frame):
                     name = " -"
             # add Byte
             self.memory.append(NBitNumber(8, tk.IntVar(value=0), tk.StringVar(value="00h"), tk.StringVar(value=f"00000000"), name))
+
+    # clear all values in data registers and reset highlighting
+    def reset_data_memory_frame(self):
+        # reset memory
+        for register in self.memory:
+            register.set_value(0) # sets all registers to zero
+
+        self.previous_reg_address = -1 # starts as non-existant address
+
+        # reset highlighting
+        for row in self.rows:
+            for element in row:
+                if element.winfo_class() == "TLabel" : # miss the Checkbox object
+                    element.configure(background="white")
+        self._SFRs_background_set()
+        self.highlight_current_register(-1)
 
     # retrieve bytes from data memory by name (if SFR) or address - return None if outside of index
     def get_byte_by_name(self, byte_name):

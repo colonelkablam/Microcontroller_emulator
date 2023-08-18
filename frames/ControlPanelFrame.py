@@ -55,7 +55,7 @@ class ControlPanelFrame(ttk.Frame):
         self.parent.MCU_frame.advance_cycle()
     
     def reset_MCU(self):
-        self.parent.reset_MCU_frame()
+        self.parent.MCU_frame.reset_MCU()
 
     def open_code_window(self):
         if self.code_window_open == False:
@@ -72,9 +72,3 @@ class ControlPanelFrame(ttk.Frame):
 
     def close_log_window(self):
         self.log_window_open = False
-
-
-    def add_w_reg(self):
-        print(1, self.parent.MCU_frame.register_list[0])
-        self.parent.MCU_frame.memory_container.add_value_to_memory(1, self.parent.MCU_frame.register_list[0][1])
-

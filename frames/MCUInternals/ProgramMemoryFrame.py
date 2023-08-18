@@ -20,8 +20,9 @@ class ProgramMemoryFrame(ttk.Frame):
         self.memory = []
 
         # list to store intruction labels
-        self.rows = []# allows access for formatting later
+        self.rows = [] # allows access for formatting tkinter objects later
         self.previous_address = 0
+        self.program_length = 0
 
 
         # tkinter widgets
@@ -47,10 +48,10 @@ class ProgramMemoryFrame(ttk.Frame):
         # get it's inner frame to mount the memory display on
         inner_frame = scroll_canvas_frame.get_inner_frame()
            
-        # initialise program memory
+        # initialise program memory - clear and create list of default instructions
         self.initialise_program_memory()
 
-        # add memory display
+        # add memory display - using the variables stored in the memory list
         for mem_address in range(0, PROGRAM_MEMORY_SIZE):
             # display the program memory locations
             dec_addr = ttk.Label(inner_frame, text=f"[{mem_address :03}]", width=5, style="MCUmemory.TLabel")
@@ -72,7 +73,7 @@ class ProgramMemoryFrame(ttk.Frame):
             self.rows.append([dec_addr, hex_addr, instruction_mnemonic, instruction_operand_1, instruction_operand_2])
 
         # hightlight the program starting position (0x00h)
-        self.highlight_current_instruction(self.previous_address)
+        self.highlight_current_instruction(0)
 
 
     # MemoryFrame methods
@@ -81,19 +82,38 @@ class ProgramMemoryFrame(ttk.Frame):
     def initialise_program_memory(self):
         for mem_address in range(0, PROGRAM_MEMORY_SIZE):
             # add Instruction
-            self.memory.append(Instruction(tk.StringVar(value="ADDLW"), tk.StringVar(value="0xFF"), tk.StringVar(value="-")))
+            self.memory.append(Instruction())
+
+    # clear all values in program data
+    def reset_program_memory_frame(self):
+        # reset memory
+        for i, instruction in enumerate(self.memory):
+            
+            # saves looping through entire program memory
+            if i >= self.program_length:
+                break
+            instruction.set_instruction() # sets all instructions to DEFAULT_INSTRUCTION
+
+        self.previous_address = 0   # back to starting state
+
+        # reset highlighting
+        for row in self.rows:
+            for element in row:
+                element.configure(background="white")
+        self.highlight_current_instruction(0)
 
     # load program into program memory (code editor uses this to populate memory)
     def upload_program(self, program):
-        prog_len = len(program)
-        if prog_len <= PROGRAM_MEMORY_SIZE | prog_len > 0:
-            for mem_address in range(0, prog_len):
+        self.program_length = len(program)
+        if self.program_length <= PROGRAM_MEMORY_SIZE | self.program_length > 0:
+            for mem_address in range(0, self.program_length):
                 self.memory[mem_address].set_mnumonic(program[mem_address][0])
                 self.memory[mem_address].set_operand_1(program[mem_address][1])
                 self.memory[mem_address].set_operand_2(program[mem_address][2])
 
             return True
         else:
+            self.program_length = 0
             return False
 
     # retrieve an instruction - none if out of range

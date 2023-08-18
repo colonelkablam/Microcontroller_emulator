@@ -67,6 +67,12 @@ class StackDisplayFrame(ttk.Frame):
         if stack_length == 0:
             self._add_empty_label() # show stack is empty
 
+    # clear stack and display
+    def clear_stack(self):
+        for element in self.stack_display_list:
+            element.grid_remove()
+        self.stack.clear()
+
     # access to the stack data structure
     def get_stack(self):
         return self.stack
