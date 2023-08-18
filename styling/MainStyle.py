@@ -82,6 +82,12 @@ class MainStyle(ttk.Style):
         )
 
         self.configure(
+            "MCUTickbox.TCheckbutton", 
+            background=COLOUR_MEMORY_FRAME_BACKGROUND,
+            indicatorforeground =DATA_MEMORY_HIGHLIGHT,
+        )
+
+        self.configure(
             "MCUmemory.TFrame",
             background=COLOUR_MEMORY_FRAME_BACKGROUND,
         )

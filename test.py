@@ -1,5 +1,5 @@
 import tkinter as tk
-import tkinter.font as font
+from tkinter import ttk
 
 class NBitNum(tk.IntVar):
     def __init__(self, value=10, *args, **kwargs):
@@ -20,6 +20,9 @@ class NBitNum(tk.IntVar):
 main_window = tk.Tk()
 
 number = NBitNum(value=100)
+
+label = tk.Label(main_window)
+print(type(label))
 
 print(number.get())
 
