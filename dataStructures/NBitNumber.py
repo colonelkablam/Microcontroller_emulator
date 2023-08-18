@@ -30,11 +30,24 @@ class NBitNumber():
 
     # need to update other values using the existing dec value
     def update_byte(self):
-        max_value = 2**self.number_of_bits
-        num_digets_hex = int(math.log10(max_value)) + 1
-        self.dec_value.set(self.dec_value.get()  % max_value) # can only store up to n-bit number
+        # calculating formatting (hex to be in bytes)
+        max_value = (2**self.number_of_bits) - 1
+        num_digits_hex = 0
+        if max_value <= 255:
+            num_digits_hex = 2
+        elif max_value <= 65535:
+            num_digits_hex = 4
+        # arguably no necessary
+        elif max_value <= 16777215:
+            num_digits_hex = 6
+        else:
+            num_digits_hex = 8
+
+        print(num_digits_hex)
+        # handle larger numbers than can be stored with wrap-around
+        self.dec_value.set(self.dec_value.get()  % (max_value + 1)) # store up to n-bit binary number
         # formatting number of digits to display
-        self.hex_value.set(f"{self.dec_value.get() :0{num_digets_hex}X}h")
+        self.hex_value.set(f"{self.dec_value.get() :0{num_digits_hex}X}h")
         self.bin_value.set(f"{self.dec_value.get() :0{self.number_of_bits}b}")
 
     # return int value

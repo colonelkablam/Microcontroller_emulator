@@ -53,14 +53,14 @@ class BinaryDisplayFrame(ttk.Frame):
             dec_label = ttk.Label(byte_value_frame, text="dec.", style='MainWindowInner3.TLabel')
             dec_label.grid(column=0, row=0, padx=(10,0), pady=(0,0), sticky="EW")
 
-            dec_value = ttk.Label(byte_value_frame, width=3, textvariable=self.n_bit_number_obj.get_dec(), style="MCUBit.TLabel", anchor="e")
+            dec_value = ttk.Label(byte_value_frame, width=3, textvariable=self.n_bit_number_obj.get_dec(), style="Stack.TLabel", anchor="e")
             dec_value.grid(column=1, row=0, padx=(0,5), pady=(0,0), sticky="EW")
 
         if display_hex:
             hex_label = ttk.Label(byte_value_frame, text="hex.", style='MainWindowInner3.TLabel')
             hex_label.grid(column=2, row=0, padx=(0,0), pady=(0,0), sticky="EW")
 
-            hex_value = ttk.Label(byte_value_frame, textvariable=self.n_bit_number_obj.get_hex(), style="MCUBit.TLabel")
+            hex_value = ttk.Label(byte_value_frame, textvariable=self.n_bit_number_obj.get_hex(), style="Stack.TLabel")
             hex_value.grid(column=3, row=0, padx=(0,10), pady=(0,0), sticky="EW")
 
 

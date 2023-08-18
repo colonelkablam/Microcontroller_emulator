@@ -38,8 +38,7 @@ class MCUStatusFrame(ttk.Frame):
         self.STATUS_display = BinaryDisplayFrame(   self,
                                                     self.parent.get_byte_by_name("STATUS"),
                                                     title = "Status Register",
-                                                    bit_numbering =              "7           z dc c", 
-                                                    style = 'MainWindowInner.TLabel'                  )
+                                                    bit_numbering =              "7           z dc c"     )
 
         self.STATUS_display.grid(column=1, row=2, sticky="EW")
         
@@ -47,8 +46,7 @@ class MCUStatusFrame(ttk.Frame):
         self.WREG_display = BinaryDisplayFrame( self,
                                                 self.parent.get_w_register(),
                                                 title = "Working Register",
-                                                bit_numbering =              "7                0", 
-                                                style = 'MainWindowInner.TLabel'                  )
+                                                bit_numbering =              "7                0"     )
         self.WREG_display.grid(column=1, row=3, sticky="EW")
 
         # PORTA
@@ -57,8 +55,7 @@ class MCUStatusFrame(ttk.Frame):
                                                 display_dec = False,
                                                 display_hex = False,
                                                 title = "PORTA",
-                                                bit_numbering =              "7                0", 
-                                                style = 'MainWindowInner.TLabel'                  )
+                                                bit_numbering =              "7                0"   )
         self.PORTA_display.grid(column=1, row=4, pady=(10,0), sticky="NEW")
         
         # TRISA
@@ -67,8 +64,7 @@ class MCUStatusFrame(ttk.Frame):
                                                 display_dec = False,
                                                 display_hex = False,
                                                 title = "TRISA",
-                                                bit_numbering =              "7  6  5  4  3  2  1  0", 
-                                                style = 'MainWindowInner.TLabel'                  )
+                                                bit_numbering =              "7  6  5  4  3  2  1  0"   )
         self.PARTB_display.grid(column=1, row=5, pady=(0,10), sticky="NEW")
         
         # PORTB
@@ -76,9 +72,7 @@ class MCUStatusFrame(ttk.Frame):
                                                 self.parent.get_byte_by_name("PORTB"),
                                                 display_dec=False,
                                                 display_hex=False,
-                                                title="PORTB",
-                                                #bit_numbering =              "7 6 5 4 3 2 1 0                 0", 
-                                                style='MainWindowInner.TLabel'                  )
+                                                title="PORTB"                      )
         self.PARTB_display.grid(column=1, row=6, pady=(10,0), sticky="NEW")
 
         # TRISB
@@ -86,9 +80,7 @@ class MCUStatusFrame(ttk.Frame):
                                                 self.parent.get_byte_by_name("TRISB"),
                                                 display_dec=False,
                                                 display_hex=False,
-                                                title="TRISB",
-                                                #bit_numbering =              "7  6  5  4  3  2  1  0", 
-                                                style='MainWindowInner.TLabel'                  )
+                                                title="TRISB"                      )
         self.PARTB_display.grid(column=1, row=7, pady=(0,10), sticky="NEW")
 
         # MCU status info
