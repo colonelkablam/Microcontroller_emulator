@@ -148,6 +148,7 @@ class DataMemoryFrame(ttk.Frame):
 
     # fill data memory with Byte objects and name accordingly (using the SFR dict)
     def initialise_data_memory(self):
+        self.memory.clear()
         for mem_address in range(0, DATA_MEMORY_SIZE):
             # get SFR name (if one assigned) - look through SFR dictionary
             for SFR_name, SFR_addr in self.SFR_dict.items():

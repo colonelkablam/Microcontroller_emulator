@@ -35,9 +35,8 @@ class MainWindow(tk.Tk):
 
         # tkinter Widgets
 
-        # main MCU_frame - contains MCUInternals
-        self.MCU_frame = MCUFrame(self, style='MainWindowOuter.TFrame', padding=10)
-        self.MCU_frame.grid(column=0, row=0, sticky="NSEW")
+        # main MCU_frame - contains MCUInternals, data and program memory
+        self.create_MCU_frame()
 
         # control panel frame for app - contained within main window
         self.control_panel_frame = ControlPanelFrame(self, style='MainWindowOuter.TFrame', padding=10)
@@ -45,6 +44,15 @@ class MainWindow(tk.Tk):
 
 
     # MainWindow Methods
+
+    def create_MCU_frame(self):
+        self.MCU_frame = MCUFrame(self, style='MainWindowOuter.TFrame', padding=10)
+        self.MCU_frame.grid(column=0, row=0, sticky="NSEW")
+
+    def reset_MCU_frame(self):
+        self.MCU_frame.destroy()
+        self.MCU_frame = MCUFrame(self, style='MainWindowOuter.TFrame', padding=10)
+        self.MCU_frame.grid(column=0, row=0, sticky="NSEW")
 
     def open_code_window(self):
         self.code_window = CodeWindow(self)

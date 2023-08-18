@@ -33,14 +33,17 @@ class ControlPanelFrame(ttk.Frame):
         self.button4 = ttk.Button(self.button_frame, text="View Log Messages", command=self.open_log_window)
         self.button5 = ttk.Button(self.button_frame, text="Pin Out")
         self.button6 = ttk.Button(self.button_frame, text="Code Editor", command=self.open_code_window)
+        self.button7 = ttk.Button(self.button_frame, text="Reset MCU", command=self.reset_MCU)
+
         # grid the buttons
-        self.button1.grid(column=0, row=0)
-        self.button2.grid(column=1, row=0)
-        self.button3.grid(column=2, row=0)
+        self.button1.grid(column=0, row=0, columnspan=2, sticky="EW")
+        self.button2.grid(column=0, row=1)
+        self.button3.grid(column=1, row=1)
         self.button4.grid(column=3, row=0)
         self.button5.grid(column=4, row=0)
         self.button6.grid(column=5, row=0)
-        
+        self.button7.grid(column=5, row=1)      
+
         # apply padding to all widgets in self
         for child in self.button_frame.winfo_children():
             child.configure(style="MainWindow.TButton")
@@ -50,6 +53,9 @@ class ControlPanelFrame(ttk.Frame):
 
     def MCU_advance_cycle(self):
         self.parent.MCU_frame.advance_cycle()
+    
+    def reset_MCU(self):
+        self.parent.reset_MCU_frame()
 
     def open_code_window(self):
         if self.code_window_open == False:

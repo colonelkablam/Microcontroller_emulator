@@ -73,6 +73,13 @@ class MCUFrame(ttk.Frame):
     def initialise_program_memory(self):
         self.prog_memory_frame.initialise_program_memory()
 
+    def reset_MCU(self):
+        self.initialise_program_memory()
+        self.initialise_data_memory()
+        self.stack_frame.initialise_stack_display_list()
+        self.w_reg.set_value(0)
+        self.current_PC_13bit_Number.set_value(0)
+
     # load program into program memory (code editor uses this to populate memory)
     def upload_program(self, program):
         upload_successful = self.prog_memory_frame.upload_program(program)
