@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import *
-from frames.MCUInternals.MCUStatusFrames import ByteDisplayFrame, BinaryDisplayFrame
+from frames.MCUInternals.MCUStatusFrames import BinaryDisplayFrame
 
 
 class MCUStatusFrame(ttk.Frame):

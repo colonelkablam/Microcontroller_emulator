@@ -106,7 +106,7 @@ class ProgramMemoryFrame(ttk.Frame):
     # used for highlighting current PC address
     def highlight_current_instruction(self, new_prog_address):
         for label in self.rows[self.previous_address]:
-            label.config(background="white")
+            label.config(background=VISITED_DATA_ADDRESS)
 
         self.previous_address = new_prog_address
 

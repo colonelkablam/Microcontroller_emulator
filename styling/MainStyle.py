@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from my_constants import *
 
+# styles in ttk.Style object for the ttk objects to use - CONSTANTS in my_constants module in root 
 
 class MainStyle(ttk.Style):
     def __init__(self, parent, *args, **kwargs):
@@ -93,8 +94,8 @@ class MainStyle(ttk.Style):
         )
 
         self.configure(
-            "MCUByteHighlight.TFrame",
-            background=BYTE_HIGHLIGHT,
+            "MCUBitHighlight.TFrame",
+            background=BIT_HIGHLIGHT,
             borderwidth=2,
             relief="ridge"
         )
@@ -122,7 +123,7 @@ class MainStyle(ttk.Style):
 
         self.configure(
             "MCUBitHighlight.TLabel", 
-            background=BYTE_HIGHLIGHT,
+            background=BIT_HIGHLIGHT,
             foreground=COLOUR_DARK_TEXT,
             font=("Courier", 11)
         )

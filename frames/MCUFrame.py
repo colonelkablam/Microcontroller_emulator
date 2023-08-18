@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import*
-from dataStructures import Byte, NBitNumber
+from dataStructures import NBitNumber
 from frames import ControlPanelFrame, CodeDisplayFrame
 from frames.MCUInternals import ProgramMemoryFrame, DataMemoryFrame, MCUStatusFrame, StackDisplayFrame, InstructionDecoder
 

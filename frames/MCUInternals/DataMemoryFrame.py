@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import *
-from dataStructures import Byte, NBitNumber
+from dataStructures import NBitNumber
 from frames.ScrollableCanvasFrame import ScrollableCanvasFrame
 
 
@@ -22,6 +22,8 @@ class DataMemoryFrame(ttk.Frame):
         # list to store intruction labels
         self.rows = [] # allows access for formatting later
         self.previous_reg_address = -1 # starts as non-existant address
+        self.watch_list = []    # stores registers to watch
+        self.watch_registers = tk.IntVar(value=0) # toggle value to see if to ticked registers
 
         # Special Function Registers (SFR) look-up address by name dictionary
         self.SFR_dict = {   "INDF" :    int("0x00", 16),
@@ -62,25 +64,54 @@ class DataMemoryFrame(ttk.Frame):
 
         self.initialise_data_memory()
 
+        # define style
+        label_style = "MCUmemory.TLabel"
         # add memory display
         for mem_address in range(0, DATA_MEMORY_SIZE):
-            addr = ttk.Label(inner_frame, text=f"{mem_address:04X}h", width=5, style="MCUmemory.TLabel")
+
+            addr = ttk.Label(inner_frame, text=f"{mem_address:04X}h", width=5, style=label_style)
             addr.grid(column=0, row=mem_address, pady=(0,5), padx=5, sticky="W")
 
-            name = ttk.Label(inner_frame, text=self.memory[mem_address].get_name(), width=9, style="MCUmemory.TLabel")
+            name = ttk.Label(inner_frame, text=self.memory[mem_address].get_name(), width=9, style=label_style)
             name.grid(column=1, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
-            dec_value = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_dec(), width=3, style="MCUmemory.TLabel", anchor="e")
+            dec_value = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_dec(), width=3, style=label_style, anchor="e")
             dec_value.grid(column=2, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
-            hex_value = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_hex(), width=3, style="MCUmemory.TLabel")
+            hex_value = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_hex(), width=3, style=label_style)
             hex_value.grid(column=3, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
-            bin_value = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_bin(), width=8, style="MCUmemory.TLabel")
+            bin_value = ttk.Label(inner_frame, textvariable=self.memory[mem_address].get_bin(), width=8, style=label_style)
             bin_value.grid(column=4, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
+            
+            watch = tk.IntVar(value=0) # create a watching 0/1 variable
+            watch_box = ttk.Checkbutton(inner_frame, variable=watch, onvalue=1, offvalue=0)#, bg=COLOUR_MEMORY_FRAME_BACKGROUND)
+            watch_box.grid(column=5, row=mem_address, pady=(0,0), padx=(0,0), sticky="W")
+            self.watch_list.append(watch) # add watch variable to watch_list
 
             # add 'columns' to rows of data
-            self.rows.append([addr, name, dec_value, hex_value, bin_value])
+            column = [addr, name, dec_value, hex_value, bin_value]
+            
+            # test to see if PC byte - adjust style accor
+            if mem_address == self.SFR_dict["PCL"] or mem_address == self.SFR_dict["PCLATH"]:
+                for label in column:
+                    label.config(background=PCL_PCLATH_HIGHLIGHT)
+
+            # append to main list
+            self.rows.append(column)
+        
+        # add watched reg. display tickbox
+        # user can toggle between watched and all registers
+        toggle_watch_registers = tk.Checkbutton(    self,
+                                                    variable=self.watch_registers,
+                                                    onvalue=1,
+                                                    offvalue=0,
+                                                    bg=COLOUR_MEMORY_FRAME_BACKGROUND,
+                                                    command=self._toggle_watching_reg      )
+        toggle_watch_registers.grid(column=0, row=4, pady=(0,0), padx=(0,0), sticky="W")
+
+
+
 
 
     # MemoryFrame methods
@@ -95,6 +126,12 @@ class DataMemoryFrame(ttk.Frame):
                 label.config(background=VISITED_DATA_ADDRESS)
 
         self.previous_reg_address = new_reg_address
+
+    def _toggle_watching_reg(self):
+        for address, watch in enumerate(self.watch_list):
+            if watch.get() == 0:
+                for label in self.rows[address]:
+                    label.grid_remove()
 
     # fill data memory with Byte objects and name accordingly (using the SFR dict)
     def initialise_data_memory(self):
