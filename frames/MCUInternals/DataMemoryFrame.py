@@ -21,10 +21,11 @@ class DataMemoryFrame(ttk.Frame):
 
         # list to store intruction labels
         self.rows = [] # allows access for formatting later
+        
         self.accessed_registers_in_cycle = [] # list per cycle (used for highlighting)
         self.prev_accessed_registers_in_cycle = [] # to undo highlighting (avoiding iterating through whole memory)
-
         self.accessed_registers = [] # list for duration of program (used to reset quicker + watch option)
+        
         self.watch_list = []    # stores registers to watch
         self.watching_registers = tk.BooleanVar(value=False) # toggle value to see if to only see ticked registers
 
@@ -187,14 +188,13 @@ class DataMemoryFrame(ttk.Frame):
         for register in self.memory:
             register.set_value(0) # sets all registers to zero
 
-        self.previous_reg_address = -1 # starts as non-existant address
-
         # reset highlighting
         for row in self.rows:
             for element in row:
                 if element.winfo_class() == "TLabel" : # miss the Checkbox object
                     element.configure(background="white")
         self._SFRs_background_set()
+        self.prev_accessed_registers_in_cycle.clear()
         self.accessed_registers_in_cycle.clear()
         self.accessed_registers.clear()
 
@@ -216,24 +216,22 @@ class DataMemoryFrame(ttk.Frame):
     # set bytes by name or address - return False if outside of index/unable to set
     def set_byte_by_name(self, byte_name, value):
         address = 0
-        try:
-            address = self.SFR_dict[byte_name]
-            self.memory[address].set_value(value)
-            self.add_accessed_register_cycle(address)
-            set_successful = True
-        except:
-            set_successful = False
-
-
+        #try:
+        address = self.SFR_dict[byte_name]
+        self.memory[address].set_value(value)
+        self.add_accessed_register_cycle(address)
+        set_successful = True
+        #except:
+            #set_successful = False
         return set_successful
 
     def set_byte_by_address(self, byte_addr, value):
-        try:
-            self.memory[byte_addr].set_value(value)
-            self.add_accessed_register_cycle(byte_addr)
-            set_successful = True
-        except:
-            set_successful = False
+        #try:
+        self.memory[byte_addr].set_value(value)
+        self.add_accessed_register_cycle(byte_addr)
+        set_successful = True
+        #except:
+            #set_successful = False
         return set_successful
 
 

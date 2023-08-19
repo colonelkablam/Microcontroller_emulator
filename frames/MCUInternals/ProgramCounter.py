@@ -24,12 +24,12 @@ class ProgramCounter():
         # save previous value
         self.previous_value = self.get_value()
         # wrap value within the program memory size (can different to max no. a 13-bit can represent)
-        new_address = new_address %  PROGRAM_MEMORY_SIZE
-        self.counter.set_value(new_address)
+        address = new_address %  PROGRAM_MEMORY_SIZE
+        self.counter.set_value(address)
 
         # split the address into lower and upper bytes (as PC stored in PCL and PCLATH)
-        lower_byte = self._get_n_byte_int(new_address, 0, 8)
-        upper_byte = self._get_n_byte_int(new_address, 1, 8)
+        lower_byte = self._get_n_byte_int(address, 0, 8)
+        upper_byte = self._get_n_byte_int(address, 1, 8)
         # take only the lower 5-bits of the 2nd byte - PCLATH not addressable; last 3 bits '0'
         upper_5_bits = self._get_n_byte_int(upper_byte, 0, 5)
 
@@ -59,5 +59,5 @@ class ProgramCounter():
     
     # likely handled by the instruction decoder
     def advance_two(self):
-        self.counter.set_value(self.counter.get_dec_value() + 1)
+        self.counter.set_value(self.counter.get_dec_value() + 2)
 
