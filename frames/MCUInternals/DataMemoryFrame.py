@@ -21,7 +21,10 @@ class DataMemoryFrame(ttk.Frame):
 
         # list to store intruction labels
         self.rows = [] # allows access for formatting later
-        self.previous_reg_address = -1 # starts as non-existant address
+        self.accessed_registers_in_cycle = [] # list per cycle (used for highlighting)
+        self.prev_accessed_registers_in_cycle = [] # to undo highlighting (avoiding iterating through whole memory)
+
+        self.accessed_registers = [] # list for duration of program (used to reset quicker + watch option)
         self.watch_list = []    # stores registers to watch
         self.watching_registers = tk.BooleanVar(value=False) # toggle value to see if to only see ticked registers
 
@@ -118,19 +121,34 @@ class DataMemoryFrame(ttk.Frame):
 
 
     # MemoryFrame methods
-    def highlight_current_register(self, new_reg_address):
+    # keep list of reg's accessed per cycle for highlighting
+    def add_accessed_register_cycle(self, new_reg_address):
+        self.accessed_registers_in_cycle.append(new_reg_address)
 
-        if new_reg_address != -1:
-            for element in self.rows[new_reg_address]:
-                if element.winfo_class() == "TLabel":
-                    element.config(background=DATA_MEMORY_HIGHLIGHT)
+    def highlight_accessed_registers_cycle(self):
 
-        if self.previous_reg_address != -1:
-            for element in self.rows[self.previous_reg_address]:
+        print("prev", self.prev_accessed_registers_in_cycle)
+        print("current", self.accessed_registers_in_cycle)
+        print("all", self.accessed_registers)
+
+
+        # unhighlight previously accessed registers
+        for address in self.prev_accessed_registers_in_cycle:
+            for element in self.rows[address]:
                 if element.winfo_class() == "TLabel":
                     element.config(background=VISITED_DATA_ADDRESS)
+        # highlight accessed registers
+        for address in self.accessed_registers_in_cycle:
+            for element in self.rows[address]:
+                if element.winfo_class() == "TLabel":
+                    element.config(background=DATA_MEMORY_HIGHLIGHT)
+        
+        # manage lists - keep previous cycle list to reset highlights
+        self.prev_accessed_registers_in_cycle.clear()
+        self.prev_accessed_registers_in_cycle = self.accessed_registers_in_cycle.copy()
+        self.accessed_registers.extend(self.accessed_registers_in_cycle)
+        self.accessed_registers_in_cycle.clear()
 
-        self.previous_reg_address = new_reg_address
 
     def _toggle_watching_registers(self):
         for address, watch in enumerate(self.watch_list):
@@ -177,7 +195,8 @@ class DataMemoryFrame(ttk.Frame):
                 if element.winfo_class() == "TLabel" : # miss the Checkbox object
                     element.configure(background="white")
         self._SFRs_background_set()
-        self.highlight_current_register(-1)
+        self.accessed_registers_in_cycle.clear()
+        self.accessed_registers.clear()
 
     # retrieve bytes from data memory by name (if SFR) or address - return None if outside of index
     def get_byte_by_name(self, byte_name):
@@ -196,19 +215,25 @@ class DataMemoryFrame(ttk.Frame):
 
     # set bytes by name or address - return False if outside of index/unable to set
     def set_byte_by_name(self, byte_name, value):
+        address = 0
         try:
-            self.memory[self.SFR_dict[byte_name]].set_value(value)
+            address = self.SFR_dict[byte_name]
+            self.memory[address].set_value(value)
+            self.add_accessed_register_cycle(address)
             set_successful = True
         except:
             set_successful = False
+
+
         return set_successful
 
     def set_byte_by_address(self, byte_addr, value):
         try:
             self.memory[byte_addr].set_value(value)
+            self.add_accessed_register_cycle(byte_addr)
             set_successful = True
         except:
-            set_success = False
+            set_successful = False
         return set_successful
 
 

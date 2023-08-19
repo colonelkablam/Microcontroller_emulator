@@ -4,7 +4,7 @@ from my_constants import*
 
 
 class InstructionDecoder():
-    def __init__(self, parent):
+    def __init__(self, parent, program_counter):
 
         # properties
 
@@ -14,8 +14,7 @@ class InstructionDecoder():
         self.operand_2 = 1
 
         self.parent = parent
-        self.new_program_address = 0
-        self.altered_register_address = 0
+        self.program_counter = program_counter
     
 
     # InstructionDecoder methods
@@ -43,18 +42,14 @@ class InstructionDecoder():
             if self.operand_2 == 0:
                 self.set_w_reg_value(result)
                 loc_string = f"W_REG (result: {result})"
-                # record altered register address
-                self.altered_register_address = NONE # W REG not in data_mem
             elif self.operand_2 == 1:
                 self.set_file_reg_value(self.operand_1, result)
                 loc_string = f"FILE REG addr. 0x{self.operand_1:02X} (result: {result})"
-                # record altered register address
-                self.altered_register_address = self.operand_1
             else:
                 self.add_to_log(f"Second operand needs to be either 1 or 0; value given = {self.operand_2}")
 
             # advance to next program line
-            self.new_program_address = self.parent.get_current_PC_value() + 1
+            self.program_counter.advance_one()
 
             # log
             self.add_to_log(f"ADDWF; W_REG value ({w}) + FILE REG 0x{self.operand_1:02X} value ({f}) --> {loc_string}")
@@ -63,20 +58,16 @@ class InstructionDecoder():
         # clear value of file register given
         elif self.mnumonic == "CLRF":
             self.set_file_reg_value(self.operand_1, 0)
-            # record altered register address
-            self.altered_register_address = self.operand_1
             # advance to next program line
-            self.new_program_address = self.parent.get_current_PC_value() + 1
+            self.program_counter.advance_one()
             # log
             self.add_to_log(f"CLRF; FILE REG addr. 0x{self.operand_1:02X} cleared")
         
         # clear value of W reg
         elif self.mnumonic == "CLRW":
             self.set_w_reg_value(0)
-            # record altered register address (-1 if no reg altered)
-            self.altered_register_address = NONE
             # advance to next program line
-            self.new_program_address = self.parent.get_current_PC_value() + 1
+            self.program_counter.advance_one()
             # log
             self.add_to_log(f"CLRW; W_REG cleared")
 
@@ -85,20 +76,16 @@ class InstructionDecoder():
         elif self.mnumonic == "MOVWF":
             w = self.get_w_reg_value()
             self.set_file_reg_value(self.operand_1, w)
-            # record altered register address
-            self.altered_register_address = self.operand_1
             # advance to next program line
-            self.new_program_address = self.parent.get_current_PC_value() + 1
+            self.program_counter.advance_one()
             # log
             self.add_to_log(f"MOVWF; W_REG value({w}) --> FILE REG addr. 0x{self.operand_1:02X} [{self.operand_1}]")
 
 
         # No operation - do nothing but advance program counter
         elif self.mnumonic == "NOP":
-            # record altered register address (-1 if no reg altered)
-            self.altered_register_address = NONE
             # advance to next program line
-            self.new_program_address = self.parent.get_current_PC_value() + 1
+            self.program_counter.advance_one()
             # log
             self.add_to_log(f"NOP; No operation executed")
 
@@ -110,47 +97,36 @@ class InstructionDecoder():
             w = self.get_w_reg_value()
             result = w + self.operand_1
             self.set_w_reg_value(result)
-            # record altered register address (-1 if no reg altered)
-            self.altered_register_address = NONE
             # advance to next program line
-            self.new_program_address = self.parent.get_current_PC_value() + 1
+            self.program_counter.advance_one()
             # log
             self.add_to_log(f"ADDLW; literal value ({self.operand_1}) + W_REG value ({w}) --> W_REG (result: {self.get_w_reg_value()})")
 
         elif self.mnumonic == "GOTO":
-            self.new_program_address = self.operand_1
+            # set program counter to new address
+            self.program_counter.set_value(self.operand_1)
             # set next cycle to be an NOP as GOTO uses 2 instruction cycles
             self.parent.set_next_cycle_NOP()
-            # record altered register address (-1 if no reg altered)
-            self.altered_register_address = NONE
             # log
             self.add_to_log(f"GOTO; address 0x{self.operand_1:02X} [{self.operand_1}]; takes 2 instruction cycles")
 
         elif self.mnumonic == "CALL":
-            # record altered register address (-1 if no reg altered)
-            self.altered_register_address = NONE
             # advance to next program line
-            self.new_program_address = self.operand_1
+            self.program_counter.set_value(self.operand_1)
             # then push current PCL to stack
 
         elif self.mnumonic == "MOVLW":
             self.set_w_reg_value(self.operand_1)
-            # record altered register address (-1 if no reg altered)
-            self.altered_register_address = NONE
             # advance to next program line
-            self.new_program_address = self.parent.get_current_PC_value() + 1
+            self.program_counter.advance_one()
             # log
             self.add_to_log(f"MOVLW; literal value ({self.operand_1}) --> W_REG addr.")
 
         else:
-            # record altered register address (-1 if no reg altered)
-            self.altered_register_address = NONE
-            self.new_program_address = self.parent.get_current_PC_value() + 1
+            self.program_counter.advance_one()
             self.add_to_log(f"Unrecognised instruction; {instruction}")
             # advance to next program line
 
-        # return the new program address (handle wrap-around with %)
-        return ((self.new_program_address  % PROGRAM_MEMORY_SIZE), self.altered_register_address)
 
     # get numerical address location by name
     def get_address_by_name(self, name):

@@ -19,10 +19,6 @@ class MCUFrame(ttk.Frame):
         # properties
         self.parent = parent
 
-        # logic
-        self.instruction_decoder = InstructionDecoder(self)
-        self.is_next_cycle_NOP = False
-
         # clock
         self.clock_frequency = 4.0 # Mhz
         self.cycles_per_instruction = 4
@@ -56,6 +52,10 @@ class MCUFrame(ttk.Frame):
         # 13-bit number needed for Program Counter
         self.program_counter = ProgramCounter(self.data_memory_frame)
 
+        # logic
+        self.instruction_decoder = InstructionDecoder(self, self.program_counter)
+        self.is_next_cycle_NOP = False
+
         # MCU Status Information display - frame to display key information/status from the MCU/memory
         self.MCU_status_frame = MCUStatusFrame(self, "MCU Status Display")
         self.MCU_status_frame.grid(column=2, row=1, padx=(20,10))
@@ -81,6 +81,7 @@ class MCUFrame(ttk.Frame):
 
     # load program into program memory (code editor uses this to populate memory)
     def upload_program(self, program):
+        prog_len = len(program)
         upload_successful = self.prog_memory_frame.upload_program(program)
         if upload_successful:
             self.parent.system_message(f"{prog_len} x 14-bit word program successfully loaded into Program Memory")
@@ -155,13 +156,9 @@ class MCUFrame(ttk.Frame):
     # main advance method - calls instruction decoder (logic of MCU) and updates PCL
     def advance_cycle(self):
         # get new PC address and altered reg address from the instruction decoder object (and handle wrapping around of max prog mem size)
-        new_PC_address_and_register = self.instruction_decoder.get_new_program_address(self.get_current_instruction())
-        new_PC_address = new_PC_address_and_register[0] 
-        altered_reg_address = new_PC_address_and_register[1]
-        
-        self.set_PC(new_PC_address)
-        self.prog_memory_frame.highlight_current_instruction(new_PC_address)
-        self.data_memory_frame.highlight_current_register(altered_reg_address)
+        self.instruction_decoder.get_new_program_address(self.get_current_instruction())
+        self.prog_memory_frame.highlight_current_instruction(self.program_counter.get_value())
+        self.data_memory_frame.highlight_accessed_registers_cycle()
 
         self.MCU_status_frame.update_display() # update focused byte displays
 
