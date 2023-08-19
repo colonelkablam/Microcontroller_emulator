@@ -13,6 +13,8 @@ class ControlPanelFrame(ttk.Frame):
 
         # properties
         self.parent = parent
+        self.clock_running = False
+        self.clock_speed = tk.IntVar(value=1000)
         self.code_window_open = False
         self.log_window_open = False
         
@@ -28,8 +30,8 @@ class ControlPanelFrame(ttk.Frame):
         self.button_frame.grid(column=0, row=1)
         # buttons
         self.button1 = ttk.Button(self.button_frame, text="Advance", command=self.MCU_advance_cycle)
-        self.button2 = ttk.Button(self.button_frame, text="Run", command=self.parent.MCU_frame.pop_stack)
-        self.button3 = ttk.Button(self.button_frame, text="Stop", command=self.parent.MCU_frame.push_stack)
+        self.button2 = ttk.Button(self.button_frame, text="Run", command=self.start_clock)
+        self.button3 = ttk.Button(self.button_frame, text="Stop", command=self.stop_clock)
         self.button4 = ttk.Button(self.button_frame, text="View Log Messages", command=self.open_log_window)
         self.button5 = ttk.Button(self.button_frame, text="Pin Out")
         self.button6 = ttk.Button(self.button_frame, text="Code Editor", command=self.open_code_window)
@@ -53,6 +55,14 @@ class ControlPanelFrame(ttk.Frame):
 
     def MCU_advance_cycle(self):
         self.parent.MCU_frame.advance_cycle()
+
+    def start_clock(self):
+        self.clock_running = True
+        while clock_running:
+            self.after(self.clock_speed.get(), self.MCU_advance_cycle)
+
+    def stop_clock(self):
+        self.clock_running = False
     
     def reset_MCU(self):
         self.parent.MCU_frame.reset_MCU()
