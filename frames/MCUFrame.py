@@ -20,6 +20,7 @@ class MCUFrame(ttk.Frame):
         self.parent = parent
 
         # clock
+        self.clock_running = False
         self.clock_frequency = 4.0 # Mhz
         self.cycles_per_instruction = 4
         self.instruction_cycle = 0
@@ -175,6 +176,15 @@ class MCUFrame(ttk.Frame):
         self.parent.add_to_log(f"NOP after a 2 cycle instruction")
         self.instruction_cycle += 1
         self.parent.log_commit()
+
+    def start_clock(self, time_step):
+        self.clock_running = True
+        self.advance_cycle()
+        if self.stop_clock != True:
+            self.after(time_step, self.start)
+
+    def stop_clock(self):
+        self.clock_running = False
 
     def set_next_cycle_NOP(self):
         self.is_next_cycle_NOP = True

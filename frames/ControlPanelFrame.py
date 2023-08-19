@@ -59,17 +59,10 @@ class ControlPanelFrame(ttk.Frame):
         self.parent.MCU_frame.advance_cycle()
 
     def start_clock(self):
-        self.thread.start()
-
-    def run_clock(self):
-        self.clock_running = True
-        while True:            
-            if self.clock_running == False:
-                break
-            self.after(self.clock_speed.get(), self.parent.MCU_frame.advance_cycle())
+        self.parent.MCU_frame.start_clock()
 
     def stop_clock(self):
-        self.clock_running = False
+        self.parent.MCU_frame.stop_clock()
     
     def reset_MCU(self):
         self.parent.MCU_frame.reset_MCU()
