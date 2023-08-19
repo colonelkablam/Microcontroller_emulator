@@ -25,7 +25,7 @@ class MCUStatusFrame(ttk.Frame):
 
         # PROGRAM COUNTER - need to enter a tuple of the byte(s) being displayed
         self.PCL_display = BinaryDisplayFrame(  self, 
-                                                self.parent.get_PC_13bit(),
+                                                self.parent.get_PC_13bit_representation(),
                                                 title="Program Counter",
                                                 bit_numbering="12 -PCLATH-  7 ----- PCL ---- 0",
                                                 style='MainWindowInner.TLabel'                  )

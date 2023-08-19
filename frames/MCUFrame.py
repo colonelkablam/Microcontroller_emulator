@@ -3,7 +3,9 @@ from tkinter import ttk
 from my_constants import*
 from dataStructures import NBitNumber
 from frames import ControlPanelFrame, CodeDisplayFrame
-from frames.MCUInternals import ProgramMemoryFrame, DataMemoryFrame, MCUStatusFrame, StackDisplayFrame, InstructionDecoder
+from frames.MCUInternals import ProgramCounter, ProgramMemoryFrame,\
+                                DataMemoryFrame, MCUStatusFrame,\
+                                StackDisplayFrame, InstructionDecoder
 
 
 class MCUFrame(ttk.Frame):
@@ -26,7 +28,7 @@ class MCUFrame(ttk.Frame):
         self.cycles_per_instruction = 4
         self.instruction_cycle = 0
         self.time_duration = 0
-        
+
         # Working register - not in data_memory
         self.w_reg = NBitNumber(    8,
                                     tk.IntVar(value=0),
@@ -34,14 +36,6 @@ class MCUFrame(ttk.Frame):
                                     tk.StringVar(value=f"00000000"),
                                     "WREG"      )
         
-        # PC - store previous program counter value
-        self.prev_PC_value = 0
-        # for displaying PC 13-bit number needed
-        self.current_PC_13bit_Number = NBitNumber(  13, 
-                                                    tk.IntVar(value=0), 
-                                                    tk.StringVar(value="0000h"), 
-                                                    tk.StringVar(value="0000000000000"), 
-                                                    "PC"        )
 
         # tkinter widgets
 
@@ -59,6 +53,9 @@ class MCUFrame(ttk.Frame):
         self.data_memory_frame = DataMemoryFrame(self, "Data Memory / registers")
         self.data_memory_frame.grid(column=1, row=1)
 
+        # 13-bit number needed for Program Counter
+        self.program_counter = ProgramCounter(self.data_memory_frame)
+
         # MCU Status Information display - frame to display key information/status from the MCU/memory
         self.MCU_status_frame = MCUStatusFrame(self, "MCU Status Display")
         self.MCU_status_frame.grid(column=2, row=1, padx=(20,10))
@@ -66,6 +63,8 @@ class MCUFrame(ttk.Frame):
         # stack to be shown in MCU status frame above - contains the stack logic/control
         self.stack_frame = StackDisplayFrame(self.MCU_status_frame, style='MainWindowInner.TLabel')
         self.stack_frame.grid(column=0, row=2, rowspan=4, sticky="NSEW")   
+        
+
 
 
     # MCUFrame methods
@@ -190,41 +189,19 @@ class MCUFrame(ttk.Frame):
     # program counter is 13-bit value (can address up to 8192 14-bit instructions words)
     # get the value of the program counter (PC) from the PCL (lower byte) and PCLATH (upper 5 bits)
     def get_current_PC_value(self):
-        lower_byte = self.data_memory_frame.get_byte_by_name("PCL").get_dec_value()
-        upper_byte = self.data_memory_frame.get_byte_by_name("PCLATH").get_dec_value()
-        # combine the two bytes (NOT ADD - used to represent a 13-bit prog address!)
-        return (upper_byte << 8) | lower_byte
+        return self.program_counter.get_value()
 
-    def get_PC_13bit(self):
-        return self.current_PC_13bit_Number
+    def get_PC_13bit_representation(self):
+        return self.program_counter.get()
 
     # set the value of the program counter (PC)
     def set_PC(self, new_address):
-        print("new addr.", new_address)
-        # store current PC value
-        self.prev_PC_value = self.get_current_PC_value()
-        # split the address into lower and upper bytes (as PC stored in PCL and PCLATH)
-
-        # store the new address in tk objects - for PC display in MCU status
-        self.current_PC_13bit_Number.set_value(new_address)
-
-        lower_byte = self._get_n_byte_int(new_address, 0, 8)
-        upper_byte = self._get_n_byte_int(new_address, 1, 8)
-        # take only the lower 5-bits of the 2nd byte - PCLATH not addressable; last 3 bits '0'
-        upper_5_bits = self._get_n_byte_int(upper_byte, 0, 5)
-
-        # store the values in the registers
-        self.data_memory_frame.set_byte_by_name("PCL", lower_byte)
-        self.data_memory_frame.set_byte_by_name("PCLATH", upper_5_bits)
+        # store the new address in PC object - for PC display in MCU status
+        self.program_counter.set_value(new_address)
         # log it
-        self.parent.add_to_log(f"Program Counter (PC); changed from 0x{self.prev_PC_value:04X} [{self.prev_PC_value}] --> 0x{new_address:04X} [{new_address}]")
-    
-    # get the nth byte value
-    def _get_n_byte_int(self, target, n, bit_length=8):
-        mask = 255 << (n * bit_length)
-        and_result = mask & target
-        byte = and_result >> (n * bit_length)
-        return byte
+        prev_val = self.program_counter.get_previous()
+        self.parent.add_to_log(f"Program Counter (PC); changed from 0x{prev_val:04X} [{prev_val}] --> 0x{new_address:04X} [{new_address}]")
+
 
     # bit-wise methods
     # set/clear file reg bit

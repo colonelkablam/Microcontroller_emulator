@@ -90,9 +90,6 @@ class MainWindow(tk.Tk):
         self.event_count_per_cycle = 0
 
 
-        
-
-
     # update log window
     def update_log_window_display(self, var, index, mode):
         # text if window exists
