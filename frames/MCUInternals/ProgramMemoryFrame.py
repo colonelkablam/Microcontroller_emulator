@@ -21,6 +21,7 @@ class ProgramMemoryFrame(ttk.Frame):
 
         # list to store intruction labels
         self.rows = [] # allows access for formatting tkinter objects later
+        self.visited_rows = set()   # track visited addresses to reset labels when needed
         self.previous_address = 0
         self.program_length = 0
 
@@ -96,11 +97,13 @@ class ProgramMemoryFrame(ttk.Frame):
 
         self.previous_address = 0   # back to starting state
 
-        # reset highlighting
-        for row in self.rows:
-            for element in row:
+        # reset highlighting - only visited addresses to save in iterating through whole memory
+        for address in self.visited_rows:
+            for element in self.rows[address]:
                 element.configure(background="white")
+
         self.highlight_current_instruction(0)
+        self.visited_rows.clear()
 
     # load program into program memory (code editor uses this to populate memory)
     def upload_program(self, program):
@@ -125,11 +128,17 @@ class ProgramMemoryFrame(ttk.Frame):
 
     # used for highlighting current PC address
     def highlight_current_instruction(self, new_prog_address):
+        # add visited row to set
+        self.visited_rows.add(new_prog_address)
+        
+        # reset previous instruction row highlight
         for label in self.rows[self.previous_address]:
             label.config(background=VISITED_DATA_ADDRESS)
-
+       
+       # update previous address with current
         self.previous_address = new_prog_address
-
+        
+        # highlight current row instruction
         for label in self.rows[new_prog_address]:
             label.config(background=PROGRAM_MEMORY_HIGHLIGHT)
 

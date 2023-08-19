@@ -55,9 +55,9 @@ class ProgramCounter():
         self.previous_value = value
 
     def advance_one(self):
-        self.counter.set_value(self.counter.get_dec_value() + 1)
+        self.set_value(self.counter.get_dec_value() + 1)
     
     # likely handled by the instruction decoder
     def advance_two(self):
-        self.counter.set_value(self.counter.get_dec_value() + 2)
+        self.set_value(self.counter.get_dec_value() + 2)
 

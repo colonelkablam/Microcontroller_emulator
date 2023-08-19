@@ -24,10 +24,11 @@ class DataMemoryFrame(ttk.Frame):
         
         self.accessed_registers_in_cycle = [] # list per cycle (used for highlighting)
         self.prev_accessed_registers_in_cycle = [] # to undo highlighting (avoiding iterating through whole memory)
-        self.accessed_registers = [] # list for duration of program (used to reset quicker + watch option)
+        self.accessed_registers = set() # set of accessed addresses (used to reset quicker + watch option)
         
         self.watch_list = []    # stores registers to watch
-        self.watching_registers = tk.BooleanVar(value=False) # toggle value to see if to only see ticked registers
+        self.watching_selected_registers = tk.BooleanVar(value=False) # toggle value to see only see ticked registers
+        self.watching_accessed_registers = tk.BooleanVar(value=False) # toggle value to see only changed registers
 
         # Special Function Registers (SFR) look-up address by name dictionary
         self.SFR_dict = {   "INDF" :    int("0x00", 16),
@@ -110,15 +111,26 @@ class DataMemoryFrame(ttk.Frame):
         
         # add watched reg. display tickbox
         # user can toggle between watched and all registers
-        toggle_watching_registers = tk.Checkbutton(    self,
-                                                    text="Disply only selected registers",
-                                                    variable=self.watching_registers,
+        toggle_watching_registers = tk.Checkbutton( self,
+                                                    text="Display only selected registers",
+                                                    variable=self.watching_selected_registers,
                                                     anchor="w",
                                                     onvalue=True,
                                                     offvalue=False,
                                                     bg=COLOUR_MEMORY_FRAME_BACKGROUND,
-                                                    command=self._toggle_watching_registers      )
+                                                    command=self._toggle_watching_selected_registers      )
         toggle_watching_registers.grid(column=0, row=4, pady=(0,0), padx=(0,0), sticky="EW")
+
+        # user can toggle between watching accessed and all registers
+        toggle_accessed_registers = tk.Checkbutton( self,
+                                                    text="Display only accessed registers",
+                                                    variable=self.watching_accessed_registers,
+                                                    anchor="w",
+                                                    onvalue=True,
+                                                    offvalue=False,
+                                                    bg=COLOUR_MEMORY_FRAME_BACKGROUND,
+                                                    command=self._toggle_watching_accessed_registers      )
+        toggle_accessed_registers.grid(column=0, row=5, pady=(0,0), padx=(0,0), sticky="EW")
 
 
     # MemoryFrame methods
@@ -138,6 +150,7 @@ class DataMemoryFrame(ttk.Frame):
             for element in self.rows[address]:
                 if element.winfo_class() == "TLabel":
                     element.config(background=VISITED_DATA_ADDRESS)
+                    
         # highlight accessed registers
         for address in self.accessed_registers_in_cycle:
             for element in self.rows[address]:
@@ -147,15 +160,26 @@ class DataMemoryFrame(ttk.Frame):
         # manage lists - keep previous cycle list to reset highlights
         self.prev_accessed_registers_in_cycle.clear()
         self.prev_accessed_registers_in_cycle = self.accessed_registers_in_cycle.copy()
-        self.accessed_registers.extend(self.accessed_registers_in_cycle)
+        for item in self.accessed_registers_in_cycle:
+            self.accessed_registers.add(item)
         self.accessed_registers_in_cycle.clear()
 
 
-    def _toggle_watching_registers(self):
+    def _toggle_watching_selected_registers(self):
         for address, watch in enumerate(self.watch_list):
-            if self.watching_registers.get() == True:
+            if self.watching_selected_registers.get() == True:
                 if watch.get() == 0:
                     for element in self.rows[address]:
+                        element.grid_remove()
+            else:
+                for element in self.rows[address]:
+                        element.grid()
+
+    def _toggle_watching_accessed_registers(self):
+        for address, row in enumerate(self.rows):
+            if self.watching_accessed_registers.get() == True:
+                if address not in self.accessed_registers:
+                    for element in row:
                         element.grid_remove()
             else:
                 for element in self.rows[address]:
@@ -184,15 +208,15 @@ class DataMemoryFrame(ttk.Frame):
 
     # clear all values in data registers and reset highlighting
     def reset_data_memory_frame(self):
-        # reset memory
-        for register in self.memory:
-            register.set_value(0) # sets all registers to zero
-
-        # reset highlighting
-        for row in self.rows:
-            for element in row:
+        # reset memory and highlighting - using set of accessed addresses to speed it up
+        for register in self.accessed_registers:
+            # reset memory
+            self.memory[register].set_value(0) # sets all accessed registers to zero
+            # reset highlighting
+            for element in self.rows[register]:
                 if element.winfo_class() == "TLabel" : # miss the Checkbox object
                     element.configure(background="white")
+
         self._SFRs_background_set()
         self.prev_accessed_registers_in_cycle.clear()
         self.accessed_registers_in_cycle.clear()
