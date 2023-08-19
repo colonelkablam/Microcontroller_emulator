@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import threading
 from my_constants import*
 
 
@@ -17,7 +18,8 @@ class ControlPanelFrame(ttk.Frame):
         self.clock_speed = tk.IntVar(value=1000)
         self.code_window_open = False
         self.log_window_open = False
-        
+
+        self.thread = threading.Thread(target=self.run_clock)
 
         # tkinter widgets
 
@@ -57,9 +59,14 @@ class ControlPanelFrame(ttk.Frame):
         self.parent.MCU_frame.advance_cycle()
 
     def start_clock(self):
+        self.thread.start()
+
+    def run_clock(self):
         self.clock_running = True
-        while clock_running:
-            self.after(self.clock_speed.get(), self.MCU_advance_cycle)
+        while True:            
+            if self.clock_running == False:
+                break
+            self.after(self.clock_speed.get(), self.parent.MCU_frame.advance_cycle())
 
     def stop_clock(self):
         self.clock_running = False
