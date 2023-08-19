@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-import threading
 from my_constants import*
 
 
@@ -14,12 +13,9 @@ class ControlPanelFrame(ttk.Frame):
 
         # properties
         self.parent = parent
-        self.clock_running = False
         self.clock_speed = tk.IntVar(value=1000)
         self.code_window_open = False
         self.log_window_open = False
-
-        self.thread = threading.Thread(target=self.run_clock)
 
         # tkinter widgets
 
@@ -34,6 +30,7 @@ class ControlPanelFrame(ttk.Frame):
         self.button1 = ttk.Button(self.button_frame, text="Advance", command=self.MCU_advance_cycle)
         self.button2 = ttk.Button(self.button_frame, text="Run", command=self.start_clock)
         self.button3 = ttk.Button(self.button_frame, text="Stop", command=self.stop_clock)
+        self.slider = ttk.Scale(self, variable=self.clock_speed, from_=10, to=2000, orient="horizontal")
         self.button4 = ttk.Button(self.button_frame, text="View Log Messages", command=self.open_log_window)
         self.button5 = ttk.Button(self.button_frame, text="Pin Out")
         self.button6 = ttk.Button(self.button_frame, text="Code Editor", command=self.open_code_window)
@@ -43,6 +40,7 @@ class ControlPanelFrame(ttk.Frame):
         self.button1.grid(column=0, row=0, columnspan=2, sticky="EW")
         self.button2.grid(column=0, row=1)
         self.button3.grid(column=1, row=1)
+        self.slider.grid(column=0, row=2, columnspan=2)
         self.button4.grid(column=3, row=0)
         self.button5.grid(column=4, row=0)
         self.button6.grid(column=5, row=0)

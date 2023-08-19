@@ -184,7 +184,3 @@ class InstructionDecoder():
             op2 = 1
 
         self.operand_2 = op2
-
-        print(instruction)
-        print(self.mnumonic, self.operand_1, self.operand_2)
-

@@ -140,11 +140,6 @@ class DataMemoryFrame(ttk.Frame):
 
     def highlight_accessed_registers_cycle(self):
 
-        print("prev", self.prev_accessed_registers_in_cycle)
-        print("current", self.accessed_registers_in_cycle)
-        print("all", self.accessed_registers)
-
-
         # unhighlight previously accessed registers
         for address in self.prev_accessed_registers_in_cycle:
             for element in self.rows[address]:

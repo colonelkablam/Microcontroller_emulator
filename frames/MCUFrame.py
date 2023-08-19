@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import threading
 from my_constants import*
 from dataStructures import NBitNumber
 from frames import ControlPanelFrame, CodeDisplayFrame
@@ -177,11 +178,12 @@ class MCUFrame(ttk.Frame):
         self.instruction_cycle += 1
         self.parent.log_commit()
 
-    def start_clock(self, time_step):
-        self.clock_running = True
-        self.advance_cycle()
-        if self.stop_clock != True:
-            self.after(time_step, self.start)
+    def start_clock(self):
+        threading.Thread(target=self.advance_cycle()).start()
+        if self.clock_running == True:
+            self.after(1000, self.start_clock)
+        else:
+            self.clock_running = True
 
     def stop_clock(self):
         self.clock_running = False
