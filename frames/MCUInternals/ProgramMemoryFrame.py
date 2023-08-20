@@ -86,14 +86,15 @@ class ProgramMemoryFrame(ttk.Frame):
             self.memory.append(Instruction())
 
     # clear all values in program data
-    def reset_program_memory_frame(self):
+    def reset_program_memory_frame(self, keepprogram=True):
         # reset memory
-        for i, instruction in enumerate(self.memory):
+        if keepprogram == False:
+            for i, instruction in enumerate(self.memory):
             
-            # saves looping through entire program memory
-            if i >= self.program_length:
-                break
-            instruction.set_instruction() # sets all instructions to DEFAULT_INSTRUCTION
+                # saves looping through entire program memory
+                if i >= self.program_length:
+                    break
+                instruction.set_instruction() # sets all instructions to DEFAULT_INSTRUCTION
 
         self.previous_address = 0   # back to starting state
 

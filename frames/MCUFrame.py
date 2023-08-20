@@ -30,7 +30,7 @@ class MCUFrame(ttk.Frame):
         # Working register - not in data_memory
         self.w_reg = NBitNumber(    8,
                                     tk.IntVar(value=0),
-                                    tk.StringVar(value="00"),
+                                    tk.StringVar(value="00h"),
                                     tk.StringVar(value=f"00000000"),
                                     "WREG"      )
         
@@ -74,8 +74,8 @@ class MCUFrame(ttk.Frame):
     def initialise_program_memory(self):
         self.prog_memory_frame.initialise_program_memory()
 
-    def reset_MCU(self):
-        self.prog_memory_frame.reset_program_memory_frame()
+    def reset_MCU(self, keepprogram=True):
+        self.prog_memory_frame.reset_program_memory_frame(keepprogram)
         self.data_memory_frame.reset_data_memory_frame()
         self.stack_frame.clear_stack()
         self.w_reg.set_value(0)
@@ -178,10 +178,10 @@ class MCUFrame(ttk.Frame):
         self.instruction_cycle += 1
         self.parent.log_commit()
 
-    def start_clock(self):
+    def start_clock(self, time_step):
         threading.Thread(target=self.advance_cycle()).start()
         if self.clock_running == True:
-            self.after(1000, self.start_clock)
+            self.after(time_step, self.start_clock)
         else:
             self.clock_running = True
 

@@ -40,6 +40,13 @@ class MainStyle(ttk.Style):
         )
 
         self.configure(
+            "MainWindowOuterSlider.TLabel", 
+            background=COLOUR_MAIN_BACKGROUND,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 10, 'bold')
+        )
+
+        self.configure(
             "MainWindowInner.TLabel", 
             background=COLOUR_INNER_BACKGROUND,
             foreground=COLOUR_DARK_TEXT,
@@ -67,9 +74,38 @@ class MainStyle(ttk.Style):
             foreground=COLOUR_DARK_TEXT,
             font=("Courier", 12)
         )
+        self.configure(
+            "MainWindow2.TButton",
+            background=COLOUR_BUTTON_NORMAL_2,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 12)
+        )
+
+        self.configure(
+            "MainWindow3.TButton",
+            background=COLOUR_BUTTON_NORMAL_3,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 12)
+        )
+        self.configure(
+            "MainWindow4.TButton",
+            background=COLOUR_BUTTON_NORMAL_4,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 12)
+        )
 
         self.map(
             "MainWindow.TButton",
+            background=[("pressed", COLOUR_BUTTON_PRESSED), ("active", COLOUR_BUTTON_ACTIVE), ("disabled", COLOUR_LIGHT_BACKGROUND)]
+        )
+
+        self.map(
+            "MainWindow2.TButton",
+            background=[("pressed", COLOUR_BUTTON_PRESSED), ("active", COLOUR_BUTTON_ACTIVE), ("disabled", COLOUR_LIGHT_BACKGROUND)]
+        )
+
+        self.map(
+            "MainWindow3.TButton",
             background=[("pressed", COLOUR_BUTTON_PRESSED), ("active", COLOUR_BUTTON_ACTIVE), ("disabled", COLOUR_LIGHT_BACKGROUND)]
         )
 
