@@ -13,7 +13,6 @@ class ControlPanelFrame(ttk.Frame):
 
         # properties
         self.parent = parent
-        self.simulation_speed = tk.DoubleVar(value=1000)
         self.code_window_open = False
         self.log_window_open = False
         self.pin_window_open = False
@@ -43,14 +42,12 @@ class ControlPanelFrame(ttk.Frame):
                                          anchor="center",
                                          style="MainWindowOuterSlider.TLabel"   )
         self.sim_speed_slider = ttk.Scale(  self.running_MCU_frame,
-                                        variable=self.simulation_speed,
                                         name="run speed",
                                         takefocus=False,
-                                        from_=10,
-                                        to=2000, 
-                                        orient="horizontal",
-                                        #command=self.set_simulation_speed       
-                                        )
+                                        from_=1000,
+                                        to=1,
+                                        orient="horizontal"                      )
+        self.sim_speed_slider.set(1000)
         # positions - control buttons
         self.advance.grid(column=0, row=0, columnspan=2, sticky="EW")
         self.run.grid(column=0, row=1, sticky="EW")
@@ -109,24 +106,30 @@ class ControlPanelFrame(ttk.Frame):
         self.parent.MCU_frame.advance_cycle()
 
     def start_simulation(self):
+        self.advance.configure(state="disabled")
         self.run.configure(state="disabled")
         self.stop.configure(state="normal")
+        print(int(self.sim_speed_slider.get()))
+        self.parent.MCU_frame.set_sim_speed(int(self.sim_speed_slider.get()))
         # call method
-        self.parent.MCU_frame.start_simulation(1000)
+        self.parent.MCU_frame.start_simulation(int(self.sim_speed_slider.get()))
 
     def stop_simulation(self):
+        self.advance.configure(state="normal")
         self.run.configure(state="normal")
         self.stop.configure(state="disabled")
         # call method
         self.parent.MCU_frame.stop_simulation()
 
-    #def set_simulation_speed(self):
-        #self.parent.MCU_frame.set_sim_speed(self.simulation_speed.get())
+    def set_simulation_speed(self):
+        self.parent.MCU_frame.set_sim_speed(self.sim_speed_slider.get())
     
     def restart_MCU(self):
+        self.stop_simulation()
         self.parent.MCU_frame.reset_MCU(keepprogram=True)
 
     def clear_program(self):
+        self.stop_simulation()
         self.parent.MCU_frame.reset_MCU(keepprogram=False)
 
     def open_code_window(self):

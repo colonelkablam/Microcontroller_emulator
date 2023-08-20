@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import threading
+import multiprocessing
 from my_constants import*
 from dataStructures import NBitNumber
 from frames import ControlPanelFrame, CodeDisplayFrame
@@ -180,13 +181,28 @@ class MCUFrame(ttk.Frame):
         self.instruction_cycle += 1
         self.parent.log_commit()
 
-    def start_simulation(self):
-        # decalre a thread running advance_cycle function
-        thread = threading.Thread(target=self.advance_cycle)
-        # start it
-        thread.start()
-        # waits for thread to finish
-        thread.join()
+    def start_simulation(self, sim_speed):
+        # # decalre a thread running advance_cycle function
+        # thread = threading.Thread(target=self.advance_cycle)
+        # # start it
+        # thread.start()
+        # # waits for thread to finish
+        # thread.join()
+
+        print(multiprocessing.cpu_count())
+
+        self.simulation_running = True
+
+        def run_loop(sim_speed):
+            if self.simulation_running == True:
+                self.advance_cycle()
+                self.after(sim_speed, run_loop, sim_speed)
+            else:
+                return
+
+
+        threading.Thread(target=run_loop, args=(sim_speed,)).start()
+        
         
 
 
