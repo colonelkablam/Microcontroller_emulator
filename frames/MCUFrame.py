@@ -20,8 +20,10 @@ class MCUFrame(ttk.Frame):
         # properties
         self.parent = parent
 
-        # clock
-        self.clock_running = False
+        # running sim
+        self.simulation_running = False
+        self.simulation_speed = 500
+        # clock information
         self.clock_frequency = 4.0 # Mhz
         self.cycles_per_instruction = 4
         self.instruction_cycle = 0
@@ -178,15 +180,21 @@ class MCUFrame(ttk.Frame):
         self.instruction_cycle += 1
         self.parent.log_commit()
 
-    def start_clock(self):
-        threading.Thread(target=self.advance_cycle()).start()
-        if self.clock_running == True:
-            self.after(200, self.start_clock)
-        else:
-            self.clock_running = True
+    def start_simulation(self, sim_speed):
+        self.simulation_running = True
+        while self.simulation_running:
+            threading.Thread(target=self.advance_cycle()).start()
+            if self.simulation_running == True:
+                self.after(sim_speed, self.start_simulation(sim_speed))
+            else:
+                break
 
-    def stop_clock(self):
-        self.clock_running = False
+
+    def stop_simulation(self):
+        self.simulation_running = False
+
+    def set_sim_speed(self):
+        self.simula
 
     def set_next_cycle_NOP(self):
         self.is_next_cycle_NOP = True

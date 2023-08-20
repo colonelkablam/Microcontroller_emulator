@@ -13,7 +13,7 @@ class ControlPanelFrame(ttk.Frame):
 
         # properties
         self.parent = parent
-        self.clock_speed = tk.DoubleVar(value=1000)
+        self.simulation_speed = tk.DoubleVar(value=1000)
         self.code_window_open = False
         self.log_window_open = False
         self.pin_window_open = False
@@ -36,25 +36,27 @@ class ControlPanelFrame(ttk.Frame):
 
         # buttons + label and slider
         self.advance = ttk.Button(self.running_MCU_frame, text="Advance", command=self.MCU_advance_cycle)
-        self.run = ttk.Button(self.running_MCU_frame, text="Run", command=self.start_clock)
-        self.stop = ttk.Button(self.running_MCU_frame, text="Stop", command=self.stop_clock)
+        self.run = ttk.Button(self.running_MCU_frame, text="Run", command=self.start_simulation)
+        self.stop = ttk.Button(self.running_MCU_frame, text="Stop", command=self.stop_simulation)
         self.slider_label = ttk.Label(  self.running_MCU_frame,
                                          text="slow   - simulation speed -   fast",
                                          anchor="center",
-                                         style="MainWindowOuterSlider.TLabel")
-        self.speed_slider = ttk.Scale(  self.running_MCU_frame,
-                                        variable=self.clock_speed,
+                                         style="MainWindowOuterSlider.TLabel"   )
+        self.sim_speed_slider = ttk.Scale(  self.running_MCU_frame,
+                                        variable=self.simulation_speed,
                                         name="run speed",
                                         takefocus=False,
                                         from_=10,
                                         to=2000, 
-                                        orient="horizontal")
+                                        orient="horizontal",
+                                        #command=self.set_simulation_speed       
+                                        )
         # positions - control buttons
         self.advance.grid(column=0, row=0, columnspan=2, sticky="EW")
         self.run.grid(column=0, row=1, sticky="EW")
         self.stop.grid(column=1, row=1, sticky="EW")
         self.slider_label.grid(column=0, row=2, padx=(30,30), pady=(10,0), columnspan=2, sticky="SEW")
-        self.speed_slider.grid(column=0, row=3, padx=(30,30), columnspan=2, sticky="EW")
+        self.sim_speed_slider.grid(column=0, row=3, padx=(30,30), columnspan=2, sticky="EW")
 
         # button groups - log and pin
         self.log_frame = ttk.Frame(self.button_frame, style='MainWindowOuter.TFrame')
@@ -106,17 +108,20 @@ class ControlPanelFrame(ttk.Frame):
     def MCU_advance_cycle(self):
         self.parent.MCU_frame.advance_cycle()
 
-    def start_clock(self):
+    def start_simulation(self):
         self.run.configure(state="disabled")
         self.stop.configure(state="normal")
         # call method
-        self.parent.MCU_frame.start_clock()
+        self.parent.MCU_frame.start_simulation(1000)
 
-    def stop_clock(self):
+    def stop_simulation(self):
         self.run.configure(state="normal")
         self.stop.configure(state="disabled")
         # call method
-        self.parent.MCU_frame.stop_clock()
+        self.parent.MCU_frame.stop_simulation()
+
+    #def set_simulation_speed(self):
+        #self.parent.MCU_frame.set_sim_speed(self.simulation_speed.get())
     
     def restart_MCU(self):
         self.parent.MCU_frame.reset_MCU(keepprogram=True)
