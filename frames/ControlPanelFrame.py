@@ -110,7 +110,7 @@ class ControlPanelFrame(ttk.Frame):
         self.run.configure(state="disabled")
         self.stop.configure(state="normal")
         # call method
-        self.parent.MCU_frame.start_clock(self.clock_speed.get())
+        self.parent.MCU_frame.start_clock()
 
     def stop_clock(self):
         self.run.configure(state="normal")

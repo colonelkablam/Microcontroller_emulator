@@ -178,10 +178,10 @@ class MCUFrame(ttk.Frame):
         self.instruction_cycle += 1
         self.parent.log_commit()
 
-    def start_clock(self, time_step):
+    def start_clock(self):
         threading.Thread(target=self.advance_cycle()).start()
         if self.clock_running == True:
-            self.after(time_step, self.start_clock)
+            self.after(200, self.start_clock)
         else:
             self.clock_running = True
 
