@@ -196,11 +196,14 @@ class MCUFrame(ttk.Frame):
         def run_loop(sim_speed):
             if self.simulation_running == True:
                 self.advance_cycle()
+                # thread = threading.Thread(target=self.advance_cycle)
+                # thread.start()
+                # thread.join()
                 self.after(sim_speed, run_loop, sim_speed)
             else:
                 return
 
-
+        #run_loop(sim_speed)
         threading.Thread(target=run_loop, args=(sim_speed,)).start()
         
         
