@@ -180,21 +180,22 @@ class MCUFrame(ttk.Frame):
         self.instruction_cycle += 1
         self.parent.log_commit()
 
-    def start_simulation(self, sim_speed):
-        self.simulation_running = True
-        while self.simulation_running:
-            threading.Thread(target=self.advance_cycle()).start()
-            if self.simulation_running == True:
-                self.after(sim_speed, self.start_simulation(sim_speed))
-            else:
-                break
+    def start_simulation(self):
+        # decalre a thread running advance_cycle function
+        thread = threading.Thread(target=self.advance_cycle)
+        # start it
+        thread.start()
+        # waits for thread to finish
+        thread.join()
+        
+
 
 
     def stop_simulation(self):
         self.simulation_running = False
 
-    def set_sim_speed(self):
-        self.simula
+    def set_sim_speed(self, speed):
+        self.simulation_speed = speed
 
     def set_next_cycle_NOP(self):
         self.is_next_cycle_NOP = True
