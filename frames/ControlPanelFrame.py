@@ -62,7 +62,7 @@ class ControlPanelFrame(ttk.Frame):
         # buttons
         self.pin_out = ttk.Button(self.log_frame, text="Pin Out")
         self.log = ttk.Button(self.log_frame, text="View Log Messages", command=self.open_log_window)
-        self.log_clear = ttk.Button(self.log_frame, name="narrow1", text="Clear Log Messages", command=self.open_log_window)
+        self.log_clear = ttk.Button(self.log_frame, name="narrow1", text="Clear Log Messages", command=self.parent.MCU_frame.stack_frame.push_stack)
         # positions log and pin
         self.pin_out.grid(column=0, row=0)
         self.log.grid(column=0, row=1)

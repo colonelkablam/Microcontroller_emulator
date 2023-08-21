@@ -27,7 +27,7 @@ class MCUFrame(ttk.Frame):
         # clock information
         self.clock_frequency = 20.0 # Mhz
         self.Q_cycles_per_instruction = 4
-        self.instruction_cycle = 0
+        self.num_instruction_cycles = 0
         self.num_instructions_executed = 0
         self.time_duration = 0
 
@@ -84,6 +84,7 @@ class MCUFrame(ttk.Frame):
         self.stack_frame.clear_stack()
         self.w_reg.set_value(0)
         self.set_PC(0)
+        self.reset_clock_info()
         self.MCU_status_frame.reset_display()
 
     # load program into program memory (code editor uses this to populate memory)
@@ -158,7 +159,7 @@ class MCUFrame(ttk.Frame):
 
     # instruction cycle
     def get_instruction_cycle(self):
-        return self.instruction_cycle
+        return self.num_instruction_cycles
 
     # handling the Instruction Cycle
     # main advance method - calls instruction decoder (logic of MCU) and updates PCL
@@ -167,24 +168,25 @@ class MCUFrame(ttk.Frame):
         self.instruction_decoder.get_new_program_address(self.get_current_instruction())
         self.prog_memory_frame.highlight_current_instruction(self.program_counter.get_value())
         self.data_memory_frame.highlight_accessed_registers_cycle()
+        self.num_instruction_cycles += 1
+        self.num_instructions_executed += 1
 
-        self.MCU_status_frame.update_display() # update focused byte displays
-
-        self.instruction_cycle += 1
-        self.parent.log_commit()
-        
         # test to see if next instruction a NOP
         if self.is_next_cycle_NOP == True:
             self.advance_NOP()
             self.is_next_cycle_NOP = False
-        else:
-            self.num_instructions_executed += 1
+
+        self.MCU_status_frame.update_display() # update focused byte displays
+
+        self.parent.log_commit()
+
+
 
 
     # advance if NOP called by InstructionDecoder
     def advance_NOP(self):
         self.parent.add_to_log(f"NOP after a 2 cycle instruction")
-        self.instruction_cycle += 1
+        self.num_instruction_cycles += 1
         self.parent.log_commit()
 
 
@@ -242,11 +244,15 @@ class MCUFrame(ttk.Frame):
     def get_status_info(self):
         previous_instruction = self.get_previous_instruction()
         next_instruction = self.get_current_instruction()
-        num_cycles = self.instruction_cycle
+        num_cycles = self.num_instruction_cycles
         num_instructions = self.num_instructions_executed
         # return tuple of status information
         return (previous_instruction, next_instruction, num_cycles, num_instructions)
 
+    # reset status info
+    def reset_clock_info(self):
+        self.num_instruction_cycles = 0
+        self.num_instructions_executed = 0
 
     # bit-wise methods
     # set/clear file reg bit

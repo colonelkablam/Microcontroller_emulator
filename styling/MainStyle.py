@@ -206,6 +206,13 @@ class MainStyle(ttk.Style):
             font=("Courier", 12)
         )
 
+        self.configure(
+            "StatusHeading.TLabel", 
+            background=COLOUR_INNER2_BACKGROUND,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 10, "bold")
+        )
+
 
         # CodeWindow Styles
 
