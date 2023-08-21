@@ -141,13 +141,13 @@ class DataMemoryFrame(ttk.Frame):
     def highlight_accessed_registers_cycle(self):
         # unhighlight previously accessed registers
         for address in self.prev_accessed_registers_in_cycle:
-            for element in self.rows[address][:1]:
+            for element in self.rows[address][1:]:
                 if element.winfo_class() == "TLabel":
                     element.config(background=VISITED_DATA_ADDRESS)
                     
         # highlight accessed registers
         for address in self.accessed_registers_in_cycle:
-            for element in self.rows[address][:1]:
+            for element in self.rows[address][1:]:
                 if element.winfo_class() == "TLabel":
                     element.config(background=DATA_MEMORY_HIGHLIGHT)
         
@@ -212,7 +212,7 @@ class DataMemoryFrame(ttk.Frame):
             # reset memory
             self.memory[register].set_value(0) # sets all accessed registers to zero
             # reset highlighting
-            for element in self.rows[register]:
+            for element in self.rows[register][1:]:
                 if element.winfo_class() == "TLabel" : # miss the Checkbox object
                     element.configure(background="white")
 

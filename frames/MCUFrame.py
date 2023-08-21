@@ -182,28 +182,16 @@ class MCUFrame(ttk.Frame):
         self.parent.log_commit()
 
     def start_simulation(self, sim_speed):
-        # # decalre a thread running advance_cycle function
-        # thread = threading.Thread(target=self.advance_cycle)
-        # # start it
-        # thread.start()
-        # # waits for thread to finish
-        # thread.join()
-
-        print(multiprocessing.cpu_count())
-
+        # set sim to running
         self.simulation_running = True
-
+        # local fuction to use with threading
         def run_loop(sim_speed):
             if self.simulation_running == True:
-                self.advance_cycle()
-                # thread = threading.Thread(target=self.advance_cycle)
-                # thread.start()
-                # thread.join()
-                self.after(sim_speed, run_loop, sim_speed)
+                self.advance_cycle()    # advance cycle
+                self.after(sim_speed, run_loop, sim_speed)  # time to wait before running loop again
             else:
                 return
-
-        #run_loop(sim_speed)
+        # use a thread to run the advance cycle loop
         threading.Thread(target=run_loop, args=(sim_speed,)).start()
         
         

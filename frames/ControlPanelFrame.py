@@ -106,23 +106,20 @@ class ControlPanelFrame(ttk.Frame):
         self.parent.MCU_frame.advance_cycle()
 
     def start_simulation(self):
+        # disable other buttons
         self.advance.configure(state="disabled")
         self.run.configure(state="disabled")
         self.stop.configure(state="normal")
-        print(int(self.sim_speed_slider.get()))
-        self.parent.MCU_frame.set_sim_speed(int(self.sim_speed_slider.get()))
-        # call method
+        # call method in MCU
         self.parent.MCU_frame.start_simulation(int(self.sim_speed_slider.get()))
 
     def stop_simulation(self):
+        # enable other buttons
         self.advance.configure(state="normal")
         self.run.configure(state="normal")
         self.stop.configure(state="disabled")
-        # call method
+        # call method in MCU
         self.parent.MCU_frame.stop_simulation()
-
-    def set_simulation_speed(self):
-        self.parent.MCU_frame.set_sim_speed(self.sim_speed_slider.get())
     
     def restart_MCU(self):
         self.stop_simulation()
