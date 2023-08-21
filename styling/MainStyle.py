@@ -121,6 +121,7 @@ class MainStyle(ttk.Style):
             "MCUTickbox.TCheckbutton", 
             background=COLOUR_MEMORY_FRAME_BACKGROUND,
             indicatorforeground =DATA_MEMORY_HIGHLIGHT,
+            font=("Courier", 9)
         )
 
         self.configure(

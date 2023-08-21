@@ -93,12 +93,6 @@ class MCUStatusFrame(ttk.Frame):
         for widget in self.winfo_children():
             widget.update()
 
-    def highlight_byte(self, byte):
-        if byte == W_REG:
-            self.WREG_display.highlight()
-        elif byte == STATUS:
-            self.STATUS_display.highlight()
-
 
 
 

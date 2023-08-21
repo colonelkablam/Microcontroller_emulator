@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import threading
 from my_constants import *
 from dataStructures import NBitNumber
 from frames.ScrollableCanvasFrame import ScrollableCanvasFrame
@@ -22,11 +23,10 @@ class DataMemoryFrame(ttk.Frame):
         # list to store intruction labels
         self.rows = [] # allows access for formatting later
         
-        self.accessed_registers_in_cycle = [] # list per cycle (used for highlighting)
-        self.prev_accessed_registers_in_cycle = [] # to undo highlighting (avoiding iterating through whole memory)
+        self.accessed_registers_in_cycle = []   # list per cycle (used for highlighting)
+        self.prev_accessed_registers_in_cycle = []  # to undo highlighting (avoiding iterating through whole memory)
         self.accessed_registers = set() # set of accessed addresses (used to reset quicker + watch option)
         
-        self.watch_list = []    # stores registers to watch
         self.watching_selected_registers = tk.BooleanVar(value=False) # toggle value to see only see ticked registers
         self.watching_accessed_registers = tk.BooleanVar(value=False) # toggle value to see only changed registers
 
@@ -67,6 +67,7 @@ class DataMemoryFrame(ttk.Frame):
         # get it's inner frame to mount the memory display on
         inner_frame = scroll_canvas_frame.get_inner_frame()
 
+        # populate the data memory list with default values
         self.initialise_data_memory()
 
         # define style
@@ -74,16 +75,16 @@ class DataMemoryFrame(ttk.Frame):
         
         # add memory display to row list
         for mem_address in range(0, DATA_MEMORY_SIZE):
-
-            watch = tk.IntVar(value=0) # create a watching 0/1 variable
+            # create a watching 0/1 variable (stored as 1st element of list)
+            watch_bool = tk.BooleanVar(value=False) 
+            # checkbox to toggle above bool
             watch_box = ttk.Checkbutton(    inner_frame,
-                                            variable=watch,
-                                            onvalue=1,
-                                            offvalue=0,
+                                            variable=watch_bool,
+                                            onvalue=True,
+                                            offvalue=False,
                                             style="MCUTickbox.TCheckbutton",
                                             takefocus=False         )
             watch_box.grid(column=0, row=mem_address, pady=(0,5), padx=(3,0), sticky="W")
-            self.watch_list.append(watch) # add watch variable to watch_list
 
             addr = ttk.Label(inner_frame, text=f"{mem_address:04X}h", width=5, style=label_style)
             addr.grid(column=1, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
@@ -101,7 +102,7 @@ class DataMemoryFrame(ttk.Frame):
             bin_value.grid(column=5, row=mem_address, pady=(0,5), padx=(0,5), sticky="W")
 
             # add 'columns' to rows of data
-            column = [watch_box, addr, name, dec_value, hex_value, bin_value]
+            column = [watch_bool, watch_box, addr, name, dec_value, hex_value, bin_value]
 
             # append to main list
             self.rows.append(column)
@@ -111,26 +112,25 @@ class DataMemoryFrame(ttk.Frame):
         
         # add watched reg. display tickbox
         # user can toggle between watched and all registers
-        toggle_watching_registers = tk.Checkbutton( self,
+        self.toggle_watching_registers = ttk.Checkbutton( self,
                                                     text="Display only selected registers",
                                                     variable=self.watching_selected_registers,
-                                                    anchor="w",
                                                     onvalue=True,
                                                     offvalue=False,
-                                                    bg=COLOUR_MEMORY_FRAME_BACKGROUND,
+                                                    style="MCUTickbox.TCheckbutton",
+                                                    takefocus=False,
                                                     command=self._toggle_watching_selected_registers      )
-        toggle_watching_registers.grid(column=0, row=4, pady=(0,0), padx=(0,0), sticky="EW")
+        self.toggle_watching_registers.grid(column=0, row=4, pady=(5,0), padx=(3,3), sticky="EW")
 
         # user can toggle between watching accessed and all registers
-        toggle_accessed_registers = tk.Checkbutton( self,
+        self.toggle_accessed_registers = ttk.Checkbutton( self,
                                                     text="Display only accessed registers",
                                                     variable=self.watching_accessed_registers,
-                                                    anchor="w",
                                                     onvalue=True,
                                                     offvalue=False,
-                                                    bg=COLOUR_MEMORY_FRAME_BACKGROUND,
+                                                    style="MCUTickbox.TCheckbutton",
                                                     command=self._toggle_watching_accessed_registers      )
-        toggle_accessed_registers.grid(column=0, row=5, pady=(0,0), padx=(0,0), sticky="EW")
+        self.toggle_accessed_registers.grid(column=0, row=5, pady=(0,0), padx=(3,3), sticky="EW")
 
 
     # MemoryFrame methods
@@ -139,16 +139,15 @@ class DataMemoryFrame(ttk.Frame):
         self.accessed_registers_in_cycle.append(new_reg_address)
 
     def highlight_accessed_registers_cycle(self):
-
         # unhighlight previously accessed registers
         for address in self.prev_accessed_registers_in_cycle:
-            for element in self.rows[address]:
+            for element in self.rows[address][:1]:
                 if element.winfo_class() == "TLabel":
                     element.config(background=VISITED_DATA_ADDRESS)
                     
         # highlight accessed registers
         for address in self.accessed_registers_in_cycle:
-            for element in self.rows[address]:
+            for element in self.rows[address][:1]:
                 if element.winfo_class() == "TLabel":
                     element.config(background=DATA_MEMORY_HIGHLIGHT)
         
@@ -159,31 +158,36 @@ class DataMemoryFrame(ttk.Frame):
             self.accessed_registers.add(item)
         self.accessed_registers_in_cycle.clear()
 
-
-    def _toggle_watching_selected_registers(self):
-        for address, watch in enumerate(self.watch_list):
-            if self.watching_selected_registers.get() == True:
-                if watch.get() == 0:
-                    for element in self.rows[address]:
-                        element.grid_remove()
-            else:
-                for element in self.rows[address]:
-                        element.grid()
-
     def _toggle_watching_accessed_registers(self):
         for address, row in enumerate(self.rows):
             if self.watching_accessed_registers.get() == True:
-                if address not in self.accessed_registers:
-                    for element in row:
+                self.toggle_watching_registers.configure(state="disabled") # disable other watching checkbox
+                if address not in self.accessed_registers:  # hide if row not been accessed
+                    for element in row[1:]:
                         element.grid_remove()
             else:
-                for element in self.rows[address]:
+                self.toggle_watching_registers.configure(state="normal") # enable other watching checkbox
+                for element in self.rows[address][1:]:  # add back if stopped watching
                         element.grid()
+
+        
+    def _toggle_watching_selected_registers(self):
+        for row in self.rows:
+            if self.watching_selected_registers.get() == True:
+                self.toggle_accessed_registers.configure(state="disabled") # disable other watching checkbox
+                if row[0].get() == False: # access the watch_bool variable#
+                    for element in row[1:]:     # romove only grid widgets
+                        element.grid_remove()
+            else:
+                self.toggle_accessed_registers.configure(state="normal") # enable other watching checkbox
+                for element in row[1:]:     # add back if stopped watching
+                    element.grid()
+
 
     # takes a list of SFR names to change bg colour
     def _SFRs_background_set(self):
         for mem_address in self.SFR_dict.values():
-            for element in self.rows[mem_address]:
+            for element in self.rows[mem_address][1:]:
                 if element.winfo_class() == "TLabel":
                     element.config(background=PCL_PCLATH_HIGHLIGHT)
 

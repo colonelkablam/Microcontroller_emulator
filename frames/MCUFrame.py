@@ -207,9 +207,6 @@ class MCUFrame(ttk.Frame):
         threading.Thread(target=run_loop, args=(sim_speed,)).start()
         
         
-
-
-
     def stop_simulation(self):
         self.simulation_running = False
 
