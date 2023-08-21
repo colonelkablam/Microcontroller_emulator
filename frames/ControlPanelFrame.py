@@ -20,8 +20,8 @@ class ControlPanelFrame(ttk.Frame):
         # tkinter widgets
 
         # panel label
-        self.frame_label = ttk.Label(self, text="Control Panel", style='MainWindowOuter.TLabel')
-        self.frame_label.grid(column=0, row=0, padx=(50,0), sticky="W")
+        # self.frame_label = ttk.Label(self, text="Control Panel", style='MainWindowOuter.TLabel')
+        # self.frame_label.grid(column=0, row=0, padx=(50,0), sticky="W")
 
         # main button frame
         self.button_frame = ttk.Frame(self, style='MainWindowOuter.TFrame', relief='flat')

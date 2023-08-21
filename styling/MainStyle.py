@@ -101,12 +101,17 @@ class MainStyle(ttk.Style):
 
         self.map(
             "MainWindow2.TButton",
-            background=[("pressed", COLOUR_BUTTON_PRESSED), ("active", COLOUR_BUTTON_ACTIVE), ("disabled", COLOUR_LIGHT_BACKGROUND)]
+            background=[("pressed", COLOUR_BUTTON_PRESSED_2), ("active", COLOUR_BUTTON_ACTIVE_2), ("disabled", COLOUR_LIGHT_BACKGROUND)]
         )
 
         self.map(
             "MainWindow3.TButton",
-            background=[("pressed", COLOUR_BUTTON_PRESSED), ("active", COLOUR_BUTTON_ACTIVE), ("disabled", COLOUR_LIGHT_BACKGROUND)]
+            background=[("pressed", COLOUR_BUTTON_PRESSED_3), ("active", COLOUR_BUTTON_ACTIVE_3), ("disabled", COLOUR_LIGHT_BACKGROUND)]
+        )
+
+        self.map(
+            "MainWindow4.TButton",
+            background=[("pressed", COLOUR_BUTTON_PRESSED_4), ("active", COLOUR_BUTTON_ACTIVE_4), ("disabled", COLOUR_LIGHT_BACKGROUND)]
         )
 
         # MCUFrame Styles
@@ -192,6 +197,13 @@ class MainStyle(ttk.Style):
             relief="sunken",
             borderwidth=3,
             font=("Courier", 9)
+        )
+
+        self.configure(
+            "Instruction.TLabel", 
+            background=COLOUR_MEMORY_LABEL_BACKGROUND,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 12)
         )
 
 

@@ -21,17 +21,20 @@ class StackDisplayFrame(ttk.Frame):
 
         # tkinter widgets
         # heading
-        stack_label = ttk.Label(self, text="STACK\n-top-", style='MainWindowInner3.TLabel')
+        stack_label = ttk.Label(self, text="Stack", style='ByteDisplayHeading.TLabel')
         stack_label.grid(column=0, row=0, pady=(0,0), padx=(0, 0), sticky="EW")
+
+        stack_label_top = ttk.Label(self, text="-top-", style='MainWindowInner3.TLabel')
+        stack_label_top.grid(column=0, row=1, pady=(0,0), padx=(5, 0), sticky="EW")
 
         # frame for list of stack elements
         self.list_frame = ttk.Frame(self, style='MainWindowInner3.TLabel', height=190)
-        self.list_frame.grid(column=0, row=1, pady=(0,0), padx=(0, 0), sticky="NSEW")
-        self.list_frame.grid_propagate(0)
+        self.list_frame.grid(column=0, row=2, pady=(0,0), padx=(0, 0), sticky="NSEW")
+        #self.list_frame.grid_propagate(0)
 
         # bottom
-        stack_label = ttk.Label(self, text="-end-", style='MainWindowInner3.TLabel')
-        stack_label.grid(column=0, row=3, pady=(0,0), padx=(0, 0), sticky="EW")
+        stack_label_end = ttk.Label(self, text="-end-", style='MainWindowInner3.TLabel')
+        stack_label_end.grid(column=0, row=3, pady=(0,0), padx=(5, 0), sticky="EW")
 
         # initialise the stack display
         self.initialise_stack_display_list()
@@ -95,7 +98,7 @@ class StackDisplayFrame(ttk.Frame):
             stack_element = ttk.Label(  self.list_frame,
                                         width=5, 
                                         style="Stack.TLabel"      )
-            stack_element.grid(column=0, row=stack_level, padx=0, pady=(0,3), sticky="EW")
+            stack_element.grid(column=0, row=stack_level, padx=(5,0), pady=(0,3), sticky="EW")
             stack_element.grid_remove()
             self.stack_display_list.append(stack_element)
             self._add_empty_label() # show stack is empty

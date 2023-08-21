@@ -23,11 +23,12 @@ class MCUFrame(ttk.Frame):
 
         # running sim
         self.simulation_running = False
-        self.simulation_speed = 500
+        self.simulation_speed = 1000
         # clock information
-        self.clock_frequency = 4.0 # Mhz
-        self.cycles_per_instruction = 4
+        self.clock_frequency = 20.0 # Mhz
+        self.Q_cycles_per_instruction = 4
         self.instruction_cycle = 0
+        self.num_instructions_executed = 0
         self.time_duration = 0
 
         # Working register - not in data_memory
@@ -67,7 +68,7 @@ class MCUFrame(ttk.Frame):
 
         # stack to be shown in MCU status frame above - contains the stack logic/control
         self.stack_frame = StackDisplayFrame(self.MCU_status_frame, style='MainWindowInner.TLabel')
-        self.stack_frame.grid(column=0, row=2, rowspan=4, sticky="NSEW")   
+        self.stack_frame.grid(column=0, row=2, rowspan=6, sticky="NSEW")   
         
 
 
@@ -83,6 +84,7 @@ class MCUFrame(ttk.Frame):
         self.stack_frame.clear_stack()
         self.w_reg.set_value(0)
         self.set_PC(0)
+        self.MCU_status_frame.reset_display()
 
     # load program into program memory (code editor uses this to populate memory)
     def upload_program(self, program):
@@ -111,6 +113,7 @@ class MCUFrame(ttk.Frame):
         if byte == None:
             self.parent.system_message(f"FAILED TO RETRIEVE BYTE: @ address {byte_addr}; not within data memory")
         return byte
+
     # set bytes in data memory by name (if SFR) or address
     def set_byte_by_name(self, byte_name, value):
         set_successful = self.data_memory_frame.set_byte_by_name(byte_name, value)
@@ -174,6 +177,9 @@ class MCUFrame(ttk.Frame):
         if self.is_next_cycle_NOP == True:
             self.advance_NOP()
             self.is_next_cycle_NOP = False
+        else:
+            self.num_instructions_executed += 1
+
 
     # advance if NOP called by InstructionDecoder
     def advance_NOP(self):
@@ -181,6 +187,8 @@ class MCUFrame(ttk.Frame):
         self.instruction_cycle += 1
         self.parent.log_commit()
 
+
+    # methods for running simulation
     def start_simulation(self, sim_speed):
         # set sim to running
         self.simulation_running = True
@@ -194,7 +202,6 @@ class MCUFrame(ttk.Frame):
         # use a thread to run the advance cycle loop
         threading.Thread(target=run_loop, args=(sim_speed,)).start()
         
-        
     def stop_simulation(self):
         self.simulation_running = False
 
@@ -204,25 +211,41 @@ class MCUFrame(ttk.Frame):
     def set_next_cycle_NOP(self):
         self.is_next_cycle_NOP = True
 
+    # program counter is 13-bit value (can address up to 8192 14-bit instructions words)
     # use the current program counter value to get the current instruction
     def get_current_instruction(self):
         return self.prog_memory_frame.get_instruction(self.get_current_PC_value())
 
-    # program counter is 13-bit value (can address up to 8192 14-bit instructions words)
-    # get the value of the program counter (PC) from the PCL (lower byte) and PCLATH (upper 5 bits)
+    def get_previous_instruction(self):
+        return self.prog_memory_frame.get_instruction(self.get_previous_PC_value())
+
+    # get the value of the program counter (PC)
     def get_current_PC_value(self):
         return self.program_counter.get_value()
+    def get_previous_PC_value(self):
+        return self.program_counter.get_previous()
 
+    # returns the program counter object
     def get_PC_13bit_representation(self):
         return self.program_counter.get()
 
     # set the value of the program counter (PC)
     def set_PC(self, new_address):
         # store the new address in PC object - for PC display in MCU status
+        # this will store to the PCL (lower byte) and PCLATH (upper 5 bits)
         self.program_counter.set_value(new_address)
         # log it
         prev_val = self.program_counter.get_previous()
         self.parent.add_to_log(f"Program Counter (PC); changed from 0x{prev_val:04X} [{prev_val}] --> 0x{new_address:04X} [{new_address}]")
+
+    # get status info for MCU status frame display
+    def get_status_info(self):
+        previous_instruction = self.get_previous_instruction()
+        next_instruction = self.get_current_instruction()
+        num_cycles = self.instruction_cycle
+        num_instructions = self.num_instructions_executed
+        # return tuple of status information
+        return (previous_instruction, next_instruction, num_cycles, num_instructions)
 
 
     # bit-wise methods

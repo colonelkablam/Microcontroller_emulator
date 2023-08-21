@@ -11,11 +11,19 @@ class MCUStatusFrame(ttk.Frame):
         # styling
         self.configure(style="MainWindowInner.TFrame", padding=10)
         self.columnconfigure(1, weight=1)
-        #self.rowconfigure(2, weight=1)
         self.grid(sticky="NSEW")
 
         # object properties
         self.parent = parent
+
+        self.previous_instruction = tk.StringVar(value="n/a")
+        self.next_instruction = tk.StringVar(value="  ".join(parent.get_current_instruction()))
+        self.instruction_cycles = tk.IntVar()
+        self.num_instructions_executed = tk.IntVar()
+
+        self.q_cycles_per_instruction = self.parent.Q_cycles_per_instruction
+        self.clock_frequency = self.parent.clock_frequency
+
 
         # tkinter widgets
 
@@ -46,7 +54,7 @@ class MCUStatusFrame(ttk.Frame):
         self.WREG_display = BinaryDisplayFrame( self,
                                                 self.parent.get_w_register(),
                                                 title = "Working Register",
-                                                bit_numbering =              "7                0"     )
+                                                bit_numbering =              "7    -- bit --   0"     )
         self.WREG_display.grid(column=1, row=3, sticky="EW")
 
         # PORTA
@@ -54,18 +62,16 @@ class MCUStatusFrame(ttk.Frame):
                                                 self.parent.get_byte_by_name("PORTA"),
                                                 display_dec = False,
                                                 display_hex = False,
-                                                title = "PORTA",
-                                                bit_numbering =              "7                0"   )
-        self.PORTA_display.grid(column=1, row=4, pady=(10,0), sticky="NEW")
+                                                title = "PORTA"                 )
+        self.PORTA_display.grid(column=1, row=4, pady=(5,0), sticky="NEW")
         
         # TRISA
         self.PARTB_display = BinaryDisplayFrame(self,
                                                 self.parent.get_byte_by_name("TRISA"),
                                                 display_dec = False,
                                                 display_hex = False,
-                                                title = "TRISA",
-                                                bit_numbering =              "7  6  5  4  3  2  1  0"   )
-        self.PARTB_display.grid(column=1, row=5, pady=(0,10), sticky="NEW")
+                                                title = "TRISA"                   )
+        self.PARTB_display.grid(column=1, row=5, pady=(0,5), sticky="NEW")
         
         # PORTB
         self.PARTB_display = BinaryDisplayFrame(self,
@@ -73,7 +79,7 @@ class MCUStatusFrame(ttk.Frame):
                                                 display_dec=False,
                                                 display_hex=False,
                                                 title="PORTB"                      )
-        self.PARTB_display.grid(column=1, row=6, pady=(10,0), sticky="NEW")
+        self.PARTB_display.grid(column=1, row=6, pady=(5,0), sticky="NEW")
 
         # TRISB
         self.PARTB_display = BinaryDisplayFrame(self,
@@ -81,17 +87,53 @@ class MCUStatusFrame(ttk.Frame):
                                                 display_dec=False,
                                                 display_hex=False,
                                                 title="TRISB"                      )
-        self.PARTB_display.grid(column=1, row=7, pady=(0,10), sticky="NEW")
+        self.PARTB_display.grid(column=1, row=7, pady=(0,0), sticky="NEW")
 
-        # MCU status info
-        # self.status_info_frame = ttk.Frame(self, style="MainWindowInner2.TFrame", padding=10)
-        # self.status_info_frame.grid(column=0, row=6)
+        # MCU status info 
+        self.status_info_frame = ttk.Frame(self, style="MainWindowInner2.TFrame", padding=5)
+        self.status_info_frame.grid(column=0, row=8, sticky="EW", columnspan=2)
+        self.status_info_frame.columnconfigure(1, weight=1)
 
-        self
+        self.last_instruction_label = ttk.Label(self.status_info_frame, text="Prev. Instruction:", anchor="e", style='ByteDisplayHeading.TLabel')
+        self.last_instruction_label.grid(column=0, row=0, padx=(10,10), pady=(0,5))
+
+        self.last_instruction = ttk.Label(self.status_info_frame, textvariable=self.previous_instruction, anchor="center", style= "Instruction.TLabel")
+        self.last_instruction.grid(column=1, row=0, padx=(5,10), pady=(0,5))
+
+        self.next_instruction_label = ttk.Label(self.status_info_frame, text="Next Instruction:", anchor="e", style='ByteDisplayHeading.TLabel')
+        self.next_instruction_label.grid(column=0, row=1, padx=(10,10), pady=(0,0))
+
+        self.next_instruction_label = ttk.Label(self.status_info_frame, textvariable=self.next_instruction, anchor="center", style= "Instruction.TLabel")
+        self.next_instruction_label.grid(column=1, row=1, padx=(5,10), pady=(0,0))
+
+        for label in self.status_info_frame.winfo_children():
+            label.grid(sticky="EW")
 
     def update_display(self):
+        # get tuple of information from parent (MCUFrame)
+        status_info = self.parent.get_status_info()
+        # set the tkinter variable objects
+        self.previous_instruction.set("  ".join(status_info[0]))
+        self.next_instruction.set("  ".join(status_info[1]))
+        self.instruction_cycles.set(status_info[2])
+        self.num_instructions_executed.set(status_info[3])
+        # update each TFrame
         for widget in self.winfo_children():
-            widget.update()
+            if widget.winfo_class() == "TFrame":
+                widget.update()
+
+    def reset_display(self):
+        # get tuple of information from parent (MCUFrame)
+        status_info = self.parent.get_status_info()
+        # set the tkinter variable objects
+        self.previous_instruction.set("n/a")
+        self.next_instruction.set("  ".join(status_info[1]))
+        self.instruction_cycles.set(0)
+        self.num_instructions_executed.set(0)
+        # update each TFrame
+        for widget in self.winfo_children():
+            if widget.winfo_class() == "TFrame":
+                widget.update()
 
 
 
