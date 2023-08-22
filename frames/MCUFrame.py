@@ -42,8 +42,8 @@ class MCUFrame(ttk.Frame):
         # tkinter widgets
 
         # panel label
-        frame_label = ttk.Label(self, text="MCU Panel", style='MainWindowOuter.TLabel')
-        frame_label.grid(column=0, row=0, padx=(50,0), pady=(0,10), sticky="W")
+        #frame_label = ttk.Label(self, text="MCU Panel", style='MainWindowOuter.TLabel')
+        #frame_label.grid(column=0, row=0, padx=(50,0), pady=(0,10), sticky="W")
 
         # set-up MCU
         # MCU 'views'

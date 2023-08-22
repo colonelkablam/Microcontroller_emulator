@@ -12,9 +12,11 @@ class CodeWindow:
         # properties
 
         # starting position relative to parent window
-        window_height = parent.winfo_height()
-        window_xpos = parent.winfo_width() + parent.winfo_x()
-        window_ypos = parent.winfo_y()
+
+        window_width = CODE_WINDOW_WIDTH
+        window_height = CODE_WINDOW_HEIGHT
+        window_xpos = parent.winfo_x() + 30
+        window_ypos = parent.winfo_y() + 30
 
         self.parent = parent
         
@@ -22,6 +24,7 @@ class CodeWindow:
         self.current_file_path = tk.StringVar(value=self.empty_file_text)
         self.current_file_name = tk.StringVar(value=self.empty_file_text)
 
+        # test program
         self.compiled_program = [   ["GOTO",   "0x05",  ""],
                                     ["ADDLW",  "0xFF",  ""],
                                     ["ADDLW",  "0xFF",  ""],
@@ -30,9 +33,13 @@ class CodeWindow:
                                     ["MOVLW",  "0x08",  ""],
                                     ["MOVWF",  "0x20",  ""],
                                     ["MOVLW",  "0xA2",  ""],
-                                    ["ADDWF",  "0x20",  "1"],
-                                    ["GOTO",   "0x08",  ""],
-                                    ["ADDLW",  "0xFF",  ""]     ]
+                                    ["ADDWF",  "0x20",  "0"],
+                                    ["NOP",   "",  ""],
+                                    ["ADDLW",  "0xA2",  ""],
+                                    ["ADDWF",  "0x21",  "1"],
+                                    ["GOTO",  "0x00",  ""],
+                                    ["ADDLW",  "0xFF",  ""],
+                                    ["ADDLW",  "0xFF",  ""],    ]
 
 
         # tkinter Widgets
@@ -41,7 +48,7 @@ class CodeWindow:
         # create the new window to load/save/edit/compile code
         self.code_window = tk.Toplevel()
         self.code_window.title("Code Editor")
-        self.code_window.geometry("%dx%d+%d+%d" % (CODE_WINDOW_WIDTH, window_height, window_xpos, window_ypos))
+        self.code_window.geometry("%dx%d+%d+%d" % (window_width, window_height, window_xpos, window_ypos))
         # bind functions
         self.code_window.wm_protocol('WM_DELETE_WINDOW', self.on_close_window) # clean up after window close
 
@@ -106,6 +113,9 @@ class CodeWindow:
 
             self.code_frame.update_code_editor_display()
 
+        # keep window at top
+        self.code_window.lift()
+
     # save as - name/rename code editor text
     def save_as_text_file(self):
         
@@ -128,6 +138,9 @@ class CodeWindow:
     
         else:
             self.parent.system_message("No file name chosen - Save aborted.")
+
+        # keep window at top
+        self.code_window.lift()
     
     # save - save code editor text
     def save_text_file(self):
@@ -153,6 +166,8 @@ class CodeWindow:
         self.parent.system_message("Loading program into Program Memory...")
         try:
             self.parent.MCU_frame.upload_program(self.compiled_program)
+            self.parent.system_message(f"{len(self.compiled_program)} line program successfully loaded into MCU.")
+
         except Exception as e:
             self.parent.system_message(f"Failed to load program to MCU; Exception arguments:{e.args}")
 
@@ -168,5 +183,9 @@ class CodeWindow:
         self.parent.clear_code_window()
         # add note to log
         self.parent.system_message("Code Window closed.")
+
+    def lift_window(self):
+        self.code_window.lift()
+
 
     

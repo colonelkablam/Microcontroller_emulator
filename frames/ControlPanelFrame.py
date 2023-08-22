@@ -15,7 +15,7 @@ class ControlPanelFrame(ttk.Frame):
         self.parent = parent
         self.code_window_open = False
         self.log_window_open = False
-        self.pin_window_open = False
+        self.pinout_window_open = False
 
         # tkinter widgets
 
@@ -60,7 +60,7 @@ class ControlPanelFrame(ttk.Frame):
         self.log_frame.grid(column=1, row=0, sticky="EW")
         self.log_frame.columnconfigure(0, weight=1)
         # buttons
-        self.pin_out = ttk.Button(self.log_frame, text="Pin Out")
+        self.pin_out = ttk.Button(self.log_frame, text="Pin Out", command=self.open_pinout_window)
         self.log = ttk.Button(self.log_frame, text="View Log Messages", command=self.open_log_window)
         self.log_clear = ttk.Button(self.log_frame, name="narrow1", text="Clear Log Messages", command=self.parent.MCU_frame.stack_frame.push_stack)
         # positions log and pin
@@ -129,18 +129,35 @@ class ControlPanelFrame(ttk.Frame):
         self.stop_simulation()
         self.parent.MCU_frame.reset_MCU(keepprogram=False)
 
+    # manage code window
     def open_code_window(self):
         if self.code_window_open == False:
            self.parent.open_code_window()
            self.code_window_open = True
+        else:
+            self.parent.code_window.lift_window()
 
     def close_code_window(self):
         self.code_window_open = False
 
+    # manage log window
     def open_log_window(self):
         if self.log_window_open == False:
             self.parent.open_log_window()
             self.log_window_open = True
+        else:
+            self.parent.log_window.lift_window()
 
     def close_log_window(self):
         self.log_window_open = False
+
+    # manage pinout window
+    def open_pinout_window(self):
+        if self.pinout_window_open == False:
+            self.parent.open_pinout_window()
+            self.pinout_window_open = True
+        else:
+            self.parent.pinout_window.lift_window()
+
+    def close_pinout_window(self):
+        self.pinout_window_open = False

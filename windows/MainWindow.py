@@ -4,7 +4,7 @@ from datetime import datetime
 from my_constants import *
 from tkinter import ttk
 from frames import ControlPanelFrame, MCUFrame
-from windows import LogWindow, CodeWindow
+from windows import LogWindow, CodeWindow, PinoutWindow
 from styling import MainStyle
 
 
@@ -18,21 +18,23 @@ class MainWindow(tk.Tk):
         self.resizable(height = True, width = False)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
+        # style
+        self["background"] = COLOUR_MAIN_BACKGROUND
 
         # log window
         self.log_window = None 
         # var to contain log text (will populate log window when open)
         self.log_text = tk.StringVar()
         self.log_text.trace_add('write', self.update_log_window_display)
-        
         self.log_commit_list = [] # list of text to add to log_text when cycle/event complete
         self.event_count_per_cycle = 0
 
         # code window
         self.code_window = None
 
-        # style
-        self["background"] = COLOUR_MAIN_BACKGROUND
+        # pinout window
+        self.pinout_window = None
+
 
         # tkinter Widgets
 
@@ -55,6 +57,8 @@ class MainWindow(tk.Tk):
         self.MCU_frame = MCUFrame(self, style='MainWindowOuter.TFrame', padding=10)
         self.MCU_frame.grid(column=0, row=0, sticky="NSEW")
 
+
+    ## code editor
     def open_code_window(self):
         self.code_window = CodeWindow(self)
 
@@ -63,6 +67,8 @@ class MainWindow(tk.Tk):
         self.control_panel_frame.close_code_window()
         self.code_window = None
 
+
+    ## log window 
     def open_log_window(self):
         self.log_window = LogWindow(self)
 
@@ -71,6 +77,21 @@ class MainWindow(tk.Tk):
         self.control_panel_frame.close_log_window()
         self.log_window = None
 
+
+    ## pinout window
+    def open_pinout_window(self):
+        self.pinout_window = PinoutWindow(self)
+
+    # clear log_window var after window close
+    def close_pinout_window(self):
+        self.control_panel_frame.close_pinout_window()
+        self.pinout_window = None
+
+    # system message takes place outside the MCU cycle
+    def system_message(self, system_message):
+        # self.log_commit_list.append('\n')
+        self.log_text.set(f"{self.get_time()} - SYSTEM MESSAGE: {system_message}\n{self.log_text.get()}")
+
     # add to log - calling .set calls traceback function 'update_log_window_display'
     # needed as no textvariable in text box and log wanted as a string
     def add_to_log(self, message):
@@ -78,10 +99,7 @@ class MainWindow(tk.Tk):
         self.log_commit_list.append('\n')
         self.event_count_per_cycle += 1
 
-    def system_message(self, system_message):
-        # self.log_commit_list.append('\n')
-        self.log_text.set(f"{self.get_time()} - SYSTEM MESSAGE: {system_message}\n{self.log_text.get()}")
-
+    # add cycle log comments to log text
     def log_commit(self):
         self.log_commit_list.append('\n')
         self.log_commit_list.insert(0, f"\t\t----- Instruction Cycle: {self.MCU_frame.get_instruction_cycle()} -----\n")

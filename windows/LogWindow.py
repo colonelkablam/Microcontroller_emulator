@@ -10,9 +10,10 @@ class LogWindow:
         # LogWindow properties
 
         # starting position relative to parent window
-        window_width = parent.winfo_width()
+        window_width = LOG_WINDOW_WIDTH
+        window_height = LOG_WINDOW_HEIGHT
         window_xpos = parent.winfo_x()
-        window_ypos = parent.winfo_y() + parent.winfo_height() + 30
+        window_ypos = parent.winfo_y() + 100
 
         self.parent = parent
 
@@ -22,11 +23,12 @@ class LogWindow:
         # create the new window to display log
         self.log_window = tk.Toplevel()
         self.log_window.title("Log Message Display")
-        self.log_window.geometry("%dx%d+%d+%d" % (window_width, LOG_WINDOW_HEIGHT, window_xpos, window_ypos))
+        self.log_window.geometry("%dx%d+%d+%d" % (window_width, window_height, window_xpos, window_ypos))
         # style
         self.log_window["background"] = COLOUR_MAIN_BACKGROUND
         self.log_window.rowconfigure(0, weight=1)
         self.log_window.columnconfigure(0, weight=1)
+        self.log_window.configure(takefocus=True)
         # bind functions
         self.log_window.wm_protocol('WM_DELETE_WINDOW', self.on_close_window) # clean up after window close
 
@@ -46,4 +48,7 @@ class LogWindow:
         self.log_window.destroy()
         # clear log_window var in MainWindow
         self.parent.close_log_window()
+
+    def lift_window(self):
+        self.log_window.lift()
 

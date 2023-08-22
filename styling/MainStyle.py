@@ -74,6 +74,7 @@ class MainStyle(ttk.Style):
             foreground=COLOUR_DARK_TEXT,
             font=("Courier", 12)
         )
+
         self.configure(
             "MainWindow2.TButton",
             background=COLOUR_BUTTON_NORMAL_2,
@@ -230,10 +231,13 @@ class MainStyle(ttk.Style):
             font=("Courier", 10)
         )
 
+
         self.configure(
             "CodeWindow.TButton",
             background=COLOUR_BUTTON_NORMAL,
-            foreground=COLOUR_DARK_TEXT
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 12)
+
         )
 
         self.map(
@@ -244,7 +248,9 @@ class MainStyle(ttk.Style):
         self.configure(
             "CodeWindow2.TButton",
             background=COLOUR_BUTTON_NORMAL_2,
-            foreground=COLOUR_DARK_TEXT
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 12)
+
         )
 
         self.map(

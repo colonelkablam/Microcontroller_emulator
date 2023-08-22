@@ -3,13 +3,18 @@ MAIN_WINDOW_WIDTH = 1000
 MAIN_WINDOW_HEIGHT = 500
 
 # code editor
-CODE_WINDOW_WIDTH = 400
-CODE_EDITOR_WIDTH = 100
+CODE_WINDOW_WIDTH = 500
+CODE_WINDOW_HEIGHT = 500
 CODE_LINE_TEXT_WIDTH = 3 # as going up to 256 lines
 MAX_CODE_LINES = 256
 
 # log window
+LOG_WINDOW_WIDTH = 600
 LOG_WINDOW_HEIGHT = 200
+
+# pinout window
+PINOUT_WINDOW_WIDTH = 300
+PINOUT_WINDOW_HEIGHT = 300
 
 # MCU constants
 PROGRAM_MEMORY_SIZE = 512  # x 14-bit instructions (13-bit addressing allows up to 8192 program memory spaces)

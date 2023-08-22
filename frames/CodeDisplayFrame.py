@@ -72,7 +72,7 @@ class CodeDisplayFrame(ttk.Frame):
         self.code_text_lines.configure(state="disabled")
 
         # code text box
-        self.code_text = tk.Text(self.inner_frame, width=CODE_EDITOR_WIDTH, height=MAX_CODE_LINES, font=("Courier", _code_text_size), wrap="none")
+        self.code_text = tk.Text(self.inner_frame, width=CODE_WINDOW_WIDTH, height=MAX_CODE_LINES, font=("Courier", _code_text_size), wrap="none")
         self.code_text['yscrollcommand'] = self.code_scroll.set
         self.code_text.grid(column=1, row=0)
 
