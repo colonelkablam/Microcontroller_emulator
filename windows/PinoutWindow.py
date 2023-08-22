@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import *
+from frames import PinoutFrame
+
 
 
 class PinoutWindow:
@@ -31,8 +33,10 @@ class PinoutWindow:
         self.pinout_window.wm_protocol('WM_DELETE_WINDOW', self.on_close_window) # clean up after window close
 
         # create a PinoutDisplayFrame
-        self.pinout_frame = ttk.Frame(self.pinout_window)
+        self.pinout_frame = PinoutFrame(self.pinout_window, self.parent.MCU_frame.port_a, self.parent.MCU_frame.port_b)
         self.pinout_frame.grid(column=0, row=0, sticky="NSEW")
+
+
 
 
         # PinoutWindow methods

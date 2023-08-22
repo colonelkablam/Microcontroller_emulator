@@ -7,7 +7,8 @@ from dataStructures import NBitNumber
 from frames import ControlPanelFrame, CodeDisplayFrame
 from frames.MCUInternals import ProgramCounter, ProgramMemoryFrame,\
                                 DataMemoryFrame, MCUStatusFrame,\
-                                StackDisplayFrame, InstructionDecoder
+                                StackDisplayFrame, InstructionDecoder, \
+                                PortPeripheral
 
 
 class MCUFrame(ttk.Frame):
@@ -39,7 +40,7 @@ class MCUFrame(ttk.Frame):
                                     "WREG"      )
         
 
-        # tkinter widgets
+        ## tkinter widgets
 
         # panel label
         #frame_label = ttk.Label(self, text="MCU Panel", style='MainWindowOuter.TLabel')
@@ -68,9 +69,36 @@ class MCUFrame(ttk.Frame):
 
         # stack to be shown in MCU status frame above - contains the stack logic/control
         self.stack_frame = StackDisplayFrame(self.MCU_status_frame, style='MainWindowInner.TLabel')
-        self.stack_frame.grid(column=0, row=2, rowspan=6, sticky="NSEW")   
-        
+        self.stack_frame.grid(column=0, row=2, rowspan=6, sticky="NSEW")
 
+
+        ## peripherals
+
+        # look-up chip pin number or input value by name of port pin
+        # basically represtents the physical chip and any digital values on the pin
+
+        self.chip_pin_dict = {  "RA0" : [17, 0],
+                                "RA1" : [18, 0],
+                                "RA2" : [1,  0],
+                                "RA3" : [2,  0],
+                                "RA4" : [3,  0],
+                                "RB0" : [6,  0],
+                                "RB1" : [7,  0],
+                                "RB2" : [8,  0],
+                                "RB3" : [9,  0],
+                                "RB4" : [10, 0],
+                                "RB5" : [11, 0],
+                                "RB6" : [12, 0],
+                                "RB7" : [13, 0]     }
+
+        # port A
+        self.port_a = PortPeripheral(   self.data_memory_frame.get_byte_by_name("PORTA"),
+                                        self.data_memory_frame.get_byte_by_name("TRISA"),
+                                        5       )
+        # port B
+        self.port_b = PortPeripheral(   self.data_memory_frame.get_byte_by_name("PORTB"),
+                                        self.data_memory_frame.get_byte_by_name("TRISB"),
+                                        8       )
 
 
     # MCUFrame methods
