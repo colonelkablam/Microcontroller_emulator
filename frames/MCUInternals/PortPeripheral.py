@@ -40,11 +40,18 @@ class PortPeripheral():
             print(pin.get_input(), end="")
         print("\n")
         
-    # Ports methods
+    # Port methods
     def update_register(self):
         for pin in self.pins:
             if pin.pin_direction == PinDir.INPUT:
                 pass
+
+    # return port pin object
+    def get_port_pin_by_name(self, name):
+        for pin in self.pins:
+            if pin.get_name() == name:
+                return pin
+        return None # return None type if not found
 
     def clear_port(self):
         pass

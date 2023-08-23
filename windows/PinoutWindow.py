@@ -1,12 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import *
-from frames import PinoutFrame
+from frames import ChipPinoutFrame
 
 
 
 class PinoutWindow:
-    def __init__(self, parent):
+    def __init__(self, parent, peripheral_pin_dict):
 
         # LogWindow properties
 
@@ -18,6 +18,7 @@ class PinoutWindow:
         window_ypos = parent.winfo_y() + 50
 
         self.parent = parent
+        self.peripheral_pin_dict = peripheral_pin_dict
 
         # tkinter Widgets
 
@@ -32,12 +33,9 @@ class PinoutWindow:
         # bind functions
         self.pinout_window.wm_protocol('WM_DELETE_WINDOW', self.on_close_window) # clean up after window close
 
-        # create a PinoutDisplayFrame
-        self.pinout_frame = PinoutFrame(self.pinout_window, self.parent.MCU_frame.port_a, self.parent.MCU_frame.port_b)
+        # create a ChipPinoutFrame for display
+        self.pinout_frame = ChipPinoutFrame(self.pinout_window, self.peripheral_pin_dict)
         self.pinout_frame.grid(column=0, row=0, sticky="NSEW")
-
-
-
 
         # PinoutWindow methods
 
@@ -47,11 +45,14 @@ class PinoutWindow:
     # clean up when closing window
     def on_close_window(self):
         # destroy the toplevel window
-        self.pinout_window.destroy()
+        self.hide()
         # clear pinout_window var in MainWindow
         self.parent.close_pinout_window()
 
     def lift_window(self):
         self.pinout_window.lift()
-
+    def hide(self):
+        self.pinout_window.withdraw()
+    def show(self):
+        self.pinout_window.deiconify()
 

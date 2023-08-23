@@ -4,7 +4,7 @@ import threading
 import multiprocessing
 from my_constants import*
 from dataStructures import NBitNumber
-from frames import ControlPanelFrame, CodeDisplayFrame
+from frames import ControlPanelFrame, CodeDisplayFrame, ChipPinoutFrame
 from frames.MCUInternals import ProgramCounter, ProgramMemoryFrame,\
                                 DataMemoryFrame, MCUStatusFrame,\
                                 StackDisplayFrame, InstructionDecoder, \
@@ -74,23 +74,6 @@ class MCUFrame(ttk.Frame):
 
         ## peripherals
 
-        # look-up chip pin number or input value by name of port pin
-        # basically represtents the physical chip and any digital values on the pin
-
-        self.chip_pin_dict = {  "RA0" : [17, 0],
-                                "RA1" : [18, 0],
-                                "RA2" : [1,  0],
-                                "RA3" : [2,  0],
-                                "RA4" : [3,  0],
-                                "RB0" : [6,  0],
-                                "RB1" : [7,  0],
-                                "RB2" : [8,  0],
-                                "RB3" : [9,  0],
-                                "RB4" : [10, 0],
-                                "RB5" : [11, 0],
-                                "RB6" : [12, 0],
-                                "RB7" : [13, 0]     }
-
         # port A
         self.port_a = PortPeripheral(   self.data_memory_frame.get_byte_by_name("PORTA"),
                                         self.data_memory_frame.get_byte_by_name("TRISA"),
@@ -99,6 +82,28 @@ class MCUFrame(ttk.Frame):
         self.port_b = PortPeripheral(   self.data_memory_frame.get_byte_by_name("PORTB"),
                                         self.data_memory_frame.get_byte_by_name("TRISB"),
                                         8       )
+
+        # look-up chip pin object or input value by port pin
+        # basically represtents the physical chip and any digital values on the pin
+
+        self.peripheral_pin_dict = {17 : self.port_a.get_port_pin_by_name("RA0"),
+                                    18 : self.port_a.get_port_pin_by_name("RA1"),
+                                    1 :  self.port_a.get_port_pin_by_name("RA2"),
+                                    2 :  self.port_a.get_port_pin_by_name("RA3"),
+                                    3 :  self.port_a.get_port_pin_by_name("RA4"),
+                                    6 :  self.port_b.get_port_pin_by_name("RB0"),
+                                    7 :  self.port_b.get_port_pin_by_name("RB1"),
+                                    8 :  self.port_b.get_port_pin_by_name("RB2"),
+                                    9 :  self.port_b.get_port_pin_by_name("RB3"),
+                                    10 : self.port_b.get_port_pin_by_name("RB4"),
+                                    11 : self.port_b.get_port_pin_by_name("RB5"),
+                                    12 : self.port_b.get_port_pin_by_name("RB6"),
+                                    13 : self.port_b.get_port_pin_by_name("RB7"),
+                                    4  : None,
+                                    5  : None,
+                                    14 : None,
+                                    15 : None,
+                                    16 : None     }
 
 
     # MCUFrame methods

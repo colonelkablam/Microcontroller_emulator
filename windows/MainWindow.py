@@ -39,18 +39,20 @@ class MainWindow(tk.Tk):
         # tkinter Widgets
 
         # main MCU_frame - contains MCUInternals, data and program memory
-        self.create_MCU_frame()
+        self.MCU_frame = MCUFrame(self, style='MainWindowOuter.TFrame', padding=10)
+        self.MCU_frame.grid(column=0, row=0, sticky="NSEW")
 
         # control panel frame for app - contained within main window
         self.control_panel_frame = ControlPanelFrame(self, style='MainWindowOuter.TFrame', padding=10)
         self.control_panel_frame.grid(column=0, row=1, sticky="NSEW")
 
+        # create pinout window and pinout frame
+        self.pinout_window = PinoutWindow(self, self.MCU_frame.peripheral_pin_dict)
+        self.pinout_window.hide()
+
+
 
     # MainWindow Methods
-
-    def create_MCU_frame(self):
-        self.MCU_frame = MCUFrame(self, style='MainWindowOuter.TFrame', padding=10)
-        self.MCU_frame.grid(column=0, row=0, sticky="NSEW")
 
     def reset_MCU_frame(self):
         self.MCU_frame.destroy()
@@ -80,12 +82,11 @@ class MainWindow(tk.Tk):
 
     ## pinout window
     def open_pinout_window(self):
-        self.pinout_window = PinoutWindow(self)
+        self.pinout_window.show()
 
     # clear log_window var after window close
     def close_pinout_window(self):
         self.control_panel_frame.close_pinout_window()
-        self.pinout_window = None
 
     # system message takes place outside the MCU cycle
     def system_message(self, system_message):

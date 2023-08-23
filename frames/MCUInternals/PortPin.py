@@ -30,9 +30,16 @@ class PortPin():
         else:
             pass # no change if invalid value
 
+    # set by chip pin in pinout frame - external control
     def set_input(digital_value):
         if self.pin_direction == PinDir.INPUT:
-            self.pin_input = digital_value # PinVal enum ON or OFF
+             # PinVal enum ON or OFF
+            if digital_value == 0:
+                self.pin_input = PinVal.OFF
+            elif digital_value == 1:
+                self.pin_input = PinVal.ON
+            else:
+                pass
         else:
             pass # no change as pin not in correct state
     

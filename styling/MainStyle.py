@@ -257,3 +257,11 @@ class MainStyle(ttk.Style):
             "CodeWindow2.TButton",
             background=[("pressed", COLOUR_BUTTON_PRESSED_2), ("active", COLOUR_BUTTON_ACTIVE_2), ("disabled", COLOUR_LIGHT_BACKGROUND)]
         )
+
+        # pinout styles
+        self.configure(
+            "PinOut.TLabel", 
+            background=COLOUR_MEMORY_LABEL_BACKGROUND,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 11)
+        )
