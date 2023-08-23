@@ -18,6 +18,7 @@ class DataMemoryFrame(ttk.Frame):
 
         # object properties
         self.parent = parent
+        # strores the 'bytes' of memory
         self.memory = []
 
         # list to store intruction labels
@@ -204,6 +205,10 @@ class DataMemoryFrame(ttk.Frame):
                     name = " -"
             # add Byte
             self.memory.append(NBitNumber(8, tk.IntVar(value=0), tk.StringVar(value="00h"), tk.StringVar(value=f"00000000"), name))
+            
+        # TRIS registers start as input by default
+        self.set_byte_by_name("TRISA", 31)
+        self.set_byte_by_name("TRISB", 255)
 
     # clear all values in data registers and reset highlighting
     def reset_data_memory_frame(self):

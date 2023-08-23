@@ -1,13 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 from enum import Enum
-from my_constants import*
+from my_constants import *
+from my_enums import *
 
-class Side(Enum):
-    LEFT = 0
-    RIGHT = 1
 
-class ChipPinFrame(ttk.Frame):
+class PinFrame(ttk.Frame):
     def __init__(self, parent, pin_number, side, port_pin=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
@@ -74,16 +72,17 @@ class ChipPinFrame(ttk.Frame):
     def update(self):
         pin = self.port_pin_object
         if pin != None:
-            if pin.get_direction() == 1:
+            if pin.get_direction() == PinDir.INPUT:
                 self.direction.set(" INPUT")
                 self.input_toggle.configure(state="normal")
                 self.output_toggle.configure(state="disabled")
-            elif pin.get_direction() == 0:
+            elif pin.get_direction() == PinDir.OUTPUT:
                 self.direction.set("OUTPUT")
                 self.input_toggle.configure(state="disabled")
                 self.output_toggle.configure(state="normal")
 
-            pin.set_input(self.input_value.get())
+            pin.set_input(PinVal(self.input_value.get()))
+            print(self.input_value.get())
 
 
     def toggle_pin_input(self):
@@ -96,7 +95,7 @@ class ChipPinFrame(ttk.Frame):
         print(f"Pin {self.pin_number} value input now {self.input_value.get()}.")
 
 
-class ChipPinoutFrame(ttk.Frame):
+class PinoutFrame(ttk.Frame):
     def __init__(self, parent, port_pins_dict, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         
@@ -126,11 +125,11 @@ class ChipPinoutFrame(ttk.Frame):
             pin = port_pins_dict[pin_num]
 
             if pin != None:
-                pin_frame = ChipPinFrame(self.left_pin_frame, pin_num, Side.LEFT, pin)
+                pin_frame = PinFrame(self.left_pin_frame, pin_num, Side.LEFT, pin)
                 pin_frame.grid(column=0, row=pin_num-1)
                 self.pins.append(pin_frame)
             else:   # if no port assigned
-                pin_frame = ChipPinFrame(self.left_pin_frame, pin_num, Side.LEFT)
+                pin_frame = PinFrame(self.left_pin_frame, pin_num, Side.LEFT)
                 pin_frame.grid(column=0, row=pin_num-1)
                 self.pins.append(pin_frame)
 
@@ -139,17 +138,17 @@ class ChipPinoutFrame(ttk.Frame):
             pin = port_pins_dict[pin_num]
 
             if pin != None:
-                pin_frame = ChipPinFrame(self.right_pin_frame, pin_num, Side.RIGHT, pin)
+                pin_frame = PinFrame(self.right_pin_frame, pin_num, Side.RIGHT, pin)
                 pin_frame.grid(column=0, row=18 - pin_num)
                 self.pins.append(pin_frame)
             else:   # if no port assigned
-                pin_frame = ChipPinFrame(self.right_pin_frame, pin_num, Side.RIGHT)
+                pin_frame = PinFrame(self.right_pin_frame, pin_num, Side.RIGHT)
                 pin_frame.grid(column=0, row=18 - pin_num)
                 self.pins.append(pin_frame)
 
 
-    # ChipPinoutFrame methods
+    # PinoutFrame methods
     def update(self):
         for pin in self.pins:
-            pass
+            pin.update()
 

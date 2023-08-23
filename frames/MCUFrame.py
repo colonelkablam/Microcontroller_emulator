@@ -4,7 +4,7 @@ import threading
 import multiprocessing
 from my_constants import*
 from dataStructures import NBitNumber
-from frames import ControlPanelFrame, CodeDisplayFrame, ChipPinoutFrame
+from frames import ControlPanelFrame, CodeDisplayFrame, PinoutFrame
 from frames.MCUInternals import ProgramCounter, ProgramMemoryFrame,\
                                 DataMemoryFrame, MCUStatusFrame,\
                                 StackDisplayFrame, InstructionDecoder, \
@@ -85,7 +85,6 @@ class MCUFrame(ttk.Frame):
 
         # look-up chip pin object or input value by port pin
         # basically represtents the physical chip and any digital values on the pin
-
         self.peripheral_pin_dict = {17 : self.port_a.get_port_pin_by_name("RA0"),
                                     18 : self.port_a.get_port_pin_by_name("RA1"),
                                     1 :  self.port_a.get_port_pin_by_name("RA2"),
@@ -104,6 +103,10 @@ class MCUFrame(ttk.Frame):
                                     14 : None,
                                     15 : None,
                                     16 : None     }
+
+        # create a pinout_frame - contains the state of the chip pins - contained in the pinout window
+        self.pinout_frame = PinoutFrame(self.parent.pinout_window.window, self.peripheral_pin_dict)
+        self.pinout_frame.grid(column=0, row=0, sticky="NSEW")
 
 
     # MCUFrame methods
@@ -198,6 +201,9 @@ class MCUFrame(ttk.Frame):
     # main advance method - calls instruction decoder (logic of MCU) and updates PCL
     def advance_cycle(self):
         # get new PC address and altered reg address from the instruction decoder object (and handle wrapping around of max prog mem size)
+        self.pinout_frame.update()
+        self.port_a.update_registers()
+        self.port_b.update_registers()
         self.instruction_decoder.get_new_program_address(self.get_current_instruction())
         self.prog_memory_frame.highlight_current_instruction(self.program_counter.get_value())
         self.data_memory_frame.highlight_accessed_registers_cycle()

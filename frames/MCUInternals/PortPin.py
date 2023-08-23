@@ -1,15 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-from enum import Enum
 from my_constants import *
-
-# locally used enums for pin direction/values
-class PinDir(Enum):
-    INPUT = 1
-    OUTPUT = 0
-class PinVal(Enum):
-    ON = 1
-    OFF = 0
+from my_enums import *
 
 # pin class to store the state of each port pin and handle pin logic
 class PortPin():
@@ -22,7 +14,7 @@ class PortPin():
 
 
     # Pin methods
-    def set_direction(dir_bit):
+    def set_direction(self, dir_bit):
         if dir_bit == 0:
             self.pin_direction = PinDir.OUTPUT
         elif dir_bit == 1:
@@ -31,19 +23,13 @@ class PortPin():
             pass # no change if invalid value
 
     # set by chip pin in pinout frame - external control
-    def set_input(digital_value):
+    def set_input(self, digital_value):
         if self.pin_direction == PinDir.INPUT:
-             # PinVal enum ON or OFF
-            if digital_value == 0:
-                self.pin_input = PinVal.OFF
-            elif digital_value == 1:
-                self.pin_input = PinVal.ON
-            else:
-                pass
+            self.pin_input = digital_value
         else:
             pass # no change as pin not in correct state
     
-    def set_output(digital_value):
+    def set_output(self, digital_value):
         if self.pin_direction == PinDir.OUTPUT:
             self.pin_output = digital_value # PinVal enum ON or OFF
         else:

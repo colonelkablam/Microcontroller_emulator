@@ -15,7 +15,6 @@ class ControlPanelFrame(ttk.Frame):
         self.parent = parent
         self.code_window_open = False
         self.log_window_open = False
-        self.pinout_window_open = False
 
         # tkinter widgets
 
@@ -153,11 +152,5 @@ class ControlPanelFrame(ttk.Frame):
 
     # manage pinout window
     def open_pinout_window(self):
-        if self.pinout_window_open == False:
-            self.parent.open_pinout_window()
-            self.pinout_window_open = True
-        else:
-            self.parent.pinout_window.lift_window()
+        self.parent.open_pinout_window()
 
-    def close_pinout_window(self):
-        self.pinout_window_open = False
