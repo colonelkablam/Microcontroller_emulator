@@ -259,9 +259,71 @@ class MainStyle(ttk.Style):
         )
 
         # pinout styles
+
+        self.configure(
+            "PinOutChip.TFrame",
+            background=COLOUR_MAIN_BACKGROUND,
+            borderwidth=2,
+            relief="ridge"
+        )
+        
+        self.configure(
+            "PinOutChip.TLabel", 
+            background=COLOUR_MAIN_BACKGROUND,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 11, 'bold')
+        )
+
+        self.configure(
+            "PinOutHeading.TLabel", 
+            background=COLOUR_INNER2_BACKGROUND,
+            foreground=COLOUR_DARK_TEXT,
+            font=("Courier", 8)
+        )
+
+        self.configure(
+            "Pin.TFrame",
+            background=COLOUR_INNER2_BACKGROUND,
+            borderwidth=2,
+           # relief="ridge"
+        )
+        self.configure(
+            "PinOutBackground.TFrame",
+            background=COLOUR_INNER2_BACKGROUND,
+            borderwidth=2,
+            relief="ridge"
+        )
+
+        self.configure(
+            "PinOutBackground2.TFrame",
+            background=COLOUR_INNER2_BACKGROUND,
+        )
+
         self.configure(
             "PinOut.TLabel", 
-            background=COLOUR_MEMORY_LABEL_BACKGROUND,
+            background=COLOUR_INNER2_BACKGROUND,
             foreground=COLOUR_DARK_TEXT,
             font=("Courier", 11)
+        )
+
+        self.configure(
+            "PinOutON.TButton",
+            background = COLOUR_PINOUT_BUTTON_ON,
+            font=("Courier", 11)
+        )
+
+        self.map(
+            "PinOutON.TButton",
+            background=[("pressed", COLOUR_PINOUT_BUTTON_PRESSED), ("active", COLOUR_PINOUT_BUTTON_ACTIVE), ("disabled", COLOUR_INNER2_BACKGROUND)]
+        )
+
+        self.configure(
+            "PinOutOFF.TButton",
+            background = COLOUR_PINOUT_BUTTON_OFF,
+            font=("Courier", 11)
+        )
+
+        self.map(
+            "PinOutOFF.TButton",
+            background=[("pressed", COLOUR_PINOUT_BUTTON_PRESSED), ("active", COLOUR_PINOUT_BUTTON_ACTIVE), ("disabled", COLOUR_INNER2_BACKGROUND)]
         )

@@ -16,7 +16,6 @@ icon = set_icon()
 main_window = MainWindow()
 main_window.iconbitmap(True, icon)
 
-
 # styling
 font.nametofont("TkDefaultFont").configure(size=10)
 style = MainStyle(main_window)

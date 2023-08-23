@@ -24,11 +24,28 @@ class CodeWindow:
         self.current_file_path = tk.StringVar(value=self.empty_file_text)
         self.current_file_name = tk.StringVar(value=self.empty_file_text)
 
-        # test program
-        self.compiled_program = [   ["GOTO",   "0x05",  ""],
+        # # test program 1
+        # self.compiled_program = [   ["GOTO",   "0x05",  ""],
+        #                             ["ADDLW",  "0xFF",  ""],
+        #                             ["ADDLW",  "0xFF",  ""],
+        #                             ["ADDLW",  "0xFF",  ""],
+        #                             ["ADDLW",  "0xFF",  ""],
+        #                             ["MOVLW",  "0x08",  ""],
+        #                             ["MOVWF",  "0x20",  ""],
+        #                             ["MOVLW",  "0xA2",  ""],
+        #                             ["ADDWF",  "0x20",  "0"],
+        #                             ["NOP",   "",  ""],
+        #                             ["ADDLW",  "0xA2",  ""],
+        #                             ["ADDWF",  "0x21",  "1"],
+        #                             ["GOTO",  "0x00",  ""],
+        #                             ["ADDLW",  "0xFF",  ""],
+        #                             ["ADDLW",  "0xFF",  ""],    ]
+
+        # test program 2
+        self.compiled_program = [   ["GOTO",   "0x02",  ""],
                                     ["ADDLW",  "0xFF",  ""],
-                                    ["ADDLW",  "0xFF",  ""],
-                                    ["ADDLW",  "0xFF",  ""],
+                                    ["ADDLW",  "0x00",  ""],
+                                    ["MOVWF",  "0x85",  ""],
                                     ["ADDLW",  "0xFF",  ""],
                                     ["MOVLW",  "0x08",  ""],
                                     ["MOVWF",  "0x20",  ""],

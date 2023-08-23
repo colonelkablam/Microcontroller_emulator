@@ -38,13 +38,13 @@ class PortPin():
             pass # no change as pin not in correct state for OUTPUT
 
     def get_direction(self):
-        return self.pin_direction.value
+        return self.pin_direction
 
     def get_input(self):
-        return self.pin_input.value
+        return self.pin_input
 
     def get_output(self):
-        return self.pin_output.value
+        return self.pin_output
 
     def get_name(self):
         return self.name

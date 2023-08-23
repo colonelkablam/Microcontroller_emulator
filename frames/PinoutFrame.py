@@ -4,7 +4,7 @@ from enum import Enum
 from my_constants import *
 from my_enums import *
 
-
+# frame for each pin in the PinoutFrame - PinoutFrame below
 class PinFrame(ttk.Frame):
     def __init__(self, parent, pin_number, side, port_pin=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -12,6 +12,7 @@ class PinFrame(ttk.Frame):
         # configure layout of internal Frames
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
+        self.configure(style='Pin.TFrame')
 
         # properties
         self.parent = parent
@@ -36,52 +37,75 @@ class PinFrame(ttk.Frame):
             self.name = self.port_pin_object.get_name()
             self.direction.set(" INPUT")
 
-            self.input_toggle = tk.Button(self, textvariable=self.input_value, command=self.toggle_pin_input)
+            self.input_toggle = ttk.Button(self, width=1, textvariable=self.input_value, command=self.toggle_pin_input)
             self.input_toggle.grid(column=index, row=0)
             index += index_step
-            self.dir_label = ttk.Label(self, text=self.direction.get(), style="PinOut.TLabel")
+            self.dir_label = ttk.Label(self, text=self.direction.get())
             self.dir_label.grid(column=index, row=0)
             index += index_step
-            self.output_toggle = tk.Button(self, textvariable=self.output_value)
+            self.output_toggle = ttk.Button(self, textvariable=self.output_value)
             self.output_toggle.grid(column=index, row=0)
             self.output_toggle.configure(state="disabled")
             index += index_step
-            self.name_label = ttk.Label(self, text=self.name, style="PinOut.TLabel")
+            self.name_label = ttk.Label(self, text=self.name)
             self.name_label.grid(column=index, row=0)
 
         # else populate with default unassigned values
         else:
-            self.name = "n/a"
-            self.direction.set("------")
+            self.name = " - "
+            self.direction.set(" ---- ")
 
-            self.input_toggle = tk.Button(self, textvariable=self.input_value, command=self.toggle_pin_input)
+            self.input_toggle = ttk.Button(self, textvariable=self.input_value, command=self.toggle_pin_input)
             self.input_toggle.grid(column=index, row=0)
             self.input_toggle.configure(state="disabled")
             index += index_step
-            self.dir_label = ttk.Label(self, text=self.direction.get(), style="PinOut.TLabel")
+            self.dir_label = ttk.Label(self, text=self.direction.get())
             self.dir_label.grid(column=index, row=0)
             index += index_step
-            self.output_toggle = tk.Button(self, textvariable=self.output_value)
+            self.output_toggle = ttk.Button(self, textvariable=self.output_value)
             self.output_toggle.grid(column=index, row=0)
             self.output_toggle.configure(state="disabled")
             index += index_step
-            self.name_label = ttk.Label(self, text=self.name, style="PinOut.TLabel")
+            self.name_label = ttk.Label(self, text=self.name)
             self.name_label.grid(column=index, row=0)
+
+        for widget in self.winfo_children():
+            if widget.winfo_class() == "TButton":
+                widget.configure(style="PinOutOFF.TButton", width=1)
+            if widget.winfo_class() == "TLabel":
+                widget.configure(style="PinOut.TLabel", anchor="center")
 
     # update pin display and set port pin input
     def update(self):
         pin = self.port_pin_object
+        # if a port object connected to pin
         if pin != None:
+            # if set to INPUT
             if pin.get_direction() == PinDir.INPUT:
                 self.direction.set(" INPUT")
                 self.input_toggle.configure(state="normal")
                 self.output_toggle.configure(state="disabled")
+                # get input value and set to port pin
+                pin.set_input(PinVal(self.input_value.get()))
+
+            # if set to OUTPUT
             elif pin.get_direction() == PinDir.OUTPUT:
                 self.direction.set("OUTPUT")
                 self.input_toggle.configure(state="disabled")
                 self.output_toggle.configure(state="normal")
 
-            pin.set_input(PinVal(self.input_value.get()))
+            ## highlight if bit set 
+            #input
+            if self.input_value.get() == 1:
+                self.input_toggle.config(style="PinOutON.TButton")
+            else:
+                self.input_toggle.configure(style="PinOutOFF.TButton")
+            # output
+            if self.output_value.get() == 1:
+                self.output_toggle.configure(style="PinOutON.TButton")
+            else:
+                self.output_toggle.configure(style="PinOutOFF.TButton")
+
 
     def reset(self):
         if self.port_pin_object != None:
@@ -95,10 +119,12 @@ class PinFrame(ttk.Frame):
             self.input_value.set(1)
         else:
             self.input_value.set(0)
+
+        self.update()
         
         print(f"Pin {self.pin_number} value input now {self.input_value.get()}.")
 
-
+# frame to contain all the pins needed for the pinout
 class PinoutFrame(ttk.Frame):
     def __init__(self, parent, port_pins_dict, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -106,22 +132,35 @@ class PinoutFrame(ttk.Frame):
         # configure layout of internal Frames
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-        self.configure(style='MainWindowOuter.TFrame', padding=20)
+        self.configure(style='PinOutBackground.TFrame', padding=20)
 
         # properties
         self.parent = parent
         self.port_pins_dict = port_pins_dict
 
-        # tkinter widgets
+        ## tkinter widgets
 
-        self.left_pin_frame = ttk.Frame(self, style='MainWindowOuter.TFrame')
-        self.left_pin_frame.grid(column=0, row=0, )
-        self.center_pin_frame = ttk.Frame(self, style='MainWindowOuter.TFrame', width=150, height=290)
-        self.center_pin_frame.grid(column=1, row=0, )
-        self.right_pin_frame = ttk.Frame(self, style='MainWindowOuter.TFrame')
-        self.right_pin_frame.grid(column=2, row=0, )
+        # left side of chip
+        self.left_pin_label = ttk.Label(self, text="pin state    name", style="PinOutHeading.TLabel", anchor="e")
+        self.left_pin_label.grid(column=0, row=0, sticky="E", pady=(0,5))
+        self.left_pin_frame = ttk.Frame(self, style='PinOutBackground2.TFrame')
+        self.left_pin_frame.grid(column=0, row=1 )
+        
+        # center of chip
+        self.center_pin_frame = ttk.Frame(self, style='PinOutChip.TFrame', width=210, height=320, padding=10)
+        self.center_pin_frame.grid(column=1, row=1)
+        self.center_pin_frame.grid_propagate(0)
+        self.center_pin_frame.columnconfigure(1, weight=1)
+        self.center_pin_label = ttk.Label(self.center_pin_frame, text="PIC16172", anchor="center", style="PinOutChip.TLabel")
+        self.center_pin_label.grid(column=1, row=0, rowspan=8, sticky="EW")
+       
+       # right side of chip
+        self.left_pin_label = ttk.Label(self, text="name    pin state", style="PinOutHeading.TLabel", anchor="w")
+        self.left_pin_label.grid(column=2, row=0, sticky="W", pady=(0,5))
+        self.right_pin_frame = ttk.Frame(self, style='PinOutBackground2.TFrame')
+        self.right_pin_frame.grid(column=2, row=1 )
 
-        # create list to store pin_frames
+        # create list to store pin_frames for access when updating
         self.pin_frame_list = []
         # initialise chip pins with port_pin_dict to give access to port pins
         self.initialise_chip_pins()
@@ -130,32 +169,49 @@ class PinoutFrame(ttk.Frame):
     # PinoutFrame methods
 
     def initialise_chip_pins(self):
-        # populate left side chip pins 1 to 9
-        for pin_num in range(1, 10):
-            
-            pin = self.port_pins_dict[pin_num]
 
+    # populate left side chip pins 1 to 9
+        for pin_num in range(1, 10):
+
+            # maps port pins to chip pins
+            pin = self.port_pins_dict[pin_num]
+            # row to place pin in (according to physical pinout of PIC16C712)
+            row_num = pin_num - 1
+
+            # PinFrames
             if pin != None:
                 pin_frame = PinFrame(self.left_pin_frame, pin_num, Side.LEFT, pin)
-                pin_frame.grid(column=0, row=pin_num-1)
+                pin_frame.grid(column=0, row=row_num)
                 self.pin_frame_list.append(pin_frame)
             else:   # if no port assigned
                 pin_frame = PinFrame(self.left_pin_frame, pin_num, Side.LEFT)
-                pin_frame.grid(column=0, row=pin_num-1)
+                pin_frame.grid(column=0, row=row_num)
                 self.pin_frame_list.append(pin_frame)
 
-        # populate right side chip pins 18 to 9
+            # chip pin numbers
+            pin_num_label = ttk.Label(self.center_pin_frame, width=2, text=pin_num, style="PinOutChip.TLabel")
+            pin_num_label.grid(column=0, row=row_num, pady=6)
+
+    # populate right side chip pins 18 to 9
         for pin_num in range(18, 9, -1):
+
+            # maps port pins to chip pins
             pin = self.port_pins_dict[pin_num]
+            # row to place pin in (according to physical pinout of PIC16C712)
+            row_num = 18 - pin_num
 
             if pin != None:
                 pin_frame = PinFrame(self.right_pin_frame, pin_num, Side.RIGHT, pin)
-                pin_frame.grid(column=0, row=18 - pin_num)
+                pin_frame.grid(column=0, row=row_num)
                 self.pin_frame_list.append(pin_frame)
             else:   # if no port assigned
                 pin_frame = PinFrame(self.right_pin_frame, pin_num, Side.RIGHT)
-                pin_frame.grid(column=0, row=18 - pin_num)
+                pin_frame.grid(column=0, row=row_num)
                 self.pin_frame_list.append(pin_frame)
+
+            # chip pin numbers
+            pin_num_label = ttk.Label(self.center_pin_frame, width=2, text=pin_num, style="PinOutChip.TLabel")
+            pin_num_label.grid(column=2, row=row_num, pady=6)
 
     def update(self):
         for pin in self.pin_frame_list:
