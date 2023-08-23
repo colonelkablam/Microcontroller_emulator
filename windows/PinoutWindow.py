@@ -24,7 +24,9 @@ class PinoutWindow:
         # create the new window to display pinout
         self.window = tk.Toplevel()
         self.window.title("MCU Pinout")
-        self.window.geometry("%dx%d+%d+%d" % (window_width, window_height, window_xpos, window_ypos))
+        #self.window.geometry("%dx%d+%d+%d" % (window_width, window_height, window_xpos, window_ypos))
+        self.window.resizable(height = False, width = False)
+        self.window.attributes('-topmost', True)
         # style
         self.window["background"] = COLOUR_MAIN_BACKGROUND
         self.window.rowconfigure(0, weight=1)

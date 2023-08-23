@@ -48,3 +48,8 @@ class PortPin():
 
     def get_name(self):
         return self.name
+
+    def reset(self):
+        self.pin_direction = PinDir.INPUT
+        self.pin_output = PinVal.OFF
+        self.pin_input = PinVal.OFF

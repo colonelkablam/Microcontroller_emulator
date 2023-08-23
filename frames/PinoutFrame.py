@@ -82,8 +82,12 @@ class PinFrame(ttk.Frame):
                 self.output_toggle.configure(state="normal")
 
             pin.set_input(PinVal(self.input_value.get()))
-            print(self.input_value.get())
 
+    def reset(self):
+        if self.port_pin_object != None:
+            self.input_value.set(0)
+            self.output_value.set(0)
+            self.direction.set(" INPUT")
 
     def toggle_pin_input(self):
         # toggle between 0 / 1
@@ -100,55 +104,64 @@ class PinoutFrame(ttk.Frame):
         super().__init__(parent, *args, **kwargs)
         
         # configure layout of internal Frames
-        #self.columnconfigure(0, weight=1)
-        #self.rowconfigure(0, weight=1)
-        self.configure(style='MainWindowOuter.TFrame')
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.configure(style='MainWindowOuter.TFrame', padding=20)
 
         # properties
         self.parent = parent
-
+        self.port_pins_dict = port_pins_dict
 
         # tkinter widgets
 
         self.left_pin_frame = ttk.Frame(self, style='MainWindowOuter.TFrame')
         self.left_pin_frame.grid(column=0, row=0, )
-        self.center_pin_frame = ttk.Frame(self, style='MainWindowOuter.TFrame', width=150, height=260)
+        self.center_pin_frame = ttk.Frame(self, style='MainWindowOuter.TFrame', width=150, height=290)
         self.center_pin_frame.grid(column=1, row=0, )
         self.right_pin_frame = ttk.Frame(self, style='MainWindowOuter.TFrame')
         self.right_pin_frame.grid(column=2, row=0, )
 
-        self.pins = []
+        # create list to store pin_frames
+        self.pin_frame_list = []
+        # initialise chip pins with port_pin_dict to give access to port pins
+        self.initialise_chip_pins()
 
+
+    # PinoutFrame methods
+
+    def initialise_chip_pins(self):
         # populate left side chip pins 1 to 9
         for pin_num in range(1, 10):
             
-            pin = port_pins_dict[pin_num]
+            pin = self.port_pins_dict[pin_num]
 
             if pin != None:
                 pin_frame = PinFrame(self.left_pin_frame, pin_num, Side.LEFT, pin)
                 pin_frame.grid(column=0, row=pin_num-1)
-                self.pins.append(pin_frame)
+                self.pin_frame_list.append(pin_frame)
             else:   # if no port assigned
                 pin_frame = PinFrame(self.left_pin_frame, pin_num, Side.LEFT)
                 pin_frame.grid(column=0, row=pin_num-1)
-                self.pins.append(pin_frame)
+                self.pin_frame_list.append(pin_frame)
 
         # populate right side chip pins 18 to 9
         for pin_num in range(18, 9, -1):
-            pin = port_pins_dict[pin_num]
+            pin = self.port_pins_dict[pin_num]
 
             if pin != None:
                 pin_frame = PinFrame(self.right_pin_frame, pin_num, Side.RIGHT, pin)
                 pin_frame.grid(column=0, row=18 - pin_num)
-                self.pins.append(pin_frame)
+                self.pin_frame_list.append(pin_frame)
             else:   # if no port assigned
                 pin_frame = PinFrame(self.right_pin_frame, pin_num, Side.RIGHT)
                 pin_frame.grid(column=0, row=18 - pin_num)
-                self.pins.append(pin_frame)
+                self.pin_frame_list.append(pin_frame)
 
-
-    # PinoutFrame methods
     def update(self):
-        for pin in self.pins:
+        for pin in self.pin_frame_list:
             pin.update()
+
+    def reset(self):
+        for pin_frame in self.pin_frame_list:
+            pin_frame.reset()
 

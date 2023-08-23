@@ -50,19 +50,10 @@ class PortPeripheral():
                 return port_pin
         return None # return None type if not found
 
-    def update_port(self):
-        for port_pin in self.pins:
-            
-            pass
-
-    def read_pins(self):
-        pass
-
-    def write_pins(self):
-        pass
-
-    def initialise_port(self):
-        pass
+    # reset all values
+    def reset(self):
+        for pin in self.port_pins:
+            pin.reset()
     
 
             

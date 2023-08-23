@@ -221,6 +221,12 @@ class DataMemoryFrame(ttk.Frame):
                 if element.winfo_class() == "TLabel" : # miss the Checkbox object
                     element.configure(background="white")
 
+        # TRIS registers start as input by default
+        self.set_byte_by_name("TRISA", 31)
+        self.set_byte_by_name("TRISB", 255)
+        self.set_byte_by_name("PORTA", 0)
+        self.set_byte_by_name("PORTB", 0)
+
         self._SFRs_background_set()
         self.prev_accessed_registers_in_cycle.clear()
         self.accessed_registers_in_cycle.clear()
@@ -267,6 +273,8 @@ class DataMemoryFrame(ttk.Frame):
     # set/clear file reg bit
     def set_file_reg_bit(self, mem_address, bit):
         self.memory[mem_address].set_bit(bit)
+        self.add_accessed_register_cycle(mem_address)
+        print(mem_address, "accessed")
 
     def clear_file_reg_bit(self, mem_address, bit):
         self.memory[mem_address].clear_bit(bit)

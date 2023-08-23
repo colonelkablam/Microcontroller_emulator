@@ -114,12 +114,17 @@ class MCUFrame(ttk.Frame):
     def initialise_program_memory(self):
         self.prog_memory_frame.initialise_program_memory()
 
-    def reset_MCU(self, keepprogram=True):
+    def reset_MCU(self, keepprogram=True):        
         self.prog_memory_frame.reset_program_memory_frame(keepprogram)
         self.data_memory_frame.reset_data_memory_frame()
         self.stack_frame.clear_stack()
         self.w_reg.set_value(0)
         self.set_PC(0)
+
+        self.port_a.reset()
+        self.port_b.reset()
+        self.pinout_frame.reset()
+
         self.reset_clock_info()
         self.MCU_status_frame.reset_display()
 
