@@ -14,6 +14,7 @@ class PortPin():
 
 
     # Pin methods
+    # set direction by corrisponding TRIS register bit
     def set_direction(self, dir_bit):
         if dir_bit == 0:
             self.pin_direction = PinDir.OUTPUT
@@ -27,13 +28,14 @@ class PortPin():
         if self.pin_direction == PinDir.INPUT:
             self.pin_input = digital_value
         else:
-            pass # no change as pin not in correct state
+            pass # no change as pin not in correct state for INPUT
     
+    # set output by corrisponding PORT register bit
     def set_output(self, digital_value):
         if self.pin_direction == PinDir.OUTPUT:
             self.pin_output = digital_value # PinVal enum ON or OFF
         else:
-            pass # no change as pin not in correct state
+            pass # no change as pin not in correct state for OUTPUT
 
     def get_direction(self):
         return self.pin_direction.value

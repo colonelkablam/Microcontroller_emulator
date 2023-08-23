@@ -25,10 +25,11 @@ class PortPeripheral():
         
     # Port methods
     def update_registers(self):
-        # read TRIS registers
+        # read TRIS register and update port pins accordingly
         for bit, port_pin in enumerate(self.port_pins):
             port_pin.set_direction(self.tris_register.get_bit(bit))
 
+        # write to PORT register pin inputs (only if set to IMPUT)
         for bit, port_pin in enumerate(self.port_pins):
             # if set to input read chip pin input
             if port_pin.pin_direction == PinDir.INPUT:
@@ -37,6 +38,7 @@ class PortPeripheral():
                     self.port_register.set_bit(bit)
                 else:
                     self.port_register.clear_bit(bit)
+            # else no change and PORT register remains the same
             else:
                 pass
                 

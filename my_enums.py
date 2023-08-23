@@ -1,5 +1,4 @@
 from enum import Enum
-
 # locally used enums for pin direction/values
 class PinDir(Enum):
     INPUT = 1
