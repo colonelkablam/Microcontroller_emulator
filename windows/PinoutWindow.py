@@ -19,6 +19,8 @@ class PinoutWindow:
 
         self.parent = parent
 
+        self.always_on_top = tk.BooleanVar(value=False)
+
         # tkinter Widgets
 
         # create the new window to display pinout
@@ -26,7 +28,6 @@ class PinoutWindow:
         self.window.title("MCU Pinout")
         #self.window.geometry("%dx%d+%d+%d" % (window_width, window_height, window_xpos, window_ypos))
         self.window.resizable(height = False, width = False)
-        self.window.attributes('-topmost', True)
         # style
         self.window["background"] = COLOUR_MAIN_BACKGROUND
         self.window.rowconfigure(0, weight=1)
@@ -36,7 +37,26 @@ class PinoutWindow:
 
         ##  ChipPinoutFrame for display is created in MCU_frame ##
 
-        # PinoutWindow methods
+        # checkbox to keep window at the top
+        keep_at_top_checkbox = ttk.Checkbutton(    self.window,
+                                                        text="Keep window on top",
+                                                        variable=self.always_on_top,
+                                                        onvalue=True,
+                                                        offvalue=False,
+                                                        style="MCUTickbox3.TCheckbutton",
+                                                        padding=5,
+                                                        takefocus=False,
+                                                        command=self._toggle_keep_on_top      )
+        keep_at_top_checkbox.grid(column=0, row=1, pady=(0,0), padx=(0,0), sticky="EW")
+        
+        
+    ## PinoutWindow methods
+
+    def _toggle_keep_on_top(self):
+        if self.always_on_top.get() == True:
+            self.window.attributes('-topmost', True)
+        else:
+            self.window.attributes('-topmost', False)
 
     def lift_window(self):
         self.window.lift()

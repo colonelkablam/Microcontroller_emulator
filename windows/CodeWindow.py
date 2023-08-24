@@ -19,6 +19,7 @@ class CodeWindow:
         window_ypos = parent.winfo_y() + 30
 
         self.parent = parent
+        self.always_on_top = tk.BooleanVar(value=False)
         
         self.empty_file_text = "** No file loaded **"
         self.current_file_path = tk.StringVar(value=self.empty_file_text)
@@ -47,16 +48,15 @@ class CodeWindow:
                                     ["ADDLW",  "0xFF",  ""],
                                     ["ADDLW",  "0xFF",  ""],
                                     ["ADDLW",  "0xFF",  ""],
-                                    ["CLRW",   "",  ""],
-                                    ["MOVWF",  "0x85",  ""],
-                                    ["MOVLW",  "0x02",  ""],
-                                    ["MOVWF",  "0x05",  "0"],
-                                    ["NOP",   "",  ""],
-                                    ["CLRF",  "0x86",  ""],
-                                    ["MOVLW",  "0x01",  ""],
+                                    ["CLRW",   "0xFF",  ""],
+                                    ["CLRF",   "0x86",  ""],
+                                    ["MOVF",   "0x05",  "0"],
+                                    ["MOVWF",  "0x20",  ""],
+                                    ["NOP",    "",      ""],
                                     ["ADDWF",  "0x06",  "1"],
-                                    ["GOTO",  "0x0C",  ""],
-                                    ["ADDLW",  "0xFF",  ""],    ]
+                                    ["GOTO",   "0x09",  ""],
+                                    ["ADDLW",  "0xFF",  ""],
+                                    ["ADDLW",  "0xFF",  ""],   ]
 
 
         # tkinter Widgets
@@ -110,8 +110,26 @@ class CodeWindow:
             child.grid(padx=5, pady=5)
         self.load_into_MCU_button.configure(style="CodeWindow2.TButton")
 
+        # checkbox to keep window at the top
+        keep_at_top_checkbox = ttk.Checkbutton( self.code_window,
+                                                text="Keep window on top",
+                                                variable=self.always_on_top,
+                                                onvalue=True,
+                                                offvalue=False,
+                                                style="MCUTickbox3.TCheckbutton",
+                                                padding=5,
+                                                takefocus=False,
+                                                command=self._toggle_keep_on_top      )
+        keep_at_top_checkbox.grid(column=0, row=2, pady=(0,0), padx=(0,0), sticky="EW")
 
-    # CodeWindow methods
+
+    ## CodeWindow methods
+
+    def _toggle_keep_on_top(self):
+        if self.always_on_top.get() == True:
+            self.code_window.attributes('-topmost', True)
+        else:
+            self.code_window.attributes('-topmost', False)
 
     # open a text file and generate fill code editor with text
     def open_text_file(self):

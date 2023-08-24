@@ -83,7 +83,7 @@ class NBitNumber():
         if bit >= 0 and bit < self.number_of_bits:
             self.set_value(((1 << bit) | self.dec_value_obj.get()))
 
-    def clear_bit(self, bit=0):
+    def clear_bit(self, bit):
         if bit >= 0 and bit < self.number_of_bits:
             self.set_value(self.dec_value_obj.get() & (~(1 << bit)))
 

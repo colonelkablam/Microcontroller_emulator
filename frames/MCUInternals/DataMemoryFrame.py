@@ -113,24 +113,25 @@ class DataMemoryFrame(ttk.Frame):
         
         # add watched reg. display tickbox
         # user can toggle between watched and all registers
-        self.toggle_watching_registers = ttk.Checkbutton( self,
-                                                    text="Display only selected registers",
-                                                    variable=self.watching_selected_registers,
-                                                    onvalue=True,
-                                                    offvalue=False,
-                                                    style="MCUTickbox.TCheckbutton",
-                                                    takefocus=False,
-                                                    command=self._toggle_watching_selected_registers      )
+        self.toggle_watching_registers = ttk.Checkbutton(   self,
+                                                            text="Display only selected registers",
+                                                            variable=self.watching_selected_registers,
+                                                            onvalue=True,
+                                                            offvalue=False,
+                                                            style="MCUTickbox2.TCheckbutton",
+                                                            takefocus=False,
+                                                            command=self._toggle_watching_selected_registers      )
         self.toggle_watching_registers.grid(column=0, row=4, pady=(5,0), padx=(3,3), sticky="EW")
 
         # user can toggle between watching accessed and all registers
-        self.toggle_accessed_registers = ttk.Checkbutton( self,
-                                                    text="Display only accessed registers",
-                                                    variable=self.watching_accessed_registers,
-                                                    onvalue=True,
-                                                    offvalue=False,
-                                                    style="MCUTickbox.TCheckbutton",
-                                                    command=self._toggle_watching_accessed_registers      )
+        self.toggle_accessed_registers = ttk.Checkbutton(   self,
+                                                            text="Display only accessed registers",
+                                                            variable=self.watching_accessed_registers,
+                                                            onvalue=True,
+                                                            offvalue=False,
+                                                            style="MCUTickbox2.TCheckbutton",
+                                                            takefocus=False,
+                                                            command=self._toggle_watching_accessed_registers      )
         self.toggle_accessed_registers.grid(column=0, row=5, pady=(0,0), padx=(3,3), sticky="EW")
 
 
@@ -226,6 +227,8 @@ class DataMemoryFrame(ttk.Frame):
         self.set_byte_by_name("TRISB", 255)
         self.set_byte_by_name("PORTA", 0)
         self.set_byte_by_name("PORTB", 0)
+        self.set_byte_by_name("STATUS", 0)
+
 
         self._SFRs_background_set()
         self.prev_accessed_registers_in_cycle.clear()
@@ -274,7 +277,6 @@ class DataMemoryFrame(ttk.Frame):
     def set_file_reg_bit(self, mem_address, bit):
         self.memory[mem_address].set_bit(bit)
         self.add_accessed_register_cycle(mem_address)
-        print(mem_address, "accessed")
 
     def clear_file_reg_bit(self, mem_address, bit):
         self.memory[mem_address].clear_bit(bit)
@@ -285,6 +287,13 @@ class DataMemoryFrame(ttk.Frame):
         
     def clear_Z_bit_status(self):
         self.memory[self.SFR_dict["STATUS"]].clear_bit(2)
+
+    # set/clear status bit 0 (C); result of ALU carry over/borrow 
+    def set_C_bit_status(self):
+        self.memory[self.SFR_dict["STATUS"]].set_bit(0)
+        
+    def clear_C_bit_status(self):
+        self.memory[self.SFR_dict["STATUS"]].clear_bit(0)
 
 
 

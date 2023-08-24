@@ -315,6 +315,13 @@ class MCUFrame(ttk.Frame):
     def clear_Z_bit_status(self):
         self.data_memory_frame.clear_Z_bit_status()
 
+    # set/clear status bit 2 (C); result of ALU carry over or borrow 
+    def set_C_bit_status(self):
+        self.data_memory_frame.set_C_bit_status()
+        
+    def clear_C_bit_status(self):
+        self.data_memory_frame.clear_C_bit_status()
+
 
 
 

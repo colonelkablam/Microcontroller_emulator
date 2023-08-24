@@ -16,6 +16,7 @@ class LogWindow:
         window_ypos = parent.winfo_y() + 100
 
         self.parent = parent
+        self.always_on_top = tk.BooleanVar(value=False)
 
 
         # tkinter Widgets
@@ -36,8 +37,25 @@ class LogWindow:
         self.log_frame = LogDisplayFrame(self.log_window, self.parent.log_text)
         self.log_frame.grid(column=0, row=0, sticky="NSEW")
 
+        keep_at_top_checkbox = ttk.Checkbutton(     self.log_window,
+                                                    text="Keep window on top",
+                                                    variable=self.always_on_top,
+                                                    onvalue=True,
+                                                    offvalue=False,
+                                                    style="MCUTickbox3.TCheckbutton",
+                                                    padding=5,
+                                                    takefocus=False,
+                                                    command=self._toggle_keep_on_top      )
+        keep_at_top_checkbox.grid(column=0, row=1, pady=(0,0), padx=(0,0), sticky="EW")
+        
 
-        # LogWindow methods
+    ## LogWindow methods
+
+    def _toggle_keep_on_top(self):
+        if self.always_on_top.get() == True:
+            self.log_window.attributes('-topmost', True)
+        else:
+            self.log_window.attributes('-topmost', False)
 
     def update_window(self):
         self.log_frame.display_log()
