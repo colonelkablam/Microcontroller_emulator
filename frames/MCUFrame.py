@@ -217,16 +217,14 @@ class MCUFrame(ttk.Frame):
         self.num_instruction_cycles += 1
         self.num_instructions_executed += 1
 
+        self.parent.log_commit()    # add to log
+
         # test to see if next instruction a NOP
         if self.is_next_cycle_NOP == True:
             self.advance_NOP()
             self.is_next_cycle_NOP = False
 
         self.MCU_status_frame.update_display() # update focused byte displays
-
-        self.parent.log_commit()    # add log
-
-
 
 
     # advance if NOP called by InstructionDecoder

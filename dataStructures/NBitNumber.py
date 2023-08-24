@@ -19,7 +19,9 @@ class NBitNumber():
     
     # Byte methods
     def set_value(self, new_value):
-        self.dec_value_obj.set(new_value)
+        # keep within possible values of an n-bit number
+        kept_within_bit_range = new_value % (2**self.number_of_bits)
+        self.dec_value_obj.set(kept_within_bit_range)
         self.update_byte()
 
 

@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 from my_constants import*
 
-
 class InstructionDecoder():
     def __init__(self, parent, program_counter):
 
@@ -17,13 +16,13 @@ class InstructionDecoder():
         self.program_counter = program_counter
     
 
-    # InstructionDecoder methods
+    ## InstructionDecoder methods
 
     def get_new_program_address(self, instruction):
         # split the instruction
         self._split_instruction(instruction)
 
-        # BYTE-ORIENTATED FILE REGISTER OPERATIONS - only act on File Registers
+        ## BYTE-ORIENTATED FILE REGISTER OPERATIONS - only act on File Registers
         if self.mnumonic == "ADDWF":
             w = self._get_w_reg_value()
             f_value = self._get_file_reg_value(self.operand_1)
@@ -112,9 +111,76 @@ class InstructionDecoder():
             self.add_to_log(f"NOP; No operation executed")
 
 
-        # BIT-ORIENTATED FILE REGISTER OPERATIONS - only act on File Registers
+        ## BIT-ORIENTATED FILE REGISTER OPERATIONS - only act on File Registers
+        
+        # Bit Clear File reg
+        elif self.mnumonic == "BCF":
 
-        # LITERAL AND CONTROL OPERATIONS
+            # clear bit
+            self._clear_file_reg_bit(self.operand_1, self.operand_2)
+
+            # advance to next program line
+            self.program_counter.advance_one()
+            # log
+            self.add_to_log(f"BCF; FILE REG addr. 0x{self.operand_1:02X} [{self.operand_1}] bit {self.operand_2} cleared to 0.")
+
+        # Bit Set File reg
+        elif self.mnumonic == "BSF":
+            
+            # set bit
+            self._set_file_reg_bit(self.operand_1, self.operand_2)
+
+            # advance to next program line
+            self.program_counter.advance_one()
+            # log
+            self.add_to_log(f"BSF; FILE REG addr. 0x{self.operand_1:02X} [{self.operand_1}] bit {self.operand_2} set to 1.")
+
+        # Bit Test File reg Skip if Clear
+        elif self.mnumonic == "BTFSC":
+            # get bit value
+            file_reg_bit_value = self._get_file_reg_bit_value(self.operand_1, self.operand_2)
+            # log outcome
+            self.add_to_log(f"BTFSC; FILE REG addr. 0x{self.operand_1:02X} [{self.operand_1}] bit {self.operand_2} = {file_reg_bit_value}.")
+
+            # test bit
+            if file_reg_bit_value == 0:
+                # SKIPPED next line; next cycle to be an NOP - 2 instruction cycles
+                self.parent.set_next_cycle_NOP()
+                # skip a program line
+                self.program_counter.advance_two()
+                self.add_to_log(f"NEXT INSTRUCTION SKIPPED")
+
+            elif file_reg_bit_value == 1:
+                # advance to next program line
+                self.program_counter.advance_one()
+                self.add_to_log(f"NEXT INSTRUCTION EXECUTED")
+
+                # Bit Test File reg Skip if Clear
+
+        # Bit Test File reg Skip if Set 
+        elif self.mnumonic == "BTFSS":
+            # get bit value
+            file_reg_bit_value = self._get_file_reg_bit_value(self.operand_1, self.operand_2)
+            # log outcome
+            self.add_to_log(f"BTFSS; FILE REG addr. 0x{self.operand_1:02X} [{self.operand_1}] bit {self.operand_2} = {file_reg_bit_value}.")
+
+            # test bit
+            if file_reg_bit_value == 1:
+                # SKIPPED next line; next cycle to be an NOP - 2 instruction cycles
+                self.parent.set_next_cycle_NOP()
+                # skip a program line
+                self.program_counter.advance_two()
+                self.add_to_log(f"NEXT INSTRUCTION SKIPPED")
+
+            elif file_reg_bit_value == 0:
+                # advance to next program line
+                self.program_counter.advance_one()
+                self.add_to_log(f"NEXT INSTRUCTION EXECUTED")
+
+
+        ## LITERAL AND CONTROL OPERATIONS
+
+        # Add lieral value with W Reg
         elif self.mnumonic == "ADDLW":
             w = self._get_w_reg_value()
             total = w + self.operand_1
@@ -123,7 +189,7 @@ class InstructionDecoder():
             self._handle_C_bit(total)
         
             # handle byte wrap-around
-            result = total % 256
+            result = total % 256 # 8-bit number
 
             # handle Z bit
             self._handle_Z_bit(result)
@@ -136,33 +202,75 @@ class InstructionDecoder():
             # log
             self.add_to_log(f"ADDLW; literal value ({self.operand_1}) + W_REG value ({w}) --> W_REG (result: {self._get_w_reg_value()})")
 
+        # GOTO a given address
         elif self.mnumonic == "GOTO":
             # set program counter to new address
             self.program_counter.set_value(self.operand_1)
+
             # set next cycle to be an NOP as GOTO uses 2 instruction cycles
             self.parent.set_next_cycle_NOP()
+
             # log
             self.add_to_log(f"GOTO; address 0x{self.operand_1:02X} [{self.operand_1}]; takes 2 instruction cycles")
 
+        # CALL a subroutine - push return address (PC + 1) onto stack then GOTO given address
         elif self.mnumonic == "CALL":
             # advance to next program line
+            self.program_counter.advance_one()
+            
+            # then push current PC address to stack
+            self._push_stack(self.program_counter.get_value())
+            
+            # set program counter to new address - like GOTO
             self.program_counter.set_value(self.operand_1)
-            # then push current PCL to stack
+
+            # set next cycle to be an NOP as GOTO uses 2 instruction cycles
+            self.parent.set_next_cycle_NOP()
+
+            # log
+            self.add_to_log(f"CALL; subroutine at address 0x{self.operand_1:02X} [{self.operand_1}]; takes 2 instruction cycles")
+
+
 
         elif self.mnumonic == "MOVLW":
+            # set new w reg value
             self._set_w_reg_value(self.operand_1)
+
             # advance to next program line
             self.program_counter.advance_one()
+
             # log
             self.add_to_log(f"MOVLW; literal value ({self.operand_1}) --> W_REG addr.")
 
+        # Return from a subroutine using stack
+        elif self.mnumonic == "RETURN":
+            # get return address - most recent stack item
+            return_address = self._pop_stack()
+
+            # set PC to return address
+            self.program_counter.set_value(return_address)
+
+            # set next cycle to be an NOP as GOTO uses 2 instruction cycles
+            self.parent.set_next_cycle_NOP()
+
+            # log
+            self.add_to_log(f"RETURN; Return to address 0x{return_address:02X} [{self.operand_1}]; takes 2 instruction cycles")
+        
+        # catch-all to log if instruction not understood
         else:
+            # advance to next program line
             self.program_counter.advance_one()
             self.add_to_log(f"Unrecognised instruction; {instruction}")
-            # advance to next program line
 
 
     ## InstructionDecoder internal methods
+
+    # stack methods
+    def _push_stack(self, return_address):
+        self.parent.push_stack(return_address)
+
+    def _pop_stack(self):
+        return self.parent.pop_stack()
 
     # get numerical address location by name
     def _get_address_by_name(self, name):
@@ -210,8 +318,12 @@ class InstructionDecoder():
                 self.parent.clear_Z_bit_status()
 
     # set/clear bit from file register
-    def _set_file_reg_value_bit(self, file_reg, bit):
+    def _get_file_reg_bit_value(self, file_reg, bit):
+        return self.parent.get_byte_by_address(file_reg).get_bit(bit)
+
+    def _set_file_reg_bit(self, file_reg, bit):
         self.parent.set_file_reg_bit(file_reg, bit)
+
     def _clear_file_reg_bit(self, file_reg, bit):
         self.parent.clear_file_reg_bit(file_reg, bit)
 
