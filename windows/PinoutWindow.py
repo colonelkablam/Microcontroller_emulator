@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from my_constants import *
-from frames import PinoutFrame
+from frames import ChipPinoutFrame
 
 
 
@@ -34,7 +34,7 @@ class PinoutWindow:
         # bind functions
         self.window.wm_protocol('WM_DELETE_WINDOW', self.hide) # clean up after window close
 
-        ##  PinoutFrame for display is created in MCU_frame ##
+        ##  ChipPinoutFrame for display is created in MCU_frame ##
 
         # PinoutWindow methods
 

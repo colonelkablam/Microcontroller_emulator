@@ -29,19 +29,24 @@ class PortPeripheral():
         for bit, port_pin in enumerate(self.port_pins):
             port_pin.set_direction(self.tris_register.get_bit(bit))
 
-        # write to PORT register pin inputs (only if set to IMPUT)
+        # decide pins to set
         for bit, port_pin in enumerate(self.port_pins):
-            # if set to input read chip pin input
+
+            # if set to INPUT read CHIP pin input and set PORT register accordingly
             if port_pin.pin_direction == PinDir.INPUT:
                 # if port pin set to input change value accordingly
                 if port_pin.pin_input == PinVal.ON:
                     self.port_register.set_bit(bit)
                 else:
                     self.port_register.clear_bit(bit)
-            # else no change and PORT register remains the same
-            else:
-                pass
-                
+
+            # if set to OUTPUT read PORT pin input and set CHIP pin accordingly
+            elif port_pin.pin_direction == PinDir.OUTPUT:
+                # if port pin set to output change output value according to PORT reg. bit value
+                if self.port_register.get_bit(bit) == 0:
+                    port_pin.set_output(PinVal.OFF)
+                elif self.port_register.get_bit(bit) == 1:
+                    port_pin.set_output(PinVal.ON)
 
     # return port pin object
     def get_port_pin_by_name(self, name):

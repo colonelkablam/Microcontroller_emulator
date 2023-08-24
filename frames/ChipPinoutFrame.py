@@ -4,8 +4,8 @@ from enum import Enum
 from my_constants import *
 from my_enums import *
 
-# frame for each pin in the PinoutFrame - PinoutFrame below
-class PinFrame(ttk.Frame):
+# frame for each chip pin in the ChipPinoutFrame - ChipPinoutFrame below
+class ChipPinFrame(ttk.Frame):
     def __init__(self, parent, pin_number, side, port_pin=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
@@ -35,12 +35,12 @@ class PinFrame(ttk.Frame):
         # if peripheral port pin assigned populate with values of port pins
         if self.port_pin_object != None:
             self.name = self.port_pin_object.get_name()
-            self.direction.set(" INPUT")
+            self.direction.set("INPUT ")
 
             self.input_toggle = ttk.Button(self, width=1, textvariable=self.input_value, command=self.toggle_pin_input)
             self.input_toggle.grid(column=index, row=0)
             index += index_step
-            self.dir_label = ttk.Label(self, text=self.direction.get())
+            self.dir_label = ttk.Label(self, textvariable=self.direction)
             self.dir_label.grid(column=index, row=0)
             index += index_step
             self.output_toggle = ttk.Button(self, textvariable=self.output_value)
@@ -59,7 +59,7 @@ class PinFrame(ttk.Frame):
             self.input_toggle.grid(column=index, row=0)
             self.input_toggle.configure(state="disabled")
             index += index_step
-            self.dir_label = ttk.Label(self, text=self.direction.get())
+            self.dir_label = ttk.Label(self, textvariable=self.direction)
             self.dir_label.grid(column=index, row=0)
             index += index_step
             self.output_toggle = ttk.Button(self, textvariable=self.output_value)
@@ -82,7 +82,7 @@ class PinFrame(ttk.Frame):
         if pin != None:
             # if set to INPUT
             if pin.get_direction() == PinDir.INPUT:
-                self.direction.set(" INPUT")
+                self.direction.set("INPUT ")
                 self.input_toggle.configure(state="normal")
                 self.output_toggle.configure(state="disabled")
                 # get input value and set to port pin
@@ -93,6 +93,9 @@ class PinFrame(ttk.Frame):
                 self.direction.set("OUTPUT")
                 self.input_toggle.configure(state="disabled")
                 self.output_toggle.configure(state="normal")
+                # get output value and set to chip pin
+                print("output val.", pin.get_output().value)
+                self.output_value.set(pin.get_output().value)
 
             ## highlight if bit set 
             #input
@@ -106,12 +109,17 @@ class PinFrame(ttk.Frame):
             else:
                 self.output_toggle.configure(style="PinOutOFF.TButton")
 
+        # if object None then no action
+        else:
+            pass
+
 
     def reset(self):
         if self.port_pin_object != None:
             self.input_value.set(0)
             self.output_value.set(0)
             self.direction.set(" INPUT")
+            self.update()
 
     def toggle_pin_input(self):
         # toggle between 0 / 1
@@ -125,7 +133,7 @@ class PinFrame(ttk.Frame):
         print(f"Pin {self.pin_number} value input now {self.input_value.get()}.")
 
 # frame to contain all the pins needed for the pinout
-class PinoutFrame(ttk.Frame):
+class ChipPinoutFrame(ttk.Frame):
     def __init__(self, parent, port_pins_dict, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         
@@ -166,7 +174,7 @@ class PinoutFrame(ttk.Frame):
         self.initialise_chip_pins()
 
 
-    # PinoutFrame methods
+    # ChipPinoutFrame methods
 
     def initialise_chip_pins(self):
 
@@ -178,13 +186,13 @@ class PinoutFrame(ttk.Frame):
             # row to place pin in (according to physical pinout of PIC16C712)
             row_num = pin_num - 1
 
-            # PinFrames
+            # ChipPinFrames
             if pin != None:
-                pin_frame = PinFrame(self.left_pin_frame, pin_num, Side.LEFT, pin)
+                pin_frame = ChipPinFrame(self.left_pin_frame, pin_num, Side.LEFT, pin)
                 pin_frame.grid(column=0, row=row_num)
                 self.pin_frame_list.append(pin_frame)
             else:   # if no port assigned
-                pin_frame = PinFrame(self.left_pin_frame, pin_num, Side.LEFT)
+                pin_frame = ChipPinFrame(self.left_pin_frame, pin_num, Side.LEFT)
                 pin_frame.grid(column=0, row=row_num)
                 self.pin_frame_list.append(pin_frame)
 
@@ -201,11 +209,11 @@ class PinoutFrame(ttk.Frame):
             row_num = 18 - pin_num
 
             if pin != None:
-                pin_frame = PinFrame(self.right_pin_frame, pin_num, Side.RIGHT, pin)
+                pin_frame = ChipPinFrame(self.right_pin_frame, pin_num, Side.RIGHT, pin)
                 pin_frame.grid(column=0, row=row_num)
                 self.pin_frame_list.append(pin_frame)
             else:   # if no port assigned
-                pin_frame = PinFrame(self.right_pin_frame, pin_num, Side.RIGHT)
+                pin_frame = ChipPinFrame(self.right_pin_frame, pin_num, Side.RIGHT)
                 pin_frame.grid(column=0, row=row_num)
                 self.pin_frame_list.append(pin_frame)
 

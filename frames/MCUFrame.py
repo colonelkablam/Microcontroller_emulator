@@ -4,7 +4,7 @@ import threading
 import multiprocessing
 from my_constants import*
 from dataStructures import NBitNumber
-from frames import ControlPanelFrame, CodeDisplayFrame, PinoutFrame
+from frames import ControlPanelFrame, CodeDisplayFrame, ChipPinoutFrame
 from frames.MCUInternals import ProgramCounter, ProgramMemoryFrame,\
                                 DataMemoryFrame, MCUStatusFrame,\
                                 StackDisplayFrame, InstructionDecoder, \
@@ -105,7 +105,7 @@ class MCUFrame(ttk.Frame):
                                     16 : None     }
 
         # create a pinout_frame - contains the state of the chip pins - contained in the pinout window
-        self.pinout_frame = PinoutFrame(self.parent.pinout_window.window, self.peripheral_pin_dict)
+        self.pinout_frame = ChipPinoutFrame(self.parent.pinout_window.window, self.peripheral_pin_dict)
         self.pinout_frame.grid(column=0, row=0, sticky="NSEW")
 
 
@@ -206,12 +206,14 @@ class MCUFrame(ttk.Frame):
     # main advance method - calls instruction decoder (logic of MCU) and updates PCL
     def advance_cycle(self):
         # get new PC address and altered reg address from the instruction decoder object (and handle wrapping around of max prog mem size)
-        self.pinout_frame.update()
-        self.port_a.update_registers()
-        self.port_b.update_registers()
+
         self.instruction_decoder.get_new_program_address(self.get_current_instruction())
         self.prog_memory_frame.highlight_current_instruction(self.program_counter.get_value())
         self.data_memory_frame.highlight_accessed_registers_cycle()
+        self.port_a.update_registers()
+        self.port_b.update_registers()
+        self.pinout_frame.update()
+
         self.num_instruction_cycles += 1
         self.num_instructions_executed += 1
 
@@ -222,7 +224,7 @@ class MCUFrame(ttk.Frame):
 
         self.MCU_status_frame.update_display() # update focused byte displays
 
-        self.parent.log_commit()
+        self.parent.log_commit()    # add log
 
 
 
