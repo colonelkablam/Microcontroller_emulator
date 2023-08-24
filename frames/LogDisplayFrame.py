@@ -20,15 +20,15 @@ class LogDisplayFrame(ttk.Frame):
         # tkinter widgets
 
         # scrollbar
-        self.log_scroll_y = tk.Scrollbar(self)
+        self.log_scroll_y = ttk.Scrollbar(self)
         self.log_scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.log_scroll_x = tk.Scrollbar(self, orient='horizontal')
+        self.log_scroll_x = ttk.Scrollbar(self, orient='horizontal')
         self.log_scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
 
         # log text box
-        self.log_text_box = tk.Text(self, yscrollcommand=self.log_scroll_y.set, wrap="none")
-        self.log_text_box = tk.Text(self, xscrollcommand=self.log_scroll_x.set, wrap="none")
+        self.log_text_box = tk.Text(self, yscrollcommand=self.log_scroll_y.set, xscrollcommand=self.log_scroll_x.set, wrap="none")
+        #self.log_text_box = tk.Text(self, xscrollcommand=self.log_scroll_x.set, wrap="none")
         self.log_text_box.pack(expand=True, fill=tk.BOTH)
 
         # configure scrollbar
@@ -48,6 +48,13 @@ class LogDisplayFrame(ttk.Frame):
         self.log_text_box.delete(1.0, tk.END) # clear text box
         for log_entry in log_lines:
             self.log_text_box.insert(tk.END, log_entry + "\n")
+
+    def toggle_dark_theme(self, bool):
+        if bool == True:
+            self.log_text_box.configure(background=LOG_BACKGROUND_DARK, foreground=LOG_BACKGROUND_LIGHT)
+        else:
+            self.log_text_box.configure(background=LOG_BACKGROUND_LIGHT, foreground=LOG_BACKGROUND_DARK)
+
 
 
 

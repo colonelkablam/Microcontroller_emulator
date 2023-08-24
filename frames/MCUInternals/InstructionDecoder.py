@@ -39,7 +39,6 @@ class InstructionDecoder():
 
             # store value of reg in w or f (0 or 1)
             loc_string = self._where_to_store_result(result, self.operand_1, self.operand_2)
-            # advance to next program line
 
             # advance to next program line
             self.program_counter.advance_one()
@@ -47,6 +46,11 @@ class InstructionDecoder():
             # log
             self.add_to_log(f"ADDWF; W_REG value ({w}) + FILE REG 0x{self.operand_1:02X} value ({f_value}) --> {loc_string}")
 
+
+
+        # AND W reg and file reg
+
+        # ANDWF needed
 
         # clear value of file register given
         elif self.mnumonic == "CLRF":
@@ -201,17 +205,26 @@ class InstructionDecoder():
             self.program_counter.advance_one()
             # log
             self.add_to_log(f"ADDLW; literal value ({self.operand_1}) + W_REG value ({w}) --> W_REG (result: {self._get_w_reg_value()})")
+        
+        # AND W Reg with literal value, store in w reg
+        elif self.mnumonic == "ANDLW":
+            literal = self.operand_1
+            w = self._get_w_reg_value()
 
-        # GOTO a given address
-        elif self.mnumonic == "GOTO":
-            # set program counter to new address
-            self.program_counter.set_value(self.operand_1)
+            # bitwise and the two values
+            result = literal & w
 
-            # set next cycle to be an NOP as GOTO uses 2 instruction cycles
-            self.parent.set_next_cycle_NOP()
+            # set Z bit according to result
+            self._handle_Z_bit(result)
+
+            # set new w reg value
+            self._set_w_reg_value(result)
+
+            # advance to next program line
+            self.program_counter.advance_one()
 
             # log
-            self.add_to_log(f"GOTO; address 0x{self.operand_1:02X} [{self.operand_1}]; takes 2 instruction cycles")
+            self.add_to_log(f"ANDWF; W_REG value ({w}) bitwise & with literal value {literal} = {result}\n w: {w:08b}\n l: {literal:08b}&\n  = {result:08b}")
 
         # CALL a subroutine - push return address (PC + 1) onto stack then GOTO given address
         elif self.mnumonic == "CALL":
@@ -230,8 +243,18 @@ class InstructionDecoder():
             # log
             self.add_to_log(f"CALL; subroutine at address 0x{self.operand_1:02X} [{self.operand_1}]; takes 2 instruction cycles")
 
+        # GOTO a given address
+        elif self.mnumonic == "GOTO":
+            # set program counter to new address
+            self.program_counter.set_value(self.operand_1)
 
+            # set next cycle to be an NOP as GOTO uses 2 instruction cycles
+            self.parent.set_next_cycle_NOP()
 
+            # log
+            self.add_to_log(f"GOTO; address 0x{self.operand_1:02X} [{self.operand_1}]; takes 2 instruction cycles")
+
+        # MOVE a literal value to w reg
         elif self.mnumonic == "MOVLW":
             # set new w reg value
             self._set_w_reg_value(self.operand_1)

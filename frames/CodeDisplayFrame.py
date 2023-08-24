@@ -42,10 +42,10 @@ class CodeDisplayFrame(ttk.Frame):
         self.scroll_canvas.columnconfigure(0, weight=1)
 
         # scrollbars
-        self.code_scroll = tk.Scrollbar(self.code_box_frame, orient='vertical', command=self.scroll_canvas.yview)
+        self.code_scroll = ttk.Scrollbar(self.code_box_frame, orient='vertical', command=self.scroll_canvas.yview)
         self.code_scroll.grid(column=2, row=0, sticky="NS")
 
-        self.code_scroll_h = tk.Scrollbar(self.code_box_frame, orient='horizontal', command=self.scroll_canvas.xview)
+        self.code_scroll_h = ttk.Scrollbar(self.code_box_frame, orient='horizontal', command=self.scroll_canvas.xview)
         self.code_scroll_h.grid(column=0, row=1, sticky="EW")
 
         # configure canvas

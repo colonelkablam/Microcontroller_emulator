@@ -59,24 +59,38 @@ class CodeWindow:
         #                             ["ADDLW",  "0xFF",  ""],   ]
 
         # test program 3
-        self.compiled_program = [   ["GOTO",   "0x02",  ""],
+        # self.compiled_program = [   ["GOTO",   "0x02",  ""],
+        #                             ["ADDLW",  "0xFF",  ""],
+        #                             ["CALL",   "0x06",  ""], # 2
+        #                             ["GOTO",   "0x10",  ""],
+        #                             ["ADDLW",  "0xFF",  ""],
+        #                             ["ADDLW",  "0xFF",  ""],
+        #                             ["ADDLW",  "0x02",  ""], # 6
+        #                             ["ADDLW",  "0x10",  ""],
+        #                             ["CALL",   "0x0A",  ""],
+        #                             ["RETURN",   "",  ""],
+        #                             ["MOVWF",  "0x20",  "1"], # A
+        #                             ["RETURN",  "0xFF",  ""],
+        #                             ["CALL",   "0x0D",  ""],
+        #                             ["GOTO",   "0x00",  ""],
+        #                             ["ADDLW",  "0xFF",  ""],
+        #                             ["MOVF",   "0x05",  "0"], # F
+        #                             ["GOTO",  "0x00",  ""],   
+        #                             ["RETURN",  "",     ""],        ]
+
+        # test program 4
+        self.compiled_program = [   ["CALL",   "0x08",  ""],
+                                    ["CLRF",   "0x86",  ""],
+                                    ["MOVLW",  "0x0A",  ""],
+                                    ["ANDLW",  "0x12",  ""],
+                                    ["MOVWF",  "0x06",  "0"],
+                                    ["NOP",  "",  ""],
+                                    ["GOTO",  "0x05",  ""],
                                     ["ADDLW",  "0xFF",  ""],
-                                    ["CALL",   "0x06",  ""], # 2
-                                    ["GOTO",   "0x10",  ""],
-                                    ["ADDLW",  "0xFF",  ""],
-                                    ["ADDLW",  "0xFF",  ""],
-                                    ["ADDLW",  "0x02",  ""], # 6
-                                    ["ADDLW",  "0x10",  ""],
-                                    ["CALL",   "0x0A",  ""],
-                                    ["RETURN",   "",  ""],
-                                    ["MOVWF",  "0x20",  "1"], # A
-                                    ["RETURN",  "0xFF",  ""],
-                                    ["CALL",   "0x0D",  ""],
-                                    ["GOTO",   "0x00",  ""],
-                                    ["ADDLW",  "0xFF",  ""],
-                                    ["MOVF",   "0x05",  "0"], # F
-                                    ["GOTO",  "0x00",  ""],   
-                                    ["RETURN",  "",     ""],        ]
+                                    ["CLRW",  "",  ""],
+                                    ["ADDLW",  "0x01",  ""],
+                                    ["ADDLW",  "0x01",  ""],
+                                    ["RETURN",  "0xFF",  ""]         ]
 
 
         # tkinter Widgets
