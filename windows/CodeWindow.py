@@ -1,5 +1,6 @@
 import tkinter as tk
 import os
+import re
 from tkinter import ttk
 from frames import CodeDisplayFrame
 from my_constants import *
@@ -27,7 +28,8 @@ class CodeWindow:
         self.current_file_name = tk.StringVar(value=self.empty_file_text)
 
         self.instruction_set = [    "GOTO",
-                                    "ADDLW", ]
+                                    "ADDLW",
+                                    "ADDWF"  ]
 
         # # test program 1
         # self.compiled_program = [   ["GOTO",   "0x05",  ""],
@@ -266,72 +268,108 @@ class CodeWindow:
         
         # get the text from the text box in the code_frame object
         whole_text = self.code_frame.code_text.get(1.0, tk.END)
-        print(whole_text)
-
-        # split the text into a list of lines
-        no_empty_line_list = []
-
-        for line in whole_text.split("\n"):
-            if len(line) != 0: # remove empty lines
-                no_empty_line_list.append(line.strip()) # removes whitespaces
 
         # split the lines into words
         word_list_per_line = []
 
-        for line in no_empty_line_list:
+        for line in whole_text.split("\n"):
             word_list = []
-            if line != "": # remove empty lists
-                for word in line.split():
-                    if word[0] == ";":
-                        break
+            # for each word in line
+            for word in line.split():
+                # check for ';' comment character to ignore whole/rest of line
+                if word[0] == ";":
+                    break
+                else:
                     word_list.append(word)
+            # add word list to line list if any words
+            if len(word_list) != 0:
                 word_list_per_line.append(word_list)
 
         print(word_list_per_line)
 
         # create empty list for upload to MCU
         compiled_program = []
-        for empty_instruction in range(265):
+        for empty_instruction in range(256):
             compiled_program.append(["ADDWF", "0xFF", "-"]) # list of 3 empty strings (MCU format)
-
-        print(compiled_program)
         
         # dict to store vars
         var_dict = {}
 
+        subroutine_dict = {}
+
         # keep track of instruction address
         PC = 0
-        for instruction in word_list_per_line:
+
+        # iterate through code lines
+        for text_line, instruction in enumerate(word_list_per_line):
             instruction_line = []
+            print(instruction)
 
-            for part_instruction in instruction:
-                if part_instruction in self.instruction_set:
-                    instruction_line.append(part_instruction)
-                elif part_instruction == "0xFF":
+            # INSTRUCTION from SET
+            # if first part a recognised MNUMONIC then append next one or two parts into instruction code
+            if instruction[0] in self.instruction_set:
+                for i, part_instruction in enumerate(instruction):
+                    # MNUMONIC
+                    if i == 0:
+                        instruction_line.append(part_instruction)
+                    # 1st operand
+                    elif i == 1: # can be literal value or address
+                        if re.search('^0x[a-fA-F0-9]+$', part_instruction): # is already in hex format?
+                            instruction_line.append(f"0x{int(int(part_instruction), 16):04X}")
+                        elif re.search('^[0-9]*$', part_instruction):  # else if decimal turn into hex
+                            instruction_line.append(f"0x{int(part_instruction, 10):04X}")
+                        else:
+                            instruction_line.append("") # operand 1 left empty if above criteria not met
+                    # 2nd operand
+                    elif i == 2: # one charcter only (defines destination or bit)
+                        if re.search('^[0-9]{1}|[WwFf]{1}$', part_instruction): 
+                            instruction_line.append(part_instruction)
+                        else:
+                            instruction_line.append("") # operand 2 left empty if above criteria not met
 
-            
-            else:
+                    # stop instruction line; the rest can be ignored
+                    elif i > 2:
+                        break # if more parts ignore (no more than 3 parts needed)
+                    else:
+                        print(f"error compiling part {i} of instruction '{part_instruction}' on code editor line {code_line}; not recognised")
+
+                # insert in the correct program address
+                compiled_program[PC] = instruction_line
+                # move to next line
+                PC += 1
+
+            # PROGRAM SECTIONS and SUBROUTINES
+            # else, check 1st part ENDS with a ':' i.e. main: or loop:
+            elif re.search('^[^0-9]+\w+:$', instruction[0]):
+                # if only only part PC remains unchanged
+                if len(instruction) == 1:
+                    subroutine_dict.update({instruction[0] : f"0x{PC:04X}"})
+                # if 3 parts and 2nd part is CODE and 3rd valid address then use prodecing address as location
+                elif len(instruction) == 3 and re.search('^0x[a-fA-F0-9]+$', instruction[2]) :
+                    if instruction[1] == "CODE":
+                        # store location in subroutine dict - format hex
+                        subroutine_dict.update({instruction[0] : f"{int(instruction[2]):04X}"})
+                else:
+                    print(f"Error creating subroutine/program section '{instruction}")
+
+                # move to next line
+                PC += 1
+
+            # VARIABLES
+            # else, if three parts (needed to define a variable address location), add variable to dictionary
+            elif len(instruction) == 3 and re.search('^[^0-9]+\w+$', instruction[0]):
                 if instruction[1] == "EQU":
                     var_dict.update({instruction[0] : instruction[2]})
+                else:
+                    print(f"Error creating variable '{instruction[0]}")
+                # move to next line
+                PC += 1
 
 
+        print(compiled_program[:5])
+        print(var_dict)
+        print(subroutine_dict)
 
-
-
-        # split the lines into a list of words and append to code list
-        # words_list_per_line = []
-        # # iterate through lines list
-        # for line in lines_list:
-
-        #     words_list = []
-        #     # split into individual words and remove whitespace
-        #     if len(line) != 0:
-        #         for word in line.split():
-        #             words_list.append(word.strip())
-
-        #     words_list_per_line.append(words_list)
-
-        # print(words_list_per_line)
 
 
 
