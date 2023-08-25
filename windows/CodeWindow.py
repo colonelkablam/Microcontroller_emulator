@@ -285,8 +285,6 @@ class CodeWindow:
             if len(word_list) != 0:
                 word_list_per_line.append(word_list)
 
-        print(word_list_per_line)
-
         # create empty list for upload to MCU
         compiled_program = []
         for empty_instruction in range(256):
@@ -303,7 +301,6 @@ class CodeWindow:
         # iterate through code lines
         for text_line, instruction in enumerate(word_list_per_line):
             instruction_line = []
-            print(instruction)
 
             # INSTRUCTION from SET
             # if first part a recognised MNUMONIC then append next one or two parts into instruction code
@@ -314,10 +311,12 @@ class CodeWindow:
                         instruction_line.append(part_instruction)
                     # 1st operand
                     elif i == 1: # can be literal value or address
-                        if re.search('^0x[a-fA-F0-9]+$', part_instruction): # is already in hex format?
-                            instruction_line.append(f"0x{int(int(part_instruction), 16):04X}")
-                        elif re.search('^[0-9]*$', part_instruction):  # else if decimal turn into hex
+                        if re.search('^0x[a-fA-F0-9]+$', part_instruction): # is already in hex format; make sure 4 digit long
+                            instruction_line.append(f"0x{int(part_instruction, 16):04X}")
+                        elif re.search('^[0-9]*$', part_instruction):  # else if decimal string turn into hex string
                             instruction_line.append(f"0x{int(part_instruction, 10):04X}")
+                        elif part_instruction in var_dict.keys() or part_instruction in subroutine_dict.keys():
+                            instruction_line.append(part_instruction)
                         else:
                             instruction_line.append("") # operand 1 left empty if above criteria not met
                     # 2nd operand
@@ -343,33 +342,45 @@ class CodeWindow:
             elif re.search('^[^0-9]+\w+:$', instruction[0]):
                 # if only only part PC remains unchanged
                 if len(instruction) == 1:
-                    subroutine_dict.update({instruction[0] : f"0x{PC:04X}"})
+                    prog_sect = instruction[0][:-1]
+                    subroutine_dict.update({prog_sect : f"0x{PC:04X}"})
                 # if 3 parts and 2nd part is CODE and 3rd valid address then use prodecing address as location
                 elif len(instruction) == 3 and re.search('^0x[a-fA-F0-9]+$', instruction[2]) :
                     if instruction[1] == "CODE":
                         # store location in subroutine dict - format hex
-                        subroutine_dict.update({instruction[0] : f"{int(instruction[2]):04X}"})
+                        prog_sect = instruction[0][:-1]
+                        subroutine_dict.update({prog_sect : f"{int(instruction[2]):04X}"})
                 else:
                     print(f"Error creating subroutine/program section '{instruction}")
 
-                # move to next line
-                PC += 1
 
-            # VARIABLES
+            # VARIABLES single word not beginning with a letter
             # else, if three parts (needed to define a variable address location), add variable to dictionary
             elif len(instruction) == 3 and re.search('^[^0-9]+\w+$', instruction[0]):
                 if instruction[1] == "EQU":
-                    var_dict.update({instruction[0] : instruction[2]})
+                    if re.search('^0x[a-fA-F0-9]+$', instruction[2]): # is already in hex format; make sure 4 digit long
+                            var_dict.update({instruction[0] : f"0x{int(instruction[2], 16):04X}"})
+                    elif re.search('^[0-9]*$', instruction[2]):  # else if decimal string turn into hex string
+                            var_dict.update({instruction[0] : f"0x{int(instruction[2], 10):04X}"})
                 else:
                     print(f"Error creating variable '{instruction[0]}")
-                # move to next line
-                PC += 1
 
 
-        print(compiled_program[:5])
+
+        clipped_compiled_program = compiled_program[:PC]
+        print("1st pass:" , compiled_program[:5])
         print(var_dict)
         print(subroutine_dict)
 
+        for instruction in clipped_compiled_program:
+            for part in instruction:
+                if part in var_dict.keys():
+                    part = var_dict[part]
+                elif part in subroutine_dict.keys():
+                    part = subroutine_dict[part]
+
+        
+        print("2nd pass", clipped_compiled_program)
 
 
 
