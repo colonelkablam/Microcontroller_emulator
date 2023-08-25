@@ -51,17 +51,20 @@ class MainWindow(tk.Tk):
         self.control_panel_frame.grid(column=0, row=1, sticky="NSEW")
 
 
-    # MainWindow Methods
+    ## MainWindow Methods
 
+    # MCU
     def reset_MCU_frame(self):
         self.MCU_frame.destroy()
         self.MCU_frame = MCUFrame(self, style='MainWindowOuter.TFrame', padding=10)
         self.MCU_frame.grid(column=0, row=0, sticky="NSEW")
 
+
     ## pinout window
     def open_pinout_window(self):
         self.pinout_window.show()
         self.pinout_window.lift_window()
+
 
     ## code editor
     def open_code_window(self):
@@ -71,6 +74,7 @@ class MainWindow(tk.Tk):
     def clear_code_window(self):
         self.control_panel_frame.close_code_window()
         self.code_window = None
+
 
     ## log window 
     def open_log_window(self):
@@ -123,3 +127,4 @@ class MainWindow(tk.Tk):
     # initialise log text
     def clear_log_text(self):
         self.log_text.set(value="")
+        #self.update_log_window_display()

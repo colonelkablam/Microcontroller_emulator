@@ -16,24 +16,30 @@ class LogDisplayFrame(ttk.Frame):
         # object properties
         self.parent = parent
         self.log_text = log_text
+        _code_text_size = 12
 
         # tkinter widgets
 
         # scrollbar
-        self.log_scroll_y = ttk.Scrollbar(self)
-        self.log_scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
+        log_scroll_y = ttk.Scrollbar(self)
+        log_scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.log_scroll_x = ttk.Scrollbar(self, orient='horizontal')
-        self.log_scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
+        log_scroll_x = ttk.Scrollbar(self, orient='horizontal')
+        log_scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
 
         # log text box
-        self.log_text_box = tk.Text(self, yscrollcommand=self.log_scroll_y.set, xscrollcommand=self.log_scroll_x.set, wrap="none")
-        #self.log_text_box = tk.Text(self, xscrollcommand=self.log_scroll_x.set, wrap="none")
+        self.log_text_box = tk.Text(    self,
+                                        yscrollcommand=log_scroll_y.set,
+                                        xscrollcommand=log_scroll_x.set, 
+                                        bg=LOG_BACKGROUND_LIGHT, 
+                                        fg=LOG_BACKGROUND_DARK, 
+                                        font=("Courier", _code_text_size), 
+                                        wrap="none")
         self.log_text_box.pack(expand=True, fill=tk.BOTH)
 
         # configure scrollbar
-        self.log_scroll_y.configure(command=self.log_text_box.yview)
-        self.log_scroll_x.configure(command=self.log_text_box.xview)
+        log_scroll_y.configure(command=self.log_text_box.yview)
+        log_scroll_x.configure(command=self.log_text_box.xview)
 
         # display initial contents
         self.display_log()

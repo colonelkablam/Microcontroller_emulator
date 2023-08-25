@@ -42,19 +42,15 @@ class MCUFrame(ttk.Frame):
 
         ## tkinter widgets
 
-        # panel label
-        #frame_label = ttk.Label(self, text="MCU Panel", style='MainWindowOuter.TLabel')
-        #frame_label.grid(column=0, row=0, padx=(50,0), pady=(0,10), sticky="W")
-
         # set-up MCU
         # MCU 'views'
         # program memory - contains the program memory logic/control
         self.prog_memory_frame = ProgramMemoryFrame(self, "Program Memory")
-        self.prog_memory_frame.grid(column=0, row=1, padx=(10,10))
+        self.prog_memory_frame.grid(column=0, row=0, padx=(10,10))
 
         # data memory - contains the data memory logic/control
         self.data_memory_frame = DataMemoryFrame(self, "Data Memory / registers")
-        self.data_memory_frame.grid(column=1, row=1)
+        self.data_memory_frame.grid(column=1, row=0)
 
         # 13-bit number needed for Program Counter
         self.program_counter = ProgramCounter(self.data_memory_frame)
@@ -65,7 +61,7 @@ class MCUFrame(ttk.Frame):
 
         # MCU Status Information display - frame to display key information/status from the MCU/memory
         self.MCU_status_frame = MCUStatusFrame(self, "MCU Status Display")
-        self.MCU_status_frame.grid(column=2, row=1, padx=(20,10))
+        self.MCU_status_frame.grid(column=2, row=0, padx=(20,10))
 
         # stack to be shown in MCU status frame above - contains the stack logic/control
         self.stack_frame = StackDisplayFrame(self.MCU_status_frame, style='MainWindowInner.TLabel')
@@ -83,8 +79,8 @@ class MCUFrame(ttk.Frame):
                                         self.data_memory_frame.get_byte_by_name("TRISB"),
                                         8       )
 
-        # look-up chip pin object or input value by port pin
-        # basically represtents the physical chip and any digital values on the pin
+        # look-up CHIP PIN object or input value by port pin
+        # represtents the physical chip and any digital values on the pin
         self.peripheral_pin_dict = {17 : self.port_a.get_port_pin_by_name("RA0"),
                                     18 : self.port_a.get_port_pin_by_name("RA1"),
                                     1 :  self.port_a.get_port_pin_by_name("RA2"),
@@ -109,7 +105,9 @@ class MCUFrame(ttk.Frame):
         self.pinout_frame.grid(column=0, row=0, sticky="NSEW")
 
 
-    # MCUFrame methods
+    ## MCUFrame methods
+
+    ## PROGRAM MEMORY
     # fill program memory with empty Instruction objects ("ADDLW 0xFF 0")
     def initialise_program_memory(self):
         self.prog_memory_frame.initialise_program_memory()
@@ -136,12 +134,9 @@ class MCUFrame(ttk.Frame):
             self.parent.system_message(f"{prog_len} x 14-bit word program successfully loaded into Program Memory")
         else:
             self.parent.system_message(f"FAILED TO LOAD PROGRAM: {prog_len} word program too large for MCU's {PROGRAM_MEMORY_SIZE} word program memory")
-    
-    # fill data memory with Byte objects and name accordingly (using the SFR dict)
-    def initialise_data_memory(self):
-        self.data_memory_frame.initialise_data_memory()
-        self.parent.system_message(f"DATA MEMORY INITIALISED")
 
+
+    ## DATA MEMORY ACCESS
 
     # retrieve bytes from data memory by name (if SFR) or address
     def get_byte_by_name(self, byte_name):
@@ -167,17 +162,16 @@ class MCUFrame(ttk.Frame):
         if set_successful == False:
             self.parent.system_message(f"FAILED TO SET BYTE: value of {value} @ address {byte_addr}")
 
-    # handle the working register (exists outside the data memory list)
+
+
+    ## handle the WORKING REGISTER (exists outside the data memory list)
     def get_w_register(self):
         return self.w_reg
     def set_w_register(self, new_value):
         self.w_reg.set_value(new_value)
 
-    # STACK methods
-    # access to the stack data structure
-    def get_stack(self):
-        return self.stack_frame.get_stack()
 
+    ## STACK methods
     # return top element
     def pop_stack(self):
         first_in_queue = self.stack_frame.pop_stack()
@@ -194,15 +188,7 @@ class MCUFrame(ttk.Frame):
         self.parent.add_to_log(f"Stack pushed; 0x{new_address:04X} added to top")
 
 
-    # initialise log text
-    def clear_log_text(self):
-        self.parent.clear_log_text()
-
-    # instruction cycle
-    def get_instruction_cycle(self):
-        return self.num_instruction_cycles
-
-    # handling the Instruction Cycle
+    ## handling the Instruction Cycle
     # main advance method - calls instruction decoder (logic of MCU) and updates PCL
     def advance_cycle(self):
         # get new PC address and altered reg address from the instruction decoder object (and handle wrapping around of max prog mem size)
@@ -226,13 +212,22 @@ class MCUFrame(ttk.Frame):
 
         self.MCU_status_frame.update_display() # update focused byte displays
 
-
     # advance if NOP called by InstructionDecoder
     def advance_NOP(self):
         self.parent.add_to_log(f"NOP after a 2 cycle instruction")
         self.num_instruction_cycles += 1
         self.parent.log_commit()
 
+    # set next cycle to be NOP
+    def set_next_cycle_NOP(self):
+        self.is_next_cycle_NOP = True
+
+    # return number of instruction cycles
+    def get_instruction_cycle(self):
+        return self.num_instruction_cycles
+
+
+    ## RUNNING SIMULATION
 
     # methods for running simulation
     def start_simulation(self, sim_speed):
@@ -254,10 +249,8 @@ class MCUFrame(ttk.Frame):
     def set_sim_speed(self, speed):
         self.simulation_speed = speed
 
-    def set_next_cycle_NOP(self):
-        self.is_next_cycle_NOP = True
 
-    # program counter is 13-bit value (can address up to 8192 14-bit instructions words)
+    ## PROGRAM COUNTER is 13-bit value (can address up to 8192 14-bit instructions words)
     # use the current program counter value to get the current instruction
     def get_current_instruction(self):
         return self.prog_memory_frame.get_instruction(self.program_counter.get_value())
@@ -269,6 +262,8 @@ class MCUFrame(ttk.Frame):
     # returns the program counter object
     def get_PC_13bit_representation(self):
         return self.program_counter.get()
+
+    ## MCU status display frame
 
     # get status info for MCU status frame display
     def get_status_info(self):
@@ -284,7 +279,9 @@ class MCUFrame(ttk.Frame):
         self.num_instruction_cycles = 0
         self.num_instructions_executed = 0
 
-    # bit-wise methods
+
+    ## bit-wise methods
+
     # set/clear file reg bit
     def set_file_reg_bit(self, mem_address, bit):
         self.data_memory_frame(mem_address).set_bit(bit)

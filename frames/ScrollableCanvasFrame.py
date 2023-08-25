@@ -10,11 +10,11 @@ class ScrollableCanvasFrame(tk.Frame):
         self.scroll_canvas.grid(column=0, row=0, sticky="NS")
 
         # scrollbars
-        self.code_scroll = ttk.Scrollbar(self, orient='vertical', command=self.scroll_canvas.yview)
-        self.code_scroll.grid(column=1, row=0, sticky="NS")
+        code_scroll = ttk.Scrollbar(self, orient='vertical', command=self.scroll_canvas.yview)
+        code_scroll.grid(column=1, row=0, sticky="NS")
 
         # configure canvas
-        self.scroll_canvas.configure(yscrollcommand=self.code_scroll.set)
+        self.scroll_canvas.configure(yscrollcommand=code_scroll.set)
         self.scroll_canvas.bind("<Configure>", lambda e: self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox("all")))
         self.scroll_canvas.bind('<Enter>', self._bound_to_mousewheel)
         self.scroll_canvas.bind('<Leave>', self._unbound_to_mousewheel)

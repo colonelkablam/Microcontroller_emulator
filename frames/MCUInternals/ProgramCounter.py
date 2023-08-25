@@ -37,7 +37,10 @@ class ProgramCounter():
 
         # store the values in the registers
         self.data_memory.set_byte_by_name("PCL", lower_byte)
-        self.data_memory.set_byte_by_name("PCLATH", upper_5_bits)
+
+        # alter PCLATH only if non zero
+        if upper_5_bits != 0:
+            self.data_memory.set_byte_by_name("PCLATH", upper_5_bits)
 
     # get the nth byte value
     def _get_n_byte_int(self, target, n, bit_length=8):

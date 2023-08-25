@@ -40,7 +40,7 @@ class StackDisplayFrame(ttk.Frame):
         self.initialise_stack_display_list()
 
         
-    # STACK methods
+    ## STACK methods
 
     def update(self):
         stack_length = len(self.stack)
@@ -90,7 +90,6 @@ class StackDisplayFrame(ttk.Frame):
 
     # add to stack - 8 deep
     def push_stack(self, new_address=17):
-        # **some logic** to implement an 8 deep stack to be added
         self.stack.append(new_address)
 
     def initialise_stack_display_list(self):

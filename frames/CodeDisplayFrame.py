@@ -19,7 +19,7 @@ class CodeDisplayFrame(ttk.Frame):
         self.parent = parent
         self.file_path = file_path
         self.file_name = file_name
-        _code_text_size = 10
+        _code_text_size = 12
 
 
         # tkinter widgets
@@ -63,7 +63,13 @@ class CodeDisplayFrame(ttk.Frame):
 
         # contents of code_box_frame frame (contains line numbers and code lines)
         # code line numbers textbox
-        self.code_text_lines = tk.Text(self.inner_frame, width=CODE_LINE_TEXT_WIDTH, height=MAX_CODE_LINES, bg="gray60", fg="white", font=("Courier", _code_text_size), wrap="none")
+        self.code_text_lines = tk.Text( self.inner_frame, 
+                                        width=CODE_LINE_TEXT_WIDTH, 
+                                        height=MAX_CODE_LINES, 
+                                        bg=LOG_BACKGROUND_LIGHT, 
+                                        fg=LOG_BACKGROUND_DARK, 
+                                        font=("Courier", _code_text_size), 
+                                        wrap="none")
         self.code_text_lines['yscrollcommand'] = self.code_scroll.set
         self.code_text_lines.grid(column=0, row=0, padx=(0, 5))
         # fill line numbers textbox
