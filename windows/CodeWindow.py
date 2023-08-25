@@ -80,17 +80,14 @@ class CodeWindow:
 
         # test program 4
         self.compiled_program = [   ["CALL",   "0x08",  ""],
-                                    ["CLRF",   "0x86",  ""],
+                                    ["CLRF",   "0x85",  ""],
                                     ["MOVLW",  "0x0A",  ""],
-                                    ["ANDLW",  "0x12",  ""],
-                                    ["MOVWF",  "0x06",  "0"],
-                                    ["NOP",  "",  ""],
-                                    ["GOTO",  "0x05",  ""],
-                                    ["ADDLW",  "0xFF",  ""],
-                                    ["CLRW",  "",  ""],
-                                    ["ADDLW",  "0x01",  ""],
-                                    ["ADDLW",  "0x01",  ""],
-                                    ["RETURN",  "0xFF",  ""]         ]
+                                    ["ANDWF",  "0x06",  "0"],
+                                    ["MOVWF",  "0x05",  "0"],
+                                    ["NOP",     "",     ""],
+                                    ["GOTO",   "0x05",  ""],
+                                    ["ADDLW",   "0xFF", ""],
+                                    ["RETURN",  "",     ""]         ]
 
 
         # tkinter Widgets

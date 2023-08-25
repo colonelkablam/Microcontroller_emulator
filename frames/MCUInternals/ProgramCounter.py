@@ -5,18 +5,20 @@ from dataStructures import NBitNumber
 
 
 class ProgramCounter():
-    def __init__(self, data_memory):
+    def __init__(self, data_memory, bit_length=13):
         
         # properties
         self.data_memory = data_memory
-        self.counter = NBitNumber(  13, 
+        self.counter = NBitNumber(  bit_length, 
                                     tk.IntVar(value=0), 
                                     tk.StringVar(value="0000h"), 
-                                    tk.StringVar(value="0000000000000"), 
+                                    tk.StringVar(value=f"{0:{bit_length}b}"), 
                                     "PC"        )
 
         self.previous_value = 0
 
+
+    # ProgramCounter methods
     def get(self):
         return self.counter
 
@@ -37,7 +39,6 @@ class ProgramCounter():
         self.data_memory.set_byte_by_name("PCL", lower_byte)
         self.data_memory.set_byte_by_name("PCLATH", upper_5_bits)
 
-
     # get the nth byte value
     def _get_n_byte_int(self, target, n, bit_length=8):
         mask = 255 << (n * bit_length)
@@ -53,11 +54,12 @@ class ProgramCounter():
 
     def set_previous(self, value=0):
         self.previous_value = value
-
+    
+    # used by the instruction decoder to advance PC after instruction
     def advance_one(self):
         self.set_value(self.counter.get_dec_value() + 1)
     
-    # likely handled by the instruction decoder
+    # used for Bit Test File operations - used by the instruction decoder
     def advance_two(self):
         self.set_value(self.counter.get_dec_value() + 2)
 

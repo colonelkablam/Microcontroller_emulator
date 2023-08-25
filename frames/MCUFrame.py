@@ -119,13 +119,13 @@ class MCUFrame(ttk.Frame):
         self.data_memory_frame.reset_data_memory_frame()
         self.stack_frame.clear_stack()
         self.w_reg.set_value(0)
-        self.set_PC(0)
+        self.program_counter.set_value(0)
 
         self.port_a.reset()
         self.port_b.reset()
         self.pinout_frame.reset()
 
-        self.reset_clock_info()
+        self._reset_clock_info()
         self.MCU_status_frame.reset_display()
 
     # load program into program memory (code editor uses this to populate memory)
@@ -260,29 +260,15 @@ class MCUFrame(ttk.Frame):
     # program counter is 13-bit value (can address up to 8192 14-bit instructions words)
     # use the current program counter value to get the current instruction
     def get_current_instruction(self):
-        return self.prog_memory_frame.get_instruction(self.get_current_PC_value())
-
+        return self.prog_memory_frame.get_instruction(self.program_counter.get_value())
+    
+    # use the previous program counter value to get the previous instruction
     def get_previous_instruction(self):
-        return self.prog_memory_frame.get_instruction(self.get_previous_PC_value())
-
-    # get the value of the program counter (PC)
-    def get_current_PC_value(self):
-        return self.program_counter.get_value()
-    def get_previous_PC_value(self):
-        return self.program_counter.get_previous()
+        return self.prog_memory_frame.get_instruction(self.program_counter.get_previous())
 
     # returns the program counter object
     def get_PC_13bit_representation(self):
         return self.program_counter.get()
-
-    # set the value of the program counter (PC)
-    def set_PC(self, new_address):
-        # store the new address in PC object - for PC display in MCU status
-        # this will store to the PCL (lower byte) and PCLATH (upper 5 bits)
-        self.program_counter.set_value(new_address)
-        # log it
-        prev_val = self.program_counter.get_previous()
-        self.parent.add_to_log(f"Program Counter (PC); changed from 0x{prev_val:04X} [{prev_val}] --> 0x{new_address:04X} [{new_address}]")
 
     # get status info for MCU status frame display
     def get_status_info(self):
@@ -294,7 +280,7 @@ class MCUFrame(ttk.Frame):
         return (previous_instruction, next_instruction, num_cycles, num_instructions)
 
     # reset status info
-    def reset_clock_info(self):
+    def _reset_clock_info(self):
         self.num_instruction_cycles = 0
         self.num_instructions_executed = 0
 

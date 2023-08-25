@@ -125,7 +125,7 @@ class ChipPinFrame(ttk.Frame):
     def reset(self):
         if self.port_pin_object != None:
             self.input_value.set(0)
-            self.output_value.set(0)
+           # self.output_value.set(0)
             self.direction.set(" INPUT")
             # refresh display
             self.update()

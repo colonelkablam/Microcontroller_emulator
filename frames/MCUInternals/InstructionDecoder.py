@@ -23,6 +23,8 @@ class InstructionDecoder():
         self._split_instruction(instruction)
 
         ## BYTE-ORIENTATED FILE REGISTER OPERATIONS - only act on File Registers
+        
+        # ADDWF Add the contents of w reg and file reg, storing result in either
         if self.mnumonic == "ADDWF":
             w = self._get_w_reg_value()
             f_value = self._get_file_reg_value(self.operand_1)
@@ -46,13 +48,26 @@ class InstructionDecoder():
             # log
             self.add_to_log(f"ADDWF; W_REG value ({w}) + FILE REG 0x{self.operand_1:02X} value ({f_value}) --> {loc_string}")
 
+        # ANDWF Add the contents of w reg and file reg, storing result in either
+        elif self.mnumonic == "ANDWF":
+            w = self._get_w_reg_value()
+            f_value = self._get_file_reg_value(self.operand_1)
+            result = w & f_value
+
+            # set Z bit according to result
+            self._handle_Z_bit(result)
+
+            # store value of reg in w or f (0 or 1)
+            loc_string = self._where_to_store_result(result, self.operand_1, self.operand_2)
+
+            # advance to next program line
+            self.program_counter.advance_one()
+
+            # log
+            self.add_to_log(f"ANDWF; W_REG value ({w}) bitwise & with FILE REG 0x{self.operand_1:02X} value ({f_value}) --> {loc_string}\n w: {w:08b}\n l: {f_value:08b}&\n  = {result:08b}")
 
 
-        # AND W reg and file reg
-
-        # ANDWF needed
-
-        # clear value of file register given
+        # CLRF clear value of file register given
         elif self.mnumonic == "CLRF":
             self._set_file_reg_value(self.operand_1, 0)
            
@@ -65,7 +80,7 @@ class InstructionDecoder():
             # log
             self.add_to_log(f"CLRF; FILE REG addr. 0x{self.operand_1:02X} cleared")
         
-        # clear value of W reg
+        # CLRW clear value of W reg
         elif self.mnumonic == "CLRW":
             self._set_w_reg_value(0)
 
@@ -78,7 +93,7 @@ class InstructionDecoder():
             # log
             self.add_to_log(f"CLRW; W_REG cleared")
 
-        # move file register of address given (to 0 - W reg, or 1 - file reg) 
+        # MOVF move file register of address given (to 0 - W reg, or 1 - file reg) 
         elif self.mnumonic == "MOVF":
             result = self._get_file_reg_value(self.operand_1)
 
@@ -184,7 +199,7 @@ class InstructionDecoder():
 
         ## LITERAL AND CONTROL OPERATIONS
 
-        # Add lieral value with W Reg
+        # ADDLW Add lieral value with W Reg
         elif self.mnumonic == "ADDLW":
             w = self._get_w_reg_value()
             total = w + self.operand_1
@@ -265,7 +280,7 @@ class InstructionDecoder():
             # log
             self.add_to_log(f"MOVLW; literal value ({self.operand_1}) --> W_REG addr.")
 
-        # Return from a subroutine using stack
+        # RETURN from a subroutine using stack
         elif self.mnumonic == "RETURN":
             # get return address - most recent stack item
             return_address = self._pop_stack()
