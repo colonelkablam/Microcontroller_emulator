@@ -26,6 +26,9 @@ class CodeWindow:
         self.current_file_path = tk.StringVar(value=self.empty_file_text)
         self.current_file_name = tk.StringVar(value=self.empty_file_text)
 
+        self.instruction_set = [    "GOTO",
+                                    "ADDLW", ]
+
         # # test program 1
         # self.compiled_program = [   ["GOTO",   "0x05",  ""],
         #                             ["ADDLW",  "0xFF",  ""],
@@ -140,7 +143,8 @@ class CodeWindow:
         for child in self.button_frame.winfo_children():
             child.configure(padding=5, style="CodeWindow.TButton")
             child.grid(padx=5, pady=5)
-        self.load_into_MCU_button.configure(style="CodeWindow2.TButton")
+        self.load_into_MCU_button.configure(style="MainWindow3.TButton")
+        self.compile_button.configure(style="MainWindow4.TButton")
 
         # checkbox to keep window at the top
         keep_at_top_checkbox = ttk.Checkbutton( self.code_window,
@@ -259,6 +263,77 @@ class CodeWindow:
     # compile the users code in the window
     def compile_code(self):
         self.parent.system_message("Compiling code...")
+        
+        # get the text from the text box in the code_frame object
+        whole_text = self.code_frame.code_text.get(1.0, tk.END)
+        print(whole_text)
+
+        # split the text into a list of lines
+        no_empty_line_list = []
+
+        for line in whole_text.split("\n"):
+            if len(line) != 0: # remove empty lines
+                no_empty_line_list.append(line.strip()) # removes whitespaces
+
+        # split the lines into words
+        word_list_per_line = []
+
+        for line in no_empty_line_list:
+            word_list = []
+            if line != "": # remove empty lists
+                for word in line.split():
+                    if word[0] == ";":
+                        break
+                    word_list.append(word)
+                word_list_per_line.append(word_list)
+
+        print(word_list_per_line)
+
+        # create empty list for upload to MCU
+        compiled_program = []
+        for empty_instruction in range(265):
+            compiled_program.append(["ADDWF", "0xFF", "-"]) # list of 3 empty strings (MCU format)
+
+        print(compiled_program)
+        
+        # dict to store vars
+        var_dict = {}
+
+        # keep track of instruction address
+        PC = 0
+        for instruction in word_list_per_line:
+            instruction_line = []
+
+            for part_instruction in instruction:
+                if part_instruction in self.instruction_set:
+                    instruction_line.append(part_instruction)
+                elif part_instruction == "0xFF":
+
+            
+            else:
+                if instruction[1] == "EQU":
+                    var_dict.update({instruction[0] : instruction[2]})
+
+
+
+
+
+        # split the lines into a list of words and append to code list
+        # words_list_per_line = []
+        # # iterate through lines list
+        # for line in lines_list:
+
+        #     words_list = []
+        #     # split into individual words and remove whitespace
+        #     if len(line) != 0:
+        #         for word in line.split():
+        #             words_list.append(word.strip())
+
+        #     words_list_per_line.append(words_list)
+
+        # print(words_list_per_line)
+
+
 
     def on_close_window(self):
         # destroy the toplevel window
