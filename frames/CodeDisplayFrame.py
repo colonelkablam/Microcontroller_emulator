@@ -10,7 +10,7 @@ class CodeDisplayFrame(ttk.Frame):
         super().__init__(parent, *args, **kwargs)
 
         # styling
-        self.configure(padding=10, style="CodeWindow.TFrame")
+        self.configure(style="CodeWindow.TFrame")
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
         self.grid(sticky="NSEW")
@@ -25,9 +25,9 @@ class CodeDisplayFrame(ttk.Frame):
         # tkinter widgets
 
         # label for code box
-        self.file_name_title = ttk.Label(self, text="File Name: ", style="CodeWindow.TLabel")
+        self.file_name_title = ttk.Label(self, text="File Name: ", style="CodeWindow.TLabel", padding=5)
         self.file_name_title.grid(column=0, row=0, sticky="W")
-        self.file_name_label = ttk.Label(self, textvariable=self.file_name, style="CodeWindow.TLabel")
+        self.file_name_label = ttk.Label(self, textvariable=self.file_name, style="CodeWindow.TLabel", padding=5)
         self.file_name_label.grid(column=1, row=0, sticky="EW")
 
         # frame to contain code text boxes (lines and code + canvas for scrolling)
@@ -56,7 +56,7 @@ class CodeDisplayFrame(ttk.Frame):
         self.scroll_canvas.bind('<Leave>', self._unbound_to_mousewheel)
 
         # create ANOTHER inner frame inside canvas
-        self.inner_frame = tk.Frame(self.scroll_canvas)
+        self.inner_frame = ttk.Frame(self.scroll_canvas, style="CodeWindowInner.TFrame")
 
         # add INNER FRAME to a window in the canvas
         self.scroll_canvas.create_window((0,0), window=self.inner_frame, anchor="nw")
@@ -67,7 +67,7 @@ class CodeDisplayFrame(ttk.Frame):
                                         width=CODE_LINE_TEXT_WIDTH, 
                                         height=MAX_CODE_LINES, 
                                         bg=LOG_BACKGROUND_LIGHT, 
-                                        fg=LOG_BACKGROUND_DARK, 
+                                        fg=CODE_DARK_TEXT, 
                                         font=("Courier", _code_text_size), 
                                         wrap="none")
         self.code_text_lines['yscrollcommand'] = self.code_scroll.set
@@ -78,14 +78,22 @@ class CodeDisplayFrame(ttk.Frame):
         self.code_text_lines.configure(state="disabled")
 
         # code text box
-        self.code_text = tk.Text(self.inner_frame, width=CODE_WINDOW_WIDTH, height=MAX_CODE_LINES, font=("Courier", _code_text_size), wrap="none")
+        self.code_text = tk.Text(   self.inner_frame, 
+                                    width=CODE_TEXT_LINE_LENGTH, 
+                                    height=MAX_CODE_LINES,
+                                    bg=LOG_BACKGROUND_LIGHT, 
+                                    fg=LOG_BACKGROUND_DARK,
+                                    insertbackground="green",
+                                    insertwidth=5,
+                                    font=("Courier", _code_text_size), 
+                                    wrap="none")
         self.code_text['yscrollcommand'] = self.code_scroll.set
         self.code_text.grid(column=1, row=0)
 
         # code file path label
-        self.file_path_title = ttk.Label(self, text="File Path: ", style="CodeWindow.TLabel")
+        self.file_path_title = ttk.Label(self, text="File Path: ", style="CodeWindow.TLabel", padding=5)
         self.file_path_title.grid(column=0, row=2, sticky="W")
-        self.file_path_label = ttk.Label(self, textvariable=self.file_path, style="CodeWindow.TLabel")
+        self.file_path_label = ttk.Label(self, textvariable=self.file_path, style="CodeWindow.TLabel", padding=5)
         self.file_path_label.grid(column=1, row=2, sticky="EW")
         
 
@@ -93,7 +101,7 @@ class CodeDisplayFrame(ttk.Frame):
         self.update_code_editor_display()
 
 
-    # CodeDisplayFrame methods
+    ## CodeDisplayFrame methods
 
     # display code in textbox
     def update_code_editor_display(self, new_code_text=None):
@@ -132,7 +140,17 @@ class CodeDisplayFrame(ttk.Frame):
             elif line < 999:
                 self.code_text_lines.insert(tk.END, f"{line + 1}\n")
 
+    # handle display theme toggle
+    def toggle_dark_theme(self, dark_display):
+        if dark_display == True:
+            self.code_text_lines.configure(background=CODE_BACKGROUND_DARK, foreground=CODE_LIGHT_TEXT)
+            self.code_text.configure(background=CODE_BACKGROUND_DARK, foreground=CODE_BACKGROUND_LIGHT)
+        else:
+            self.code_text_lines.configure(background=CODE_BACKGROUND_LIGHT, foreground=CODE_DARK_TEXT)
+            self.code_text.configure(background=CODE_BACKGROUND_LIGHT, foreground=CODE_BACKGROUND_DARK)
+
     
+    # handle mouse-over controls
     def _on_mousewheel(self, event):
         self.scroll_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
 

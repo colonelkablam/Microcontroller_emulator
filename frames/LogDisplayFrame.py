@@ -45,7 +45,7 @@ class LogDisplayFrame(ttk.Frame):
         self.display_log()
 
 
-    # LogDisplayFrame methods
+    ## LogDisplayFrame methods
 
     def display_log(self):
         # split text into lines
@@ -55,8 +55,8 @@ class LogDisplayFrame(ttk.Frame):
         for log_entry in log_lines:
             self.log_text_box.insert(tk.END, log_entry + "\n")
 
-    def toggle_dark_theme(self, bool):
-        if bool == True:
+    def toggle_dark_theme(self, dark_display):
+        if dark_display == True:
             self.log_text_box.configure(background=LOG_BACKGROUND_DARK, foreground=LOG_BACKGROUND_LIGHT)
         else:
             self.log_text_box.configure(background=LOG_BACKGROUND_LIGHT, foreground=LOG_BACKGROUND_DARK)

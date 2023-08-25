@@ -20,6 +20,7 @@ class CodeWindow:
 
         self.parent = parent
         self.always_on_top = tk.BooleanVar(value=False)
+        self.dark_theme = tk.BooleanVar(value=False)
         
         self.empty_file_text = "** No file loaded **"
         self.current_file_path = tk.StringVar(value=self.empty_file_text)
@@ -101,18 +102,18 @@ class CodeWindow:
         self.code_window.wm_protocol('WM_DELETE_WINDOW', self.on_close_window) # clean up after window close
 
         # style
-        self.code_window["background"] = COLOUR_MAIN_BACKGROUND
+        self.code_window["background"] = COLOUR_INNER2_BACKGROUND
         self.code_window.rowconfigure(0, weight=1)
-        self.code_window.columnconfigure(0, weight=1)
+        self.code_window.columnconfigure((0), weight=1)
 
         # create a CodeDisplayFrame - put in new CodeWindow
         self.code_frame = CodeDisplayFrame(self.code_window, self.current_file_name, self.current_file_path)
-        self.code_frame.grid(column=0, row=0, sticky="NSEW")
+        self.code_frame.grid(column=0, row=0, columnspan=2, sticky="NSEW")
 
         # create buttons
         # container Frame
-        self.button_frame = ttk.Frame(self.code_window, style='CodeWindow.TFrame', padding=10)
-        self.button_frame.grid(column=0, row=1, sticky="SEW")
+        self.button_frame = ttk.Frame(self.code_window, style='CodeWindow.TFrame')
+        self.button_frame.grid(column=0, row=1, columnspan=2, sticky="SW")
         self.button_frame.columnconfigure((0,1,2), weight=1)
 
         #open code file
@@ -151,16 +152,33 @@ class CodeWindow:
                                                 padding=5,
                                                 takefocus=False,
                                                 command=self._toggle_keep_on_top      )
-        keep_at_top_checkbox.grid(column=0, row=2, pady=(0,0), padx=(0,0), sticky="EW")
+        keep_at_top_checkbox.grid(column=0, row=2, pady=(0,0), padx=(0,0), sticky="W")
+        
+        # checkbox toggle light/dark code theme
+        toggle_colour_theme = ttk.Checkbutton(     self.code_window,
+                                                    text="Toggle dark / light theme",
+                                                    variable=self.dark_theme,
+                                                    onvalue=True,
+                                                    offvalue=False,
+                                                    style="MCUTickbox3.TCheckbutton",
+                                                    padding=5,
+                                                    takefocus=False,
+                                                    command=self._toggle_dark_theme      )
+        toggle_colour_theme.grid(column=1, row=2, pady=(0,0), padx=(0,0), sticky="EW")
 
 
     ## CodeWindow methods
 
+    # display options
     def _toggle_keep_on_top(self):
         if self.always_on_top.get() == True:
             self.code_window.attributes('-topmost', True)
         else:
             self.code_window.attributes('-topmost', False)
+
+    def _toggle_dark_theme(self):
+        self.code_frame.toggle_dark_theme(self.dark_theme.get())
+
 
     # open a text file and generate fill code editor with text
     def open_text_file(self):

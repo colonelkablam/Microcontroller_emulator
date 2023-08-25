@@ -138,7 +138,7 @@ class MainStyle(ttk.Style):
 
         self.configure(
             "MCUTickbox3.TCheckbutton", 
-            background=COLOUR_INNER_BACKGROUND,
+            background=COLOUR_INNER2_BACKGROUND,
             indicatorforeground=CHECKBOX_TICK,
             font=("Courier", 9)
         )
@@ -232,14 +232,18 @@ class MainStyle(ttk.Style):
 
         self.configure(
             "CodeWindow.TFrame",
-            background=COLOUR_MAIN_BACKGROUND,
-            borderwidth=2,
+            background=COLOUR_INNER2_BACKGROUND,
+        )
+
+        self.configure(
+            "CodeWindowInner.TFrame",
+            background=COLOUR_INNER2_BACKGROUND,
             relief="ridge"
         )
 
         self.configure(
             "CodeWindow.TLabel", 
-            background=COLOUR_LIGHT_BACKGROUND,
+            background=COLOUR_INNER2_BACKGROUND,
             foreground=COLOUR_DARK_TEXT,
             font=("Courier", 10)
         )
