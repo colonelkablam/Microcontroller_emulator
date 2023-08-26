@@ -4,6 +4,8 @@ from enum import Enum
 from my_constants import *
 from my_enums import *
 import re
+from frames import LogDisplayFrame
+
 
 class Compiler():
     def __init__(self, SFR_dict, instruction_set):
@@ -38,6 +40,12 @@ class Compiler():
 
             # if first part a recognised MNUMONIC then append next one or two parts into instruction code
             if instruction[0] in self.instruction_set:
+               
+                # determine format of hex (CALL and GOTO need to address Program mem (13-bit), others are 8-bit)
+                hex_digits = 2
+                if instruction[0] == "CALL" or instruction[0] == "GOTO":
+                    hex_digits = 4
+
                 for i, part_instruction in enumerate(instruction):
                     # MNUMONIC
                     if i == 0:
@@ -45,11 +53,11 @@ class Compiler():
                     # 1st operand
                     elif i == 1: # can be literal value or address
                         if self._is_hex(part_instruction):              # is already in hex format; make sure 4 digit long
-                            instruction_line.append(f"0x{int(part_instruction, 16):04X}")
+                            instruction_line.append(self._string_to_hex_string(part_instruction, 16, hex_digits))
                         elif self._is_decimal(part_instruction):        # else if decimal string turn into hex string
-                            instruction_line.append(f"0x{int(part_instruction, 10):04X}")
+                            instruction_line.append(self._string_to_hex_string(part_instruction, 10, hex_digits))
                         elif part_instruction in self.SFR_dict.keys():  # or named SFR get address from dict (and format to hex string)
-                            instruction_line.append(f"0x{self.SFR_dict[part_instruction]:04X}")
+                            instruction_line.append(self._int_to_hex_string(self.SFR_dict[part_instruction], hex_digits))
                         elif part_instruction in var_sub_dict.keys():   # else if in var_sub dict as already defined in code
                             instruction_line.append(var_sub_dict[part_instruction])
                         else:
@@ -67,6 +75,13 @@ class Compiler():
                     else:
                         self.error_log.append(f"error compiling '{instruction}' on code editor line {code_line}; not recognised.")
 
+                # add empty instruction parts to program if none in code (correct format for MCU upload)
+                if len(instruction) == 2:
+                    instruction_line.append("")
+                elif len(instruction) == 1:
+                    instruction_line.append("")
+                    instruction_line.append("") 
+
                 # insert in the correct program address
                 temp_compiled_program[PC] = instruction_line
                 # move to next line
@@ -80,25 +95,23 @@ class Compiler():
                 # if only part PC remains unchanged, no CODE address given
                 if len(instruction) == 1:
                     prog_sect = instruction[0][:-1] # remove colon
-                    var_sub_dict.update({prog_sect : f"0x{PC:04X}"})
+                    var_sub_dict.update({prog_sect : self._int_to_hex_string(PC, 4)})
 
                 # else if 3 parts and 2nd part is 'CODE' and 3rd valid hex address then use address as location
                 elif len(instruction) == 3 and self._is_hex(instruction[2]) :
                     if instruction[1] == "CODE":
                         # store location in subroutine dict - format hex
                         prog_sect = instruction[0][:-1]
-                        var_sub_dict.update({prog_sect : f"{int(instruction[2]):04X}"})
+                        var_sub_dict.update({prog_sect : self._string_to_hex_string(instruction[2], 16, 4)})
                 else:
                     self.error_log.append(f"Error creating subroutine/program section from instruction '{instruction}' on line {code_line}.")
 
             # ELSE IF VARIABLE - single word not beginning with a number
             # if three parts (needed to define a variable address location), add variable to dictionary
-            elif len(instruction) == 3 and re.search('^[^0-9]+\w+$', instruction[0]):
+            elif len(instruction) == 3 and self._is_valid_variable(instruction[0]):
                 if instruction[1] == "EQU":
-                    if re.search('^0x[a-fA-F0-9]+$', instruction[2]): # is already in hex format; make sure 4 digit long
-                            var_sub_dict.update({instruction[0] : f"0x{int(instruction[2], 16):04X}"})
-                    elif re.search('^[0-9]*$', instruction[2]):  # else if decimal string turn into hex string
-                            var_sub_dict.update({instruction[0] : f"0x{int(instruction[2], 10):04X}"})
+                    if self._is_hex(instruction[2]): # is already in hex format; make sure 4 digit long
+                            var_sub_dict.update({instruction[0] : self._string_to_hex_string(instruction[2], 16, 2)})
                     else:
                         self.error_log.append(f"Error creating variable from instruction '{instruction}' on line {code_line}.")
                 else:
@@ -113,8 +126,34 @@ class Compiler():
         for line in self.error_log:
             print(line)
 
+        self._display_assembled_code()
+
         # return compiled program
         return self.compiled_program
+
+    # create a pop-up window showing code and any errors raised
+    def _display_assembled_code(self):
+        prog_display_window = tk.Toplevel()
+        prog_display_window.title("Compiled Code Display")
+        prog_display_window.geometry("150x300")
+
+        # iterate through error log
+        text = "ERROR LOG:\n"
+        for line in self.error_log:
+            text = (text + line + '\n')
+
+        text = text + '\nPROGRAM:\n\n'
+
+        # iterate through program
+        for instruction in self.compiled_program:
+            line_text = ""
+            for part in instruction:
+                line_text = line_text + part + '\t'
+            text = text + line_text + '\n'
+
+        compile_text = tk.StringVar(value=text)
+        compile_log_frame = LogDisplayFrame(prog_display_window, compile_text)
+        compile_log_frame.grid(column=0, row=0, sticky="NSEW")
 
 
     # create empty list for upload to MCU
@@ -142,6 +181,14 @@ class Compiler():
         
         return word_list_per_line
 
+    # formatting hex for program
+    def _string_to_hex_string(self, string, base, digits):
+        return f"0x{int(string, base):0{digits}X}"
+
+    def _int_to_hex_string(self, int, digits):
+        return f"0x{int:0{digits}X}"
+
+    # testing input string
     def _is_hex(self, string):
         return re.search('^0x[a-fA-F0-9]+$', string)
 

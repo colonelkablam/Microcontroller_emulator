@@ -33,7 +33,7 @@ class InstructionDecoder():
         ## BYTE-ORIENTATED FILE REGISTER OPERATIONS - only act on File Registers
         
         # ADDWF Add the contents of w reg and file reg, storing result in either
-        elif self.mnumonic == Inst.ADDWL.name:
+        elif self.mnumonic == Inst.ADDWF.name:
             w = self._get_w_reg_value()
             f_value = self._get_file_reg_value(self.operand_1)
             total = w + f_value
