@@ -13,7 +13,7 @@ main:	; create main program section
 	MOVLW	0x03
 	MOVWF	count2
 
-	CLRF	0x05 ; clear PORTA
+	CLRF	PORTA ; clear PORTA
 	CLRF	0x85 ; set PORTA to output via TRISA
 
 main_loop:
