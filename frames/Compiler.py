@@ -112,7 +112,9 @@ class Compiler():
 
         for line in self.error_log:
             print(line)
-        return None
+
+        # return compiled program
+        return self.compiled_program
 
 
     # create empty list for upload to MCU
