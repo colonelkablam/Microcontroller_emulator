@@ -18,7 +18,7 @@ class MCUFrame(ttk.Frame):
 
         # configure layout of internal Frames
         #self.columnconfigure(2, weight=1)
-        self.rowconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
 
         # properties
         self.parent = parent
@@ -299,10 +299,13 @@ class MCUFrame(ttk.Frame):
 
     # set/clear file reg bit
     def set_file_reg_bit(self, mem_address, bit):
-        self.data_memory_frame(mem_address).set_bit(bit)
+        #self.data_memory_frame(mem_address).set_bit(bit)
+        self.data_memory_frame.set_file_reg_bit(mem_address, bit)
 
     def clear_file_reg_bit(self, mem_address, bit):
-        self.data_memory_frame(mem_address).clear_bit(bit)
+        #self.data_memory_frame(mem_address).clear_bit(bit)
+        self.data_memory_frame.clear_file_reg_bit(mem_address, bit)
+
 
     # set/clear status bit 2 (Z); result of ALU gives a zero 
     def set_Z_bit_status(self):

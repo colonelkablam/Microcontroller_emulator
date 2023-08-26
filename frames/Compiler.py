@@ -60,6 +60,8 @@ class Compiler():
                             instruction_line.append(self._int_to_hex_string(self.SFR_dict[part_instruction], hex_digits))
                         elif part_instruction in var_sub_dict.keys():   # else if in var_sub dict as already defined in code
                             instruction_line.append(var_sub_dict[part_instruction])
+                        elif self._is_valid_variable(part_instruction):
+                            instruction_line.append(part_instruction)   # will be used as a prog section later
                         else:
                             instruction_line.append("") # operand 1 left empty if above criteria not met
                     # 2nd operand
@@ -103,8 +105,12 @@ class Compiler():
                         # store location in subroutine dict - format hex
                         prog_sect = instruction[0][:-1]
                         var_sub_dict.update({prog_sect : self._string_to_hex_string(instruction[2], 16, 4)})
+
+                        # move to inserting lines past address given by CODE instruction
+                        PC = int(instruction[2], 16)
                 else:
                     self.error_log.append(f"Error creating subroutine/program section from instruction '{instruction}' on line {code_line}.")
+
 
             # ELSE IF VARIABLE - single word not beginning with a number
             # if three parts (needed to define a variable address location), add variable to dictionary
@@ -117,14 +123,13 @@ class Compiler():
                 else:
                     self.error_log.append(f"Error creating variable from instruction '{instruction}' on line {code_line}.")
 
+
+        for line in temp_compiled_program:
+            if line[1] in var_sub_dict.keys():
+                line[1] = var_sub_dict[line[1]]
+
         # shorten program to compiled length
         self.compiled_program = temp_compiled_program[:PC]
-
-        for i, instruction in enumerate(self.compiled_program):
-            print(i, "-", instruction)
-
-        for line in self.error_log:
-            print(line)
 
         self._display_assembled_code()
 
@@ -135,7 +140,11 @@ class Compiler():
     def _display_assembled_code(self):
         prog_display_window = tk.Toplevel()
         prog_display_window.title("Compiled Code Display")
-        prog_display_window.geometry("150x300")
+        prog_display_window.geometry("250x350")
+
+        prog_display_window.columnconfigure(0, weight=1)
+        prog_display_window.rowconfigure(0, weight=1)
+
 
         # iterate through error log
         text = "ERROR LOG:\n"
@@ -196,7 +205,7 @@ class Compiler():
         return re.search('^[0-9]*$', string)
 
     def _is_one_char(self, string):
-        return re.search('^[0-9]{1}|[WwFf]{1}$', string)
+        return re.search('^[0-9WwFf]{1}$', string)
     
     def _is_valid_subroutine(self, string):
         return re.search('^[^0-9]+\w+:$', string)

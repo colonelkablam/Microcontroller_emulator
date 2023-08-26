@@ -32,7 +32,7 @@ class CodeWindow:
 
         # test program initially defined
         self.compiled_program = [   ["CALL",   "0x08",  ""],
-                                    ["CLRF",   "0x85",  ""],
+                                    ["BSF",    "0x05",  "0"],
                                     ["MOVLW",  "0x0A",  ""],
                                     ["ANDWF",  "0x06",  "0"],
                                     ["MOVWF",  "0x05",  "0"],

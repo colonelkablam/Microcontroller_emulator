@@ -101,6 +101,55 @@ class InstructionDecoder():
             # log
             self._add_to_log(f"CLRW; W_REG cleared")
 
+        # DECF decrement register by one (store in 0 - W reg, or 1 - file reg)
+        elif self.mnumonic == Inst.DECF.name:
+            f_value = self._get_file_reg_value(self.operand_1)
+            total = f_value - 1
+        
+            # handle byte wrap-around
+            result = total % 256
+
+            # set Z bit according to result
+            self._handle_Z_bit(result)
+
+            # store value of reg in w or f (0 or 1)
+            loc_string = self._where_to_store_result(result, self.operand_1, self.operand_2)
+
+            # advance to next program line
+            self.program_counter.advance_one()
+
+            # log
+            self._add_to_log(f"DECF; FILE REG 0x{self.operand_1:02X} value ({f_value}) --> {loc_string}")
+
+        # DECFSZ decrement register by one (store in 0 - W reg, or 1 - file reg)
+        elif self.mnumonic == Inst.DECFSZ.name:
+            f_value = self._get_file_reg_value(self.operand_1)
+            total = f_value - 1
+        
+            # handle byte wrap-around (assuming no 2s compliment at present)
+            if total < 0:
+                total = 255
+            result = total
+
+            # store value of reg in w or f (0 or 1)
+            loc_string = self._where_to_store_result(result, self.operand_1, self.operand_2)
+
+            # test result
+            if result == 0:
+                # SKIPPED next line; next cycle to be an NOP - 2 instruction cycles
+                self.parent.set_next_cycle_NOP()
+                # skip a program line
+                self.program_counter.advance_two()
+                self._add_to_log(f"NEXT INSTRUCTION SKIPPED")
+
+            else:
+                # advance to next program line
+                self.program_counter.advance_one()
+                self._add_to_log(f"NEXT INSTRUCTION EXECUTED")
+
+            # log
+            self._add_to_log(f"DECFSZ; FILE REG 0x{self.operand_1:02X} value ({f_value}) --> {loc_string}")
+
         # MOVF move file register of address given (to 0 - W reg, or 1 - file reg) 
         elif self.mnumonic == Inst.MOVF.name:
             result = self._get_file_reg_value(self.operand_1)
@@ -181,8 +230,6 @@ class InstructionDecoder():
                 # advance to next program line
                 self.program_counter.advance_one()
                 self._add_to_log(f"NEXT INSTRUCTION EXECUTED")
-
-                # Bit Test File reg Skip if Clear
 
         # Bit Test File reg Skip if Set 
         elif self.mnumonic == Inst.BTFSS.name:

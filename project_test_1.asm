@@ -4,7 +4,7 @@
 count1	EQU	0x22
 count2	EQU	0x23
 
-main:	; create main program section
+main:	CODE	0x00 ; create main program section
 
 ; initialise registers
 
@@ -15,8 +15,10 @@ main:	; create main program section
 
 	CLRF	PORTA ; clear PORTA
 	CLRF	0x85 ; set PORTA to output via TRISA
+	BSF	0x05	0
+	GOTO	main_loop
 
-main_loop:
+main_loop:	CODE 0x0020
 
 	DECFSZ	count1
 	GOTO	main_loop	; skip if above inst. 0
