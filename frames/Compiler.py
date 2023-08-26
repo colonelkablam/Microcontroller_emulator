@@ -123,7 +123,7 @@ class Compiler():
                 else:
                     self.error_log.append(f"Error creating variable from instruction '{instruction}' on line {code_line}.")
 
-
+        # replace any subroutines and PSECT definitions with address
         for line in temp_compiled_program:
             if line[1] in var_sub_dict.keys():
                 line[1] = var_sub_dict[line[1]]
