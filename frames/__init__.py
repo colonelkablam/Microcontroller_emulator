@@ -5,6 +5,7 @@ from frames.ChipPinoutFrame import ChipPinoutFrame
 from frames.MCUFrame import MCUFrame
 from frames.LogDisplayFrame import LogDisplayFrame
 from frames.ScrollableCanvasFrame import ScrollableCanvasFrame
+from frames.Compiler import Compiler
 
 
 

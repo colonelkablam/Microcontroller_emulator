@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 import multiprocessing
-from my_constants import*
+from my_constants import *
+from my_enums import Instruction
 from dataStructures import NBitNumber
 from frames import ControlPanelFrame, CodeDisplayFrame, ChipPinoutFrame
 from frames.MCUInternals import ProgramCounter, ProgramMemoryFrame,\
@@ -38,7 +39,21 @@ class MCUFrame(ttk.Frame):
                                     tk.StringVar(value="00h"),
                                     tk.StringVar(value=f"00000000"),
                                     "WREG"      )
+
+        # Special Function Registers (SFR) look-up address by name dictionary
+        self.SFR_dict = {   "INDF" :    int("0x00", 16),
+                            "TMRO" :    int("0x01", 16),
+                            "PCL" :     int("0x02", 16),
+                            "STATUS" :  int("0x03", 16),
+                            "FSR" :     int("0x04", 16),
+                            "PORTA" :   int("0x05", 16),
+                            "PORTB" :   int("0x06", 16),
+                            "PCLATH" :  int("0x0A", 16),
+                            "TRISA" :   int("0x85", 16),
+                            "TRISB" :   int("0x86", 16)   }
         
+        # Implemented Instruction Set list - created from enum Instruction
+        self.instruction_set = set(instruction.name for instruction in Instruction)
 
         ## tkinter widgets
 
@@ -49,14 +64,14 @@ class MCUFrame(ttk.Frame):
         self.prog_memory_frame.grid(column=0, row=0, padx=(10,10))
 
         # data memory - contains the data memory logic/control
-        self.data_memory_frame = DataMemoryFrame(self, "Data Memory / registers")
+        self.data_memory_frame = DataMemoryFrame(self, self.SFR_dict, "Data Memory / registers")
         self.data_memory_frame.grid(column=1, row=0)
 
         # 13-bit number needed for Program Counter
         self.program_counter = ProgramCounter(self.data_memory_frame)
 
         # logic
-        self.instruction_decoder = InstructionDecoder(self, self.program_counter)
+        self.instruction_decoder = InstructionDecoder(self, self.instruction_set, self.program_counter)
         self.is_next_cycle_NOP = False
 
         # MCU Status Information display - frame to display key information/status from the MCU/memory

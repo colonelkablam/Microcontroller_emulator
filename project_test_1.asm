@@ -1,19 +1,35 @@
-; nick's test code - comment precedes with a ';'
+; nick's test code - comments preceded with a ';'
 
 ; decalring variable locations
-var1	EQU	0x20
-var2	EQU	0x21
+count1	EQU	0x22
+count2	EQU	0x23
 
-; create main program section
+main:	; create main program section
 
-main:
+; initialise registers
 
-ADDLW 0xFF
-ADDLW 255
+	MOVLW	0x0A
+	MOVWF 	count1
+	MOVLW	0x03
+	MOVWF	count2
 
-; comment
+	CLRF	0x05 ; clear PORTA
+	CLRF	0x85 ; set PORTA to output via TRISA
 
-loop_head:
+main_loop:
 
-ADDLW 0x01
-GOTO loop_head
+	DECFSZ	count1
+	GOTO	main_loop	; skip if above inst. 0
+	
+	BCF	0x05	0 ; turns on PORTA bit 0
+	
+	MOVLW	0x0A
+	MOVWF	count1	; reset count1
+
+	BSF 	0x05	0 ; turn off PORTA bit 0
+
+	DECFSZ	count2	
+	GOTO main_loop
+
+end:	
+	GOTO end		; stay in end_loop

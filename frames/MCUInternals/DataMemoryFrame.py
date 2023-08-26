@@ -7,7 +7,7 @@ from frames.ScrollableCanvasFrame import ScrollableCanvasFrame
 
 
 class DataMemoryFrame(ttk.Frame):
-    def __init__(self, parent, title ="Untitled", *args, **kwargs):
+    def __init__(self, parent, SFR_dict, title ="Untitled", *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         # styling
@@ -31,17 +31,8 @@ class DataMemoryFrame(ttk.Frame):
         self.watching_selected_registers = tk.BooleanVar(value=False) # toggle value to see only see ticked registers
         self.watching_accessed_registers = tk.BooleanVar(value=False) # toggle value to see only changed registers
 
-        # Special Function Registers (SFR) look-up address by name dictionary
-        self.SFR_dict = {   "INDF" :    int("0x00", 16),
-                            "TMRO" :    int("0x01", 16),
-                            "PCL" :     int("0x02", 16),
-                            "STATUS" :  int("0x03", 16),
-                            "FSR" :     int("0x04", 16),
-                            "PORTA" :   int("0x05", 16),
-                            "PORTB" :   int("0x06", 16),
-                            "PCLATH" :  int("0x0A", 16),
-                            "TRISA" :   int("0x85", 16),
-                            "TRISB" :   int("0x86", 16)   }
+        # Special Function Registers (SFR) look-up address by name dictionary (rom MCU)
+        self.SFR_dict = SFR_dict
 
         # tkinter widgets
 
