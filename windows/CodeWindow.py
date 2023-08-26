@@ -1,6 +1,5 @@
 import tkinter as tk
 import os
-import re
 from tkinter import ttk
 from frames import CodeDisplayFrame, Compiler
 from my_constants import *
@@ -14,7 +13,6 @@ class CodeWindow:
         # properties
 
         # starting position relative to parent window
-
         window_width = CODE_WINDOW_WIDTH
         window_height = CODE_WINDOW_HEIGHT
         window_xpos = parent.winfo_x() + 30

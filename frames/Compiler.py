@@ -94,19 +94,19 @@ class Compiler():
             
             # check 1st part ENDS with a ':' i.e. 'main:' or 'loop:'
             elif self._is_valid_subroutine(instruction[0]):
-                # if only part PC remains unchanged, no CODE address given
+                # if only part PC remains unchanged, no PSECT address given
                 if len(instruction) == 1:
                     prog_sect = instruction[0][:-1] # remove colon
                     var_sub_dict.update({prog_sect : self._int_to_hex_string(PC, 4)})
 
-                # else if 3 parts and 2nd part is 'CODE' and 3rd valid hex address then use address as location
+                # else if 3 parts and 2nd part is 'PSECT' and 3rd valid hex address then use address as location
                 elif len(instruction) == 3 and self._is_hex(instruction[2]) :
-                    if instruction[1] == "CODE":
+                    if instruction[1] == "PSECT":
                         # store location in subroutine dict - format hex
                         prog_sect = instruction[0][:-1]
                         var_sub_dict.update({prog_sect : self._string_to_hex_string(instruction[2], 16, 4)})
 
-                        # move to inserting lines past address given by CODE instruction
+                        # move to inserting lines past address given by PSECT instruction
                         PC = int(instruction[2], 16)
                 else:
                     self.error_log.append(f"Error creating subroutine/program section from instruction '{instruction}' on line {code_line}.")
@@ -208,7 +208,7 @@ class Compiler():
         return re.search('^[0-9WwFf]{1}$', string)
     
     def _is_valid_subroutine(self, string):
-        return re.search('^[^0-9]+\w+:$', string)
+        return re.search('^([^0-9]{1}\w*):$', string)
 
     def _is_valid_variable(self, string):
         return re.search('^[^0-9]+\w+$', string)
