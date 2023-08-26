@@ -208,9 +208,9 @@ class Compiler():
         return re.search('^[0-9WwFf]{1}$', string)
     
     def _is_valid_subroutine(self, string):
-        return re.search('^([^0-9]{1}\w*):$', string)
+        return re.search('^[^0-9]{1}\w*:$', string)
 
     def _is_valid_variable(self, string):
-        return re.search('^[^0-9]+\w+$', string)
+        return re.search('^[^0-9]{1}\w*$', string)
 
 
