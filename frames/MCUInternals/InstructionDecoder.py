@@ -8,9 +8,9 @@ class InstructionDecoder():
 
         # properties
 
-        # split the instructions
+        # split instructions
         self.mnumonic = ""
-        self.operand_1 = "0x00"
+        self.operand_1 = ""
         self.operand_2 = 1
 
         self.parent = parent

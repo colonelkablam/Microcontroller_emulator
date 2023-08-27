@@ -20,7 +20,7 @@ b:
 	RETURN
 
 c:
-	CALL d:
+	CALL d
 	RETURN
 
 d:
