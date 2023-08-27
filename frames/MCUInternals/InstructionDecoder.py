@@ -251,7 +251,7 @@ class InstructionDecoder():
             self.program_counter.advance_one()
 
             # log
-            self._add_to_log(f"SUBWF; W_REG value ({w}) + FILE REG 0x{self.operand_1:02X} value ({f_value}) --> {loc_string}")
+            self._add_to_log(f"SUBWF; W_REG value ({w}) - FILE REG 0x{self.operand_1:02X} value ({f_value}) --> {loc_string}")
 
 
         ## BIT-ORIENTATED FILE REGISTER OPERATIONS - only act on File Registers
@@ -416,13 +416,13 @@ class InstructionDecoder():
             # log
             self._add_to_log(f"RETURN; Return to address 0x{return_address:02X} [{self.operand_1}]; takes 2 instruction cycles")
         
-        # SUBLW Add lieral value with W Reg
+        # SUBLW Add lieral value with W Reg. store in w
         elif self.mnumonic == Inst.SUBLW.name:
             w = self._get_w_reg_value()
             total = self.operand_1 - w
 
             # handle C bit
-            self._handle_C_bit_borry(total)
+            self._handle_C_bit_borrow(total)
         
             # handle byte wrap-around
             result = total % 256 # 8-bit number
@@ -436,7 +436,7 @@ class InstructionDecoder():
             # advance to next program line
             self.program_counter.advance_one()
             # log
-            self._add_to_log(f"SUBLW; literal value ({self.operand_1}) + W_REG value ({w}) --> W_REG (result: {self._get_w_reg_value()})")
+            self._add_to_log(f"SUBLW; literal value ({self.operand_1}) - W_REG value ({w}) --> W_REG (result: {self._get_w_reg_value()})")
    
         # catch-all to log if instruction not understood
         else:
