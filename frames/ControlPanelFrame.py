@@ -33,9 +33,9 @@ class ControlPanelFrame(ttk.Frame):
         self.running_MCU_frame.columnconfigure((0,1), weight=1)
 
         # buttons + label and slider
-        self.advance = ttk.Button(self.running_MCU_frame, text="Advance Instruction", command=self.MCU_advance_cycle)
-        self.run = ttk.Button(self.running_MCU_frame, text="Run", command=self.start_simulation)
-        self.stop = ttk.Button(self.running_MCU_frame, text="Stop", command=self.stop_simulation)
+        self.advance = ttk.Button(self.running_MCU_frame, text="Advance Instruction", command=self._MCU_advance_cycle)
+        self.run = ttk.Button(self.running_MCU_frame, text="Run", command=self._start_simulation)
+        self.stop = ttk.Button(self.running_MCU_frame, text="Stop", command=self._stop_simulation)
         self.slider_label = ttk.Label(  self.running_MCU_frame,
                                          text="slow   - simulation speed -   fast",
                                          anchor="center",
@@ -59,8 +59,8 @@ class ControlPanelFrame(ttk.Frame):
         self.log_frame.grid(column=1, row=0, sticky="EW")
         self.log_frame.columnconfigure(0, weight=1)
         # buttons
-        self.pin_out = ttk.Button(self.log_frame, text="Pinout Display", command=self.open_pinout_window)
-        self.log = ttk.Button(self.log_frame, text="View Log Messages", command=self.open_log_window)
+        self.pin_out = ttk.Button(self.log_frame, text="Pinout Display", command=self._open_pinout_window)
+        self.log = ttk.Button(self.log_frame, text="View Log Messages", command=self._open_log_window)
         self.log_clear = ttk.Button(self.log_frame, name="narrow1", text="Clear Log Messages", command=self.parent.clear_log_text)
         # positions log and pin
         self.pin_out.grid(column=0, row=0)
@@ -72,13 +72,13 @@ class ControlPanelFrame(ttk.Frame):
         self.reset_frame.grid(column=2, row=0, sticky="EW")
         self.reset_frame.columnconfigure(0, weight=1)
         # buttons
-        self.code_editor = ttk.Button(self.reset_frame, text="Code Editor", command=self.open_code_window)
-        self.restart_MCU = ttk.Button(self.reset_frame, name="narrow1", text="Restart MCU", command=self.restart_MCU)
-        self.clear_program = ttk.Button(self.reset_frame, name="narrow2", text="Clear Program", command=self.clear_program)
+        self.code_editor = ttk.Button(self.reset_frame, text="Code Editor", command=self._open_code_window)
+        self.restart_MCU_button = ttk.Button(self.reset_frame, name="narrow1", text="Restart MCU", command=self._restart_MCU)
+        self.clear_program_button = ttk.Button(self.reset_frame, name="narrow2", text="Clear Program", command=self._clear_program)
         # positions program and reset
         self.code_editor.grid(column=0, row=0)
-        self.restart_MCU.grid(column=0, row=1)
-        self.clear_program.grid(column=0, row=2)    
+        self.restart_MCU_button.grid(column=0, row=1)
+        self.clear_program_button.grid(column=0, row=2)    
 
         # apply padding and style to all buttons
         for frame in self.button_frame.winfo_children():
@@ -93,18 +93,18 @@ class ControlPanelFrame(ttk.Frame):
                     elif button.winfo_name() == "narrow2":
                         button.grid(sticky="NEW", padx=(40,40), pady=(5,0))
 
-        self.clear_program.configure(style="MainWindow2.TButton")
+        self.clear_program_button.configure(style="MainWindow2.TButton")
         self.stop.configure(style="MainWindow2.TButton")
         self.log_clear.configure(style="MainWindow2.TButton")
         self.run.configure(style="MainWindow3.TButton")
-        self.restart_MCU.configure(style="MainWindow4.TButton")
+        self.restart_MCU_button.configure(style="MainWindow4.TButton")
 
     # ControlPanelFrame methods
 
-    def MCU_advance_cycle(self):
+    def _MCU_advance_cycle(self):
         self.parent.MCU_frame.advance_cycle()
 
-    def start_simulation(self):
+    def _start_simulation(self):
         # disable other buttons
         self.advance.configure(state="disabled")
         self.run.configure(state="disabled")
@@ -112,7 +112,7 @@ class ControlPanelFrame(ttk.Frame):
         # call method in MCU
         self.parent.MCU_frame.start_simulation(int(self.sim_speed_slider.get()))
 
-    def stop_simulation(self):
+    def _stop_simulation(self):
         # enable other buttons
         self.advance.configure(state="normal")
         self.run.configure(state="normal")
@@ -120,16 +120,16 @@ class ControlPanelFrame(ttk.Frame):
         # call method in MCU
         self.parent.MCU_frame.stop_simulation()
     
-    def restart_MCU(self):
-        self.stop_simulation()
+    def _restart_MCU(self):
+        self._stop_simulation()
         self.parent.MCU_frame.reset_MCU(keepprogram=True)
 
-    def clear_program(self):
-        self.stop_simulation()
+    def _clear_program(self):
+        self._stop_simulation()
         self.parent.MCU_frame.reset_MCU(keepprogram=False)
 
     # manage code window
-    def open_code_window(self):
+    def _open_code_window(self):
         if self.code_window_open == False:
            self.parent.open_code_window()
            self.code_window_open = True
@@ -140,7 +140,7 @@ class ControlPanelFrame(ttk.Frame):
         self.code_window_open = False
 
     # manage log window
-    def open_log_window(self):
+    def _open_log_window(self):
         if self.log_window_open == False:
             self.parent.open_log_window()
             self.log_window_open = True
@@ -151,6 +151,6 @@ class ControlPanelFrame(ttk.Frame):
         self.log_window_open = False
 
     # manage pinout window
-    def open_pinout_window(self):
+    def _open_pinout_window(self):
         self.parent.open_pinout_window()
 

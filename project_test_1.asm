@@ -1,10 +1,11 @@
 ; nick's test code - comments preceded with a ';'
 
-; decalring variable locations
+; declaring variable locations with 'EQU'
 count1	EQU	0x22
 count2	EQU	0x23
 
-main:	CODE	0x00 ; create main program section
+main:	PSECT	0x00    ;'PSECT' labels a section of code
+			; create main program section
 
 ; initialise registers
 
@@ -18,7 +19,7 @@ main:	CODE	0x00 ; create main program section
 	BSF	0x05	0
 	GOTO	main_loop
 
-main_loop:	CODE 0x0020
+main_loop:	PSECT 0x0020
 
 	DECFSZ	count1
 	GOTO	main_loop	; skip if above inst. 0

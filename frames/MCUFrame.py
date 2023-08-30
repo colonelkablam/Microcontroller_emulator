@@ -122,11 +122,6 @@ class MCUFrame(ttk.Frame):
 
     ## MCUFrame methods
 
-    ## PROGRAM MEMORY
-    # fill program memory with empty Instruction objects ("ADDLW 0xFF 0")
-    def initialise_program_memory(self):
-        self.prog_memory_frame.initialise_program_memory()
-
     def reset_MCU(self, keepprogram=True):        
         self.prog_memory_frame.reset_program_memory_frame(keepprogram)
         self.data_memory_frame.reset_data_memory_frame()
@@ -182,6 +177,7 @@ class MCUFrame(ttk.Frame):
     ## handle the WORKING REGISTER (exists outside the data memory list)
     def get_w_register(self):
         return self.w_reg
+
     def set_w_register(self, new_value):
         self.w_reg.set_value(new_value)
 
