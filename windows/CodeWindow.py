@@ -23,6 +23,7 @@ class CodeWindow:
         self.compiler = Compiler(self.parent.MCU_frame.SFR_dict, set(intruction.name for intruction in Instruction))
         self.always_on_top = tk.BooleanVar(value=False)
         self.dark_theme = tk.BooleanVar(value=False)
+        self.compiled_code_successful = False
         
         self.empty_file_text = "** No file loaded **"
         self.current_file_path = tk.StringVar(value=self.empty_file_text)
@@ -66,24 +67,25 @@ class CodeWindow:
         self.button_frame.columnconfigure((0,1,2), weight=1)
 
         #open code file
-        self.open_code_button = ttk.Button(self.button_frame, text="open", command=self.open_text_file)
+        self.open_code_button = ttk.Button(self.button_frame, text="Open", command=self.open_text_file)
         self.open_code_button.grid(column=0, row=0, sticky="EW")
         
         #save code file
-        self.save_code_button = ttk.Button(self.button_frame, text="save", command=self.save_text_file)
+        self.save_code_button = ttk.Button(self.button_frame, text="Save", command=self.save_text_file)
         self.save_code_button.grid(column=1, row=0, sticky="EW")
 
         #'save as' code file
-        self.save_as_code_button = ttk.Button(self.button_frame, text="save as", command=self.save_as_text_file)
+        self.save_as_code_button = ttk.Button(self.button_frame, text="Save As", command=self.save_as_text_file)
         self.save_as_code_button.grid(column=2, row=0, sticky="EW")
 
         # compile program
-        self.compile_button = ttk.Button(self.button_frame, text="compile code", command=self.compile_code)
+        self.compile_button = ttk.Button(self.button_frame, text="Compile Code", command=self.compile_code)
         self.compile_button.grid(column=0, row=1, columnspan=2, sticky="EW")
 
         #load_program_into_MCU
-        self.load_into_MCU_button = ttk.Button(self.button_frame, text="load program into MCU", command=self.load_program_into_MCU)
+        self.load_into_MCU_button = ttk.Button(self.button_frame, text="Load Instructions Into MCU", command=self.load_program_into_MCU)
         self.load_into_MCU_button.grid(column=2, row=1, columnspan=1, sticky="EW")
+        self.load_into_MCU_button.configure(state="disabled")
 
         # apply main button style to all buttons
         for child in self.button_frame.winfo_children():
@@ -214,10 +216,18 @@ class CodeWindow:
         whole_text = self.code_frame.code_text.get(1.0, tk.END)
 
         # pass users text into the Compiler to get MCU program instructions
-        self.compiled_program = self.compiler.get_instructions(whole_text)
+        try: 
+            self.compiled_program = self.compiler.get_instructions(whole_text)
+            self.compiled_code_successful = True
+        except Exception as e:
+            self.parent.system_message(f"Failed to compile code; Exception arguments:{e.args}")
+            self.compiled_code_successful = False
 
-        ## POP UP TO DISPLAY COMPILED LINES
-
+        ## POP UP TO DISPLAY COMPILED LINES INITIATED IN COMPILER
+        if self.compiled_code_successful:
+            self.load_into_MCU_button.configure(state="normal")
+        else:
+            self.load_into_MCU_button.configure(state="disabled")
 
 
     def on_close_window(self):

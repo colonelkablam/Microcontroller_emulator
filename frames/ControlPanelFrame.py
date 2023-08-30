@@ -33,7 +33,7 @@ class ControlPanelFrame(ttk.Frame):
         self.running_MCU_frame.columnconfigure((0,1), weight=1)
 
         # buttons + label and slider
-        self.advance = ttk.Button(self.running_MCU_frame, text="Advance", command=self.MCU_advance_cycle)
+        self.advance = ttk.Button(self.running_MCU_frame, text="Advance Instruction", command=self.MCU_advance_cycle)
         self.run = ttk.Button(self.running_MCU_frame, text="Run", command=self.start_simulation)
         self.stop = ttk.Button(self.running_MCU_frame, text="Stop", command=self.stop_simulation)
         self.slider_label = ttk.Label(  self.running_MCU_frame,
@@ -59,7 +59,7 @@ class ControlPanelFrame(ttk.Frame):
         self.log_frame.grid(column=1, row=0, sticky="EW")
         self.log_frame.columnconfigure(0, weight=1)
         # buttons
-        self.pin_out = ttk.Button(self.log_frame, text="Pin Out", command=self.open_pinout_window)
+        self.pin_out = ttk.Button(self.log_frame, text="Pinout Display", command=self.open_pinout_window)
         self.log = ttk.Button(self.log_frame, text="View Log Messages", command=self.open_log_window)
         self.log_clear = ttk.Button(self.log_frame, name="narrow1", text="Clear Log Messages", command=self.parent.clear_log_text)
         # positions log and pin

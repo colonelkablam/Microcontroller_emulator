@@ -17,8 +17,9 @@ class Compiler():
         self.error_log = []
 
     def get_instructions(self, whole_text):
+
         
-        # split the lines into words - removes comments and blanks
+        # split the lines into words - removes comments and blanks and sets to uppercase
         word_list_per_line = self._create_word_list_per_line(whole_text)
 
         # create empty program
@@ -100,7 +101,7 @@ class Compiler():
                     var_sub_dict.update({prog_sect : self._int_to_hex_string(PC, 4)})
 
                 # else if 3 parts and 2nd part is 'PSECT' and 3rd valid hex address then use address as location
-                elif len(instruction) == 3 and self._is_hex(instruction[2]) :
+                elif len(instruction) == 3 and self._is_hex(instruction[2]):
                     if instruction[1] == "PSECT":
                         # store location in subroutine dict - format hex
                         prog_sect = instruction[0][:-1]
@@ -140,7 +141,7 @@ class Compiler():
     def _display_assembled_code(self):
         prog_display_window = tk.Toplevel()
         prog_display_window.title("Compiled Code Display")
-        prog_display_window.geometry("250x350")
+        prog_display_window.geometry("250x350+20+20")
 
         prog_display_window.columnconfigure(0, weight=1)
         prog_display_window.rowconfigure(0, weight=1)
@@ -183,7 +184,7 @@ class Compiler():
                 if word[0] == ";":
                     break
                 else:
-                    word_list.append(word)
+                    word_list.append(word.upper())
             # add word list to line list if any words
             if len(word_list) != 0:
                 word_list_per_line.append(word_list)
@@ -199,7 +200,7 @@ class Compiler():
 
     # testing input string
     def _is_hex(self, string):
-        return re.search('^0x[a-fA-F0-9]+$', string)
+        return re.search('^0[Xx][a-fA-F0-9]+$', string)
 
     def _is_decimal(self, string):
         return re.search('^[0-9]*$', string)
