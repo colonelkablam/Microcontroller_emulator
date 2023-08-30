@@ -54,9 +54,6 @@ class ProgramCounter():
 
     def get_previous(self):
         return self.previous_value
-
-    def set_previous(self, value=0):
-        self.previous_value = value
     
     # used by the instruction decoder to advance PC after instruction
     def advance_one(self):

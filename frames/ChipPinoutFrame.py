@@ -51,7 +51,6 @@ class ChipPinoutFrame(ttk.Frame):
     # ChipPinoutFrame methods
 
     def initialise_chip_pins(self):
-
     # populate left side chip pins 1 to 9
         for pin_num in range(1, 10):
 
