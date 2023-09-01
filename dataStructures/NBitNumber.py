@@ -24,12 +24,6 @@ class NBitNumber():
         self.dec_value_obj.set(kept_within_bit_range)
         self.update_byte()
 
-
-    # need to increment all three base numbers
-    def increment_value(self, step=1):
-        self.dec_value_obj.set(self.dec_value_obj.get() + step)
-        self.update_byte()
-
     # need to update other values using the existing dec value
     def update_byte(self):
         # calculating formatting (hex to be in bytes)

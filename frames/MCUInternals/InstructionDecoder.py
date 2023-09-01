@@ -30,7 +30,7 @@ class InstructionDecoder():
             # advance to next program line
             self.program_counter.advance_one()
 
-        ## BYTE-ORIENTATED FILE REGISTER OPERATIONS - only act on File Registers
+        ## BYTE-ORIENTED FILE REGISTER OPERATIONS - only act on File Registers
         
         # ADDWF Add the contents of w reg and file reg, storing result in either
         elif self.mnumonic == Inst.ADDWF.name:
