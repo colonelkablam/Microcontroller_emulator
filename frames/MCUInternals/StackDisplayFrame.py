@@ -101,7 +101,7 @@ class StackDisplayFrame(ttk.Frame):
             stack_element.grid_remove()
             self.stack_display_list.append(stack_element)
             self._add_empty_label() # show stack is empty
-    
+
     # add empty 'backstop to stack'
     def _add_empty_label(self):
         self.stack_display_list[0].configure(text="empty", style="Stack.TLabel")

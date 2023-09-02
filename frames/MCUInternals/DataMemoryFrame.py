@@ -202,6 +202,7 @@ class DataMemoryFrame(ttk.Frame):
         self.set_byte_by_name("TRISA", 31)
         self.set_byte_by_name("TRISB", 255)
 
+
     # clear all values in data registers and reset highlighting
     def reset_data_memory_frame(self):
         # reset memory and highlighting - using set of accessed addresses to speed it up

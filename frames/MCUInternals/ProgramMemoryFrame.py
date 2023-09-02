@@ -84,6 +84,7 @@ class ProgramMemoryFrame(ttk.Frame):
         for mem_address in range(0, PROGRAM_MEMORY_SIZE):
             # add Instruction
             self.memory.append(Instruction())
+        
 
     # clear all values in program data
     def reset_program_memory_frame(self, keepprogram=True):

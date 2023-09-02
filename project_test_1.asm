@@ -35,4 +35,5 @@ main_loop:	PSECT 0x0020
 	GOTO main_loop
 
 end:	
+	ADDLW	0x03
 	GOTO end		; stay in end_loop
