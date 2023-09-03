@@ -13,7 +13,7 @@ class MainWindow(tk.Tk):
         super().__init__()
 
         # MainWindow properties
-        self.title("MCU Emulator")
+        self.title("MCU Simulator")
         #self.geometry("%dx%d+%d+%d" % (MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, 100, 100))
         self.resizable(height = True, width = False)
         self.columnconfigure(0, weight=1)
